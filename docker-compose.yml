@@ -99,6 +99,8 @@ services:
         - GID=${GID:-1000}
     volumes:
       - ./src:/var/www/html:delegated
+    ports:
+      - "8000:8000"
     depends_on:
       - mysql
     entrypoint: [ 'php', '/var/www/html/artisan' ]
