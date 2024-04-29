@@ -40,7 +40,7 @@ services:
     networks:
       - laravel
 
-  php:
+  php: # name should also be in dockerfiles/nginx/default.conf
     build:
       context: ./dockerfiles
       dockerfile: php.dockerfile
