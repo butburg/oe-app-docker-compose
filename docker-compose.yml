@@ -18,9 +18,10 @@ services:
       - ./src:/var/www/html:delegated
     depends_on:
       - php
-      - redis
-      - mysql
-      - mailhog
+      - npm
+      #- redis
+      #- mysql
+      #- mailhog
     networks:
       - laravel
 
@@ -86,7 +87,8 @@ services:
       - "3001:3001"
       - "5173:5173"
     working_dir: /var/www/html
-    entrypoint: [ 'npm' ]
+    #entrypoint: [ 'npm' ]
+    command: ["npm", "run", "dev"]  # Specify the default command to run
     networks:
       - laravel
 
