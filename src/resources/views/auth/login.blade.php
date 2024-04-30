@@ -2,6 +2,12 @@
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
 
+    <!-- Login Links for dev only. github.com/spatie/laravel-login-link -->
+
+    @env('local')
+        <x-login-link/>
+    @endenv
+
     <form method="POST" action="{{ route('login') }}">
         @csrf
 
@@ -14,7 +20,7 @@
 
         <!-- Password -->
         <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
+            <x-input-label for="password" :value="__('Passsword')" />
 
             <x-text-input id="password" class="block mt-1 w-full"
                             type="password"
