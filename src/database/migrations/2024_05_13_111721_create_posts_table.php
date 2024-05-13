@@ -23,7 +23,7 @@ return new class extends Migration
             $table->string('info_file')->nullable();
 
             // to store, if the post should be visible and published in gallery or only for the uploader
-            $table->boolean('is_published')->default(true);
+            $table->boolean('is_published')->default(false);
 
             // to store, if the impage from post contains faces or other content, that sould only available to logged in users
             $table->boolean('is_sensitive')->default(false);

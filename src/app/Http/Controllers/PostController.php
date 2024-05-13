@@ -21,8 +21,8 @@ class PostController extends Controller
     {
         // Retrieve published and draft posts from the database and pass them to the view
         return response()->view('posts.index', [
-            'publishedPosts' => Post::where('is_published', 0)->orderBy('updated_at', 'desc')->get(),
-            'draftPosts' => Post::where('is_published', 1)->orderBy('updated_at', 'desc')->get(),
+            'draftPosts' => Post::where('is_published', false)->orderBy('updated_at', 'desc')->get(),
+            'publishedPosts' => Post::where('is_published', true)->orderBy('updated_at', 'desc')->get(),
         ]);
     }
 
@@ -38,7 +38,7 @@ class PostController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): RedirectResponse
+    public function store(StoreRequest $request): RedirectResponse
     {
         // Validate the incoming request
         $validated = $request->validated();
@@ -86,7 +86,7 @@ class PostController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id): RedirectResponse
+    public function update(UpdateRequest $request, string $id): RedirectResponse
     {
         // Find the post with the specified ID
         $post = Post::findOrFail($id);
@@ -161,7 +161,7 @@ class PostController extends Controller
     /**
      * Mark the specified post as a draft.
      */
-    public function draft(string $id): RedirectResponse
+    public function makedraft(string $id): RedirectResponse
     {
         // Find the post with the specified ID and update its publication status
         $post = Post::findOrFail($id);
