@@ -27,7 +27,7 @@ Route::middleware('auth')->group(function () {
 
     // Posts. use a resource route because it contains exact routes we need for a typical CRUD application.
     Route::resource('posts', PostController::class);
-    Route::get('/posts/{post}/published', [PostController::class, 'published'])->name('posts.published');
+    Route::get('/posts/{post}/published', [PostController::class, 'publish'])->name('posts.published');
     Route::get('/posts/{post}/draft', [PostController::class, 'draft'])->name('posts.draft');
 });
 
