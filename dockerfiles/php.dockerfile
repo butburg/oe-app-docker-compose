@@ -52,6 +52,9 @@ RUN mkdir -p /usr/src/php/ext/redis \
     && echo 'redis' >> /usr/src/php-available-exts \
     && docker-php-ext-install redis
 
+# Copy the custom php.ini file
+COPY ./php/php.ini $PHP_INI_DIR/php.ini
+
 USER laravel
 
 CMD ["php-fpm", "-y", "/usr/local/etc/php-fpm.conf", "-R"]
