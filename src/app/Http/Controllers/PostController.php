@@ -1,16 +1,14 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use Illuminate\Http\Request;
-
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Post; // Importing the Post model
 use App\Http\Requests\Post\StoreRequest; // Importing the StoreRequest form request
 use App\Http\Requests\Post\UpdateRequest; // Importing the UpdateRequest form request
-
+use Intervention\Image\Laravel\Facades\Image; // Import Image facade
 
 class PostController extends Controller
 {
@@ -45,14 +43,28 @@ class PostController extends Controller
 
         // If a file is uploaded, store it in the public storage
         if ($request->hasFile('info_file')) {
-            $filePath = Storage::disk('public')->put('files/posts/info-files', request()->file('info_file'));
+            // Get the uploaded file
+            $file = $request->file('info_file');
+            $resizedImage = Image::read($file)->scale(1400,1400)->toJpeg(quality: 100, progressive: true);
+
+            // Generate a unique filename
+            $extension = explode('/', $resizedImage->mimetype())[1];
+            $filename = uniqid('resized_') . '_' . $file->getClientOriginalName() . '.' . $extension;
+            
+            $filePath = 'files/posts/info-files/' . $filename;
+
+
+            //$resizedImage->save($filePath);
+            // Store the resized image
+            Storage::disk('public')->put($filePath, $resizedImage);
+
             $validated['info_file'] = $filePath;
         }
 
         // Create a new post with the validated data
         $create = Post::create($validated);
 
-        if($create) {
+        if ($create) {
             // Flash a success notification and redirect to the post index page
             session()->flash('notif.success', 'Post created successfully!');
             return redirect()->route('posts.index');
@@ -90,7 +102,7 @@ class PostController extends Controller
     {
         // Find the post with the specified ID
         $post = Post::findOrFail($id);
-        
+
         // Validate the incoming request
         $validated = $request->validated();
 
@@ -127,7 +139,7 @@ class PostController extends Controller
         if (isset($post->info_file)) {
             Storage::disk('public')->delete($post->info_file);
         }
-        
+
         // Delete the post
         $delete = $post->delete($id);
 
@@ -140,7 +152,7 @@ class PostController extends Controller
         return abort(500); // Return a server error if the post deletion fails
     }
 
- /**
+    /**
      * Mark the specified post as published.
      */
     public function publish(string $id): RedirectResponse
