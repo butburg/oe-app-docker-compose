@@ -45,19 +45,20 @@ class PostController extends Controller
         if ($request->hasFile('info_file')) {
             // Get the uploaded file
             $file = $request->file('info_file');
+            
+            // resize and format the image
             $resizedImage = Image::read($file)->scale(1400,1400)->toJpeg(quality: 100, progressive: true);
 
             // Generate a unique filename
             $extension = explode('/', $resizedImage->mimetype())[1];
             $filename = uniqid('resized_') . '_' . $file->getClientOriginalName() . '.' . $extension;
             
-            $filePath = 'files/posts/info-files/' . $filename;
-
-
-            //$resizedImage->save($filePath);
+            
             // Store the resized image
+            $filePath = 'files/posts/info-files/' . $filename;
             Storage::disk('public')->put($filePath, $resizedImage);
 
+            // Add the filepath to validated data
             $validated['info_file'] = $filePath;
         }
 
@@ -108,10 +109,27 @@ class PostController extends Controller
 
         // If an info file is uploaded, update the file path and delete the old file if exists
         if ($request->hasFile('info_file')) {
+            //Delete old file before, if user uploaded one before (so info_file is not empty)
             if (isset($post->info_file)) {
                 Storage::disk('public')->delete($post->info_file);
             }
-            $filePath = Storage::disk('public')->put('files/posts/info-files', request()->file('info_file'), 'public');
+
+            // Get the uploaded file
+            $file = $request->file('info_file');
+            
+            // resize and format the image
+            $resizedImage = Image::read($file)->scale(1400,1400)->toJpeg(quality: 100, progressive: true);
+
+            // Generate a unique filename
+            $extension = explode('/', $resizedImage->mimetype())[1];
+            $filename = uniqid('resized_') . '_' . $file->getClientOriginalName() . '.' . $extension;
+            
+            
+            // Store the resized image
+            $filePath = 'files/posts/info-files/' . $filename;
+            Storage::disk('public')->put($filePath, $resizedImage);
+
+            // Add the filepath to validated data
             $validated['info_file'] = $filePath;
         }
 
