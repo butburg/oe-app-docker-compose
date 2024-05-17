@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Http\Controllers;
+
+use App\Actions\StoreNameImage;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
@@ -36,27 +38,15 @@ class PostController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreRequest $request): RedirectResponse
+    public function store(StoreRequest $request, StoreNameImage $action): RedirectResponse
     {
         // Validate the incoming request
         $validated = $request->validated();
 
-        // If a file is uploaded, store it in the public storage
+        // If an info file is uploaded, update the file path and delete the old file if exists
         if ($request->hasFile('info_file')) {
-            // Get the uploaded file
-            $file = $request->file('info_file');
-            
-            // resize and format the image
-            $resizedImage = Image::read($file)->scale(1400,1400)->toJpeg(quality: 100, progressive: true);
 
-            // Generate a unique filename
-            $extension = explode('/', $resizedImage->mimetype())[1];
-            $filename = uniqid('resized_') . '_' . $file->getClientOriginalName() . '.' . $extension;
-            
-            
-            // Store the resized image
-            $filePath = 'files/posts/info-files/' . $filename;
-            Storage::disk('public')->put($filePath, $resizedImage);
+            $filePath = $action->handle($request);
 
             // Add the filepath to validated data
             $validated['info_file'] = $filePath;
@@ -68,7 +58,7 @@ class PostController extends Controller
         if ($create) {
             // Flash a success notification and redirect to the post index page
             session()->flash('notif.success', 'Post created successfully!');
-            return redirect()->route('posts.index');
+             return redirect()->route('posts.index');
         }
 
         return abort(500); // Return a server error if the post creation fails
@@ -99,7 +89,7 @@ class PostController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateRequest $request, string $id): RedirectResponse
+    public function update(UpdateRequest $request, string $id, StoreNameImage $action): RedirectResponse
     {
         // Find the post with the specified ID
         $post = Post::findOrFail($id);
@@ -113,21 +103,8 @@ class PostController extends Controller
             if (isset($post->info_file)) {
                 Storage::disk('public')->delete($post->info_file);
             }
-
-            // Get the uploaded file
-            $file = $request->file('info_file');
             
-            // resize and format the image
-            $resizedImage = Image::read($file)->scale(1400,1400)->toJpeg(quality: 100, progressive: true);
-
-            // Generate a unique filename
-            $extension = explode('/', $resizedImage->mimetype())[1];
-            $filename = uniqid('resized_') . '_' . $file->getClientOriginalName() . '.' . $extension;
-            
-            
-            // Store the resized image
-            $filePath = 'files/posts/info-files/' . $filename;
-            Storage::disk('public')->put($filePath, $resizedImage);
+            $filePath = $action->handle($request);
 
             // Add the filepath to validated data
             $validated['info_file'] = $filePath;
