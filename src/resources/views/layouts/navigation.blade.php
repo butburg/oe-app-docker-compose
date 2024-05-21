@@ -21,12 +21,12 @@
                         </x-nav-link>
                     </div>
                 @else
-                    <div class="space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                <div class="space-x-8 -my-px ms-10 flex">
                         <x-nav-link :href="route('login')" :active="request()->routeIs('login')">
                             {{ __('Log in') }}
                         </x-nav-link>
                     </div>
-                    <div class="space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                    <div class="space-x-8 -my-px ms-10 flex">
                         <x-nav-link :href="route('register')" :active="request()->routeIs('register')">
                             {{ __('Register') }}
                         </x-nav-link>
