@@ -12,10 +12,17 @@
                     @auth
                         {{ __("You're logged in!") }}
                     @else
-                    {{ __("You're not logged in!") }}
+                        {{ __("You're not logged in!") }}
                     @endauth
                 </div>
             </div>
+
+            <!-- Include the Gallery Component -->
+            @php
+                $images = App\Models\Post::where('is_published', true)->get();
+            @endphp
+            <x-gallery.gallery :images="$images" />
+
         </div>
     </div>
     <footer class="py-16 text-center text-sm text-black dark:text-green/70">
