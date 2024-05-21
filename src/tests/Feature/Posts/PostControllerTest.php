@@ -14,14 +14,23 @@ class PostControllerTest extends TestCase
 {
     use RefreshDatabase;
 
+private User $user;
+
+    protected function setUp(): void{
+        parent::setUp();
+
+        $this->user = User::factory()->create();
+    }
+
+
+
     public function test_index_displays_posts()
     {
-        $user = User::factory()->create();
 
         $draftPost = Post::factory()->create(['is_published' => false]);
         $publishedPost = Post::factory()->create(['is_published' => true]);
 
-        $response = $this->actingAs($user)->get(route('posts.index'));
+        $response = $this->actingAs($this->user)->get(route('posts.index'));
 
         $response->assertStatus(200);
         $response->assertViewHas('draftPosts');
@@ -30,9 +39,8 @@ class PostControllerTest extends TestCase
 
     public function test_create_displays_form()
     {
-        $user = User::factory()->create();
 
-        $response = $this->actingAs($user)->get(route('posts.create'));
+        $response = $this->actingAs($this->user)->get(route('posts.create'));
 
         $response->assertStatus(200);
         $response->assertViewIs('posts.form');
@@ -40,7 +48,6 @@ class PostControllerTest extends TestCase
 
     public function test_store_creates_post()
     {
-        $user = User::factory()->create();
 
         Storage::fake('public');
         $file = UploadedFile::fake()->image('info_file.jpg');
@@ -49,7 +56,7 @@ class PostControllerTest extends TestCase
             'info_file' => $file,
         ];
 
-        $response = $this->actingAs($user)->post(route('posts.store'), $data);
+        $response = $this->actingAs($this->user)->post(route('posts.store'), $data);
 
         $response->assertRedirect(route('posts.index'));
         $this->assertDatabaseHas('posts', ['title' => 'Test Post']);
@@ -59,11 +66,10 @@ class PostControllerTest extends TestCase
 
     public function test_show_displays_post()
     {
-        $user = User::factory()->create();
 
         $post = Post::factory()->create();
 
-        $response = $this->actingAs($user)->get(route('posts.show', $post));
+        $response = $this->actingAs($this->user)->get(route('posts.show', $post));
 
         $response->assertStatus(200);
         $response->assertViewHas('post');
@@ -71,11 +77,10 @@ class PostControllerTest extends TestCase
 
     public function test_edit_displays_form()
     {
-        $user = User::factory()->create();
 
         $post = Post::factory()->create();
 
-        $response = $this->actingAs($user)->get(route('posts.edit', $post));
+        $response = $this->actingAs($this->user)->get(route('posts.edit', $post));
 
         $response->assertStatus(200);
         $response->assertViewHas('post');
@@ -83,7 +88,6 @@ class PostControllerTest extends TestCase
 
     public function test_update_updates_post()
     {
-        $user = User::factory()->create();
 
         Storage::fake('public');
         $post = Post::factory()->create(['info_file' => 'old_image.jpg']);
@@ -93,7 +97,7 @@ class PostControllerTest extends TestCase
             'info_file' => $file,
         ];
 
-        $response = $this->actingAs($user)->put(route('posts.update', $post), $data);
+        $response = $this->actingAs($this->user)->put(route('posts.update', $post), $data);
 
         $response->assertRedirect(route('posts.index'));
         $this->assertDatabaseHas('posts', ['title' => 'Updated Post']);
@@ -103,12 +107,11 @@ class PostControllerTest extends TestCase
 
     public function test_destroy_deletes_post()
     {
-        $user = User::factory()->create();
 
         Storage::fake('public');
         $post = Post::factory()->create(['info_file' => 'image.jpg']);
 
-        $response = $this->actingAs($user)->delete(route('posts.destroy', $post));
+        $response = $this->actingAs($this->user)->delete(route('posts.destroy', $post));
 
         $response->assertRedirect(route('posts.index'));
         $this->assertDatabaseMissing('posts', ['id' => $post->id]);
@@ -117,11 +120,10 @@ class PostControllerTest extends TestCase
 
     public function test_publish_publishes_post()
     {
-        $user = User::factory()->create();
 
         $post = Post::factory()->create(['is_published' => false]);
 
-        $response = $this->actingAs($user)->post(route('posts.publish', $post));
+        $response = $this->actingAs($this->user)->post(route('posts.publish', $post));
 
         $response->assertRedirect(route('posts.index'));
         $this->assertDatabaseHas('posts', ['id' => $post->id, 'is_published' => true]);
@@ -129,11 +131,10 @@ class PostControllerTest extends TestCase
 
     public function test_makedraft_saves_post_as_draft()
     {
-        $user = User::factory()->create();
 
         $post = Post::factory()->create(['is_published' => true]);
 
-        $response = $this->actingAs($user)->post(route('posts.make-draft', $post));
+        $response = $this->actingAs($this->user)->post(route('posts.make-draft', $post));
 
         $response->assertRedirect(route('posts.index'));
         $this->assertDatabaseHas('posts', ['id' => $post->id, 'is_published' => false]);
