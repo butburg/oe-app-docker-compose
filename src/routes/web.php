@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PostController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\TestMailController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -13,7 +14,7 @@ Route::get('/dashboard', function () {
     return view('welcome');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::middleware('auth')->group(function () {
+Route::middleware('auth', 'verified')->group(function () {
     // Routes of
     // Posts, Profile,
     // accessible to authenticated users only
@@ -30,5 +31,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/posts/{post}/publish', [PostController::class, 'publish'])->name('posts.publish');
     Route::get('/posts/{post}/make-draft', [PostController::class, 'makedraft'])->name('posts.make-draft');
 });
+
+Route::get('/send-test-email', [TestMailController::class, 'sendTestEmail']);
 
 require __DIR__ . '/auth.php';
