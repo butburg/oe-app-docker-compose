@@ -20,10 +20,13 @@ class PostController extends Controller
      */
     public function index()
     {
+
+        $user = Auth::user()->name;
+
         // Retrieve published and draft posts from the database and pass them to the view
         return response()->view('posts.index', [
-            'draftPosts' => Post::where('is_published', false)->orderBy('updated_at', 'desc')->get(),
-            'publishedPosts' => Post::where('is_published', true)->orderBy('updated_at', 'desc')->get(),
+            'draftPosts' => Post::where('username', $user)->where('is_published', false)->orderBy('updated_at', 'desc')->get(),
+            'publishedPosts' => Post::where('username', $user)->where('is_published', true)->orderBy('updated_at', 'desc')->get(),
         ]);
     }
 
@@ -88,10 +91,17 @@ class PostController extends Controller
      */
     public function edit(string $id)
     {
-        // Retrieve the post with the specified ID and pass it to the view for editing
+        // Retrieve the post with the specified ID
+        $post = Post::findOrFail($id);
+
+        // Check if the authenticated user owns the post
+        if ($post->username !== Auth::user()->name) {
+            return abort(403, 'Unauthorized action.');
+        }
+
+        // Pass the post to the view for editing
         return response()->view('posts.form', [
-            'post' => Post::findOrFail($id),
-        ]);
+            'post' => $post]);
     }
 
     /**
@@ -101,7 +111,12 @@ class PostController extends Controller
     {
         // Find the post with the specified ID
         $post = Post::findOrFail($id);
-
+        
+        // Check if the authenticated user owns the post
+        if ($post->username !== Auth::user()->name) {
+            return abort(403, 'Unauthorized action.');
+        }
+        
         // Validate the incoming request
         $validated = $request->validated();
 
@@ -138,6 +153,11 @@ class PostController extends Controller
         // Find the post with the specified ID
         $post = Post::findOrFail($id);
 
+        // Check if the authenticated user owns the post
+        if ($post->username !== Auth::user()->name) {
+            return abort(403, 'Unauthorized action.');
+        }
+
         // If an info file exists, delete it from storage
         if (isset($post->info_file)) {
             Storage::disk('public')->delete($post->info_file);
@@ -162,6 +182,12 @@ class PostController extends Controller
     {
         // Find the post with the specified ID and update its publication status
         $post = Post::findOrFail($id);
+        
+        // Check if the authenticated user owns the post
+        if ($post->username !== Auth::user()->name) {
+            return abort(403, 'Unauthorized action.');
+        }
+        
         $isPublished = $post->update(['is_published' => true]);
 
         if($isPublished) {
@@ -180,6 +206,13 @@ class PostController extends Controller
     {
         // Find the post with the specified ID and update its publication status
         $post = Post::findOrFail($id);
+        
+        // Check if the authenticated user owns the post
+        if ($post->username !== Auth::user()->name) {
+            return abort(403, 'Unauthorized action.');
+        }
+                
+        
         $isDrafted = $post->update(['is_published' => false]);
 
         if($isDrafted) {
