@@ -30,6 +30,16 @@ return new class extends Migration
 
             // 'created_at' and 'updated_at' columns to store timestamps of creation and updates
             $table->timestamps();
+
+            // Add user_id column and make it nullable to handle cases where the user is deleted
+            $table->unsignedBigInteger('user_id')->nullable();
+            
+            // Store the username to keep track of the uploader even after user deletion
+            $table->string('username');
+
+            // Define the foreign key constraint without cascading on delete
+            $table->foreign('user_id')->references('id')->on('users')->nullOnDelete();
+
         });
     }
 
