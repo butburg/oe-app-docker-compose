@@ -4,7 +4,10 @@
         @foreach($images as $image)
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-2">
                 <img src="{{ asset('storage/' . $image->info_file) }}" alt="{{ $image->title }}" class="w-full h-auto">
-                <p class="mt-2 text-center">{{ $image->title }}</p>
+                <span>
+                    <h3 class="mt-2 font-medium leading-tight">{{ $image->title }}</h3>
+                    <p class="text-sm">{{ $image->username }}</p>
+                </span>
             </div>
         @endforeach
     </div>

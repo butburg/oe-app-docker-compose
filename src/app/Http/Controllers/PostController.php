@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Actions\StoreNameImage;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
@@ -52,6 +53,13 @@ class PostController extends Controller
             $validated['info_file'] = $filePath;
         }
 
+        // Get the authenticated user's username
+        $username = Auth::user()->name;
+
+        // Add the username to validated data
+        $validated['username'] = $username;
+
+        #dd($validated);
         // Create a new post with the validated data
         $create = Post::create($validated);
 
