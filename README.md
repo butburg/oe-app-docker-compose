@@ -1,3 +1,22 @@
+# Oh Eweedy
+
+The ultimate art platform for sharing your masterpieces. Create a collaborative image gallery.
+
+This Laravel 11 app is here to retire my old plain PHP website.
+
+### Future Features
+- Upload your images and add them to **THE** gallery.
+- Give your piece a name, turning it into a true work of art.
+- Like other pictures to make someone’s day... or not.
+- Comment to share your profound insights (or witty remarks) with the artist.
+
+### Side Quests
+- Basic user accounts (because everyone needs a profile, right?).
+- Displaying the gallery in a stunning way.
+- Image rotation and deletion (for those oops moments).
+
+\
+The [Laravel 11](https://laravel.com/docs/11.x/) app is [dockerbased](https://www.docker.com/) and based on [aschmelyun](https://github.com/aschmelyun/docker-compose-laravel)'s:
 # docker-compose-laravel
 A pretty simplified Docker Compose workflow that sets up a LEMP network of containers for local Laravel development. You can view the full article that inspired this repo [here](https://dev.to/aschmelyun/the-beauty-of-docker-for-local-laravel-development-13c0).
 
@@ -84,4 +103,4 @@ Want to build for production? Simply run `docker-compose run --rm npm run build`
 
 The current version of Laravel (9 as of today) uses MailHog as the default application for testing email sending and general SMTP work during local development. Using the provided Docker Hub image, getting an instance set up and ready is simple and straight-forward. The service is included in the `docker-compose.yml` file, and spins up alongside the webserver and database services.
 
-To see the dashboard and view any emails coming through the system, visit [localhost:8025](http://localhost:8025) after running `docker-compose up -d site`.
+To see the dashboard and view any emails coming through the system, visit [localhost:8025](http://localhost:8025) after running `docker-compose up -d mailhog`.
