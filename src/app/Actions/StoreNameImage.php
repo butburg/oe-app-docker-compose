@@ -22,7 +22,7 @@ class StoreNameImage {
         
         
         // Store the resized image
-        $filePath = 'files/posts/info-files/' . $filename;
+        $filePath = 'files/posts/images/' . $filename;
         Storage::disk('public')->put($filePath, $resizedImage);
 
         return $filePath;
