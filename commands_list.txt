@@ -1,0 +1,164 @@
+.vendor/bin/sail up
+cat /etc/resolv.conf
+cat /etc/wsl.conf
+code .
+curl http://localhost:5173
+curl http://localhost:5173/resources/css/app.css
+curl http://localhost:80
+curl http://localhost:80/login
+docker container ls --format "table {{.ID}}\t{{.Names}}\t{{.Ports}}" -a
+docker exec -it -u root oe-app-container bash
+docker exec -it oe-app bash
+docker exec -it oe-app-container bash
+docker exec -it oe-app-container npm install
+docker exec -it oe-app-container npm run build
+docker exec -it oe-app-container npm run dev
+docker exec oe-app npm run dev
+docker exec oe-app-container npm install
+docker ps
+docker ps | clip
+docker stop
+docker up -d app
+docker up app -d
+docker-compose
+docker-compose --list
+docker-compose -d up
+docker-compose artisan test
+docker-compose build
+docker-compose build app
+docker-compose build artisan
+docker-compose build nginx
+docker-compose build oe-app
+docker-compose composer install
+docker-compose down
+docker-compose exec -it oe-app --service-ports npm run dev
+docker-compose exec -it oe-app npm install
+docker-compose exec -it oe-app npm run build
+docker-compose exec -it oe-app npm run dev
+docker-compose exec -it oe-app php artisan serve
+docker-compose exec -it oe-app php artisan serve --help
+docker-compose exec -it oe-app php artisan serve --host 172.18.0.4 --port 8000
+docker-compose exec -it oe-app php artisan serve --port 8000
+docker-compose exec -it oe-app php artisan serve -vv
+docker-compose exec app ls -l
+docker-compose exec nginx cat /etc/nginx/conf.d/oe-app.conf
+docker-compose logs npm
+docker-compose npm stop
+docker-compose p
+docker-compose ps
+docker-compose ps stop
+docker-compose restart app
+docker-compose restart app --build
+docker-compose restart npm
+docker-compose rm nginx
+docker-compose run --it php cd
+docker-compose run --rm --service-ports npm run dev
+docker-compose run --rm --service-ports oe-app npm run dev
+docker-compose run --rm app php artisan breeze:install
+docker-compose run --rm artisan breeze:install
+docker-compose run --rm artisan db:seed
+docker-compose run --rm artisan make::seeder PostSeeder
+docker-compose run --rm artisan make:controller CommentController --resource
+docker-compose run --rm artisan make:controller PostController --resource
+docker-compose run --rm artisan make:controller TestMailController
+docker-compose run --rm artisan make:mail TestMail
+docker-compose run --rm artisan make:migration
+docker-compose run --rm artisan make:migration create_comments_table
+docker-compose run --rm artisan make:migration create_likes_table
+docker-compose run --rm artisan make:migration create_posts_table
+docker-compose run --rm artisan make:model Comment -fsc --resource
+docker-compose run --rm artisan make:model Post
+docker-compose run --rm artisan make:request CommentStoreRequest
+docker-compose run --rm artisan make:request Post/StoreRequest
+docker-compose run --rm artisan make:request Post/UpdateRequest
+docker-compose run --rm artisan make:seeder PostSeeder
+docker-compose run --rm artisan make:view posts.form
+docker-compose run --rm artisan make:view posts.index
+docker-compose run --rm artisan migrate
+docker-compose run --rm artisan migrate --path=database/migrations/2024_05_13_111721_create_posts_table.php
+docker-compose run --rm artisan migrate post
+docker-compose run --rm artisan migrate:refresh
+docker-compose run --rm artisan migrate:refresh --seed
+docker-compose run --rm artisan migrate:reset
+docker-compose run --rm artisan migrate:reset --path=/home/butburg/oe-app-docker-compose/src/database/migrations/2024_05_13_111721_create_posts_table.php
+docker-compose run --rm artisan migrate:reset --path=database/migrations/2024_05_13_111721_create_posts_table.php
+docker-compose run --rm artisan migrate:reset posts
+docker-compose run --rm artisan route:list
+docker-compose run --rm artisan routes
+docker-compose run --rm artisan serve
+docker-compose run --rm artisan storage:link
+docker-compose run --rm artisan test
+docker-compose run --rm artisan test --filter AuthPostTest
+docker-compose run --rm artisan test --filter AuthTest
+docker-compose run --rm artisan test --filter PostControllerTest
+docker-compose run --rm artisan test --filter StoreNameImageTest
+docker-compose run --rm artisan tinker
+docker-compose run --rm compose install
+docker-compose run --rm composer create-project laravel/laravel .
+docker-compose run --rm composer install
+docker-compose run --rm composer require laravel/breeze --dev
+docker-compose run --rm composer require spatie/laravel-login-link
+docker-compose run --rm composer update
+docker-compose run --rm npm install
+docker-compose run --rm npm run build
+docker-compose run --rm npm run dev
+docker-compose run --rm php -i | grep php.ini
+docker-compose run --rm php -r "echo php_ini_loaded_file();"
+docker-compose run --rm php -v
+docker-compose run --rm php artisan breeze:install
+docker-compose run -it npm bash
+docker-compose run -it npm dev
+docker-compose run -it npm run dev
+docker-compose run -rm --service-ports npm run dev
+docker-compose run -rm php -i | grep php.ini
+docker-compose start
+docker-compose start -d app
+docker-compose start app
+docker-compose start npm
+docker-compose stop
+docker-compose stop npm
+docker-compose up
+docker-compose up --force-recreate
+docker-compose up -d
+docker-compose up -d --build app
+docker-compose up -d app
+docker-compose up -d app --build
+docker-compose up -d mailhog
+docker-compose up -d npm
+docker-compose up -d site
+docker-compose up app
+docker-compose up mailhog -d
+docker-compose up nginx
+docker-compose up npm
+docker-composer
+docker-composer down
+docker-composer up
+echo $(sha384sum /tmp/composer-setup.php | awk '{print $1}')
+echo $HASH
+echo ${USER}
+gh
+git add .
+git add src/storage/app/public/files/images -f
+git checkout loginlink
+git clone git@github.com:aschmelyun/docker-compose-laravel.git
+git clone https://github.com/aschmelyun/docker-compose-laravel.git
+git commit -m "init"
+git init -b main
+git pull
+git pull origin main
+git push origin main
+git remote -v
+git remote rm upstream
+history | cut -c 8- > my_command_history.txt
+history | grep '^ *[0-9]* *docker' > my_command_history.txt
+nano docker-compose.yml
+php
+php --version
+php -a
+php -v
+reboot
+rm  ~/.docker/config.json
+rm -rd oe-app-wsl/
+sail up
+su -s ${USER}
+whoami

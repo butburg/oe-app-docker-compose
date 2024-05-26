@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PostController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TestMailController;
+use App\Http\Controllers\CommentController;
 
 Route::get('/', function () {
     return view('welcome');

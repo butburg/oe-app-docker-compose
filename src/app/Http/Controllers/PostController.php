@@ -5,13 +5,12 @@ namespace App\Http\Controllers;
 use App\Actions\StoreNameImage;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Post; // Importing the Post model
 use App\Http\Requests\Post\StoreRequest; // Importing the StoreRequest form request
 use App\Http\Requests\Post\UpdateRequest; // Importing the UpdateRequest form request
-use Intervention\Image\Laravel\Facades\Image; // Import Image facade
 
 class PostController extends Controller
 {
@@ -69,7 +68,7 @@ class PostController extends Controller
         if ($create) {
             // Flash a success notification and redirect to the post index page
             session()->flash('notif.success', 'Post created successfully!');
-             return redirect()->route('posts.index');
+            return redirect()->route('posts.index');
         }
 
         return abort(500); // Return a server error if the post creation fails
@@ -101,7 +100,8 @@ class PostController extends Controller
 
         // Pass the post to the view for editing
         return response()->view('posts.form', [
-            'post' => $post]);
+            'post' => $post
+        ]);
     }
 
     /**
@@ -111,12 +111,12 @@ class PostController extends Controller
     {
         // Find the post with the specified ID
         $post = Post::findOrFail($id);
-        
+
         // Check if the authenticated user owns the post
         if ($post->username !== Auth::user()->name) {
             return abort(403, 'Unauthorized action.');
         }
-        
+
         // Validate the incoming request
         $validated = $request->validated();
 
@@ -126,7 +126,7 @@ class PostController extends Controller
             if (isset($post->info_file)) {
                 Storage::disk('public')->delete($post->info_file);
             }
-            
+
             $filePath = $action->handle($request);
 
             // Add the filepath to validated data
@@ -136,7 +136,7 @@ class PostController extends Controller
         // Update the post with the validated data
         $update = $post->update($validated);
 
-        if($update) {
+        if ($update) {
             // Flash a success notification and redirect to the post index page
             session()->flash('notif.success', 'Your Post updated successfully!');
             return redirect()->route('posts.index');
@@ -166,7 +166,7 @@ class PostController extends Controller
         // Delete the post
         $delete = $post->delete($id);
 
-        if($delete) {
+        if ($delete) {
             // Flash a success notification and redirect to the post index page
             session()->flash('notif.success', 'Post deleted successfully!');
             return redirect()->route('posts.index');
@@ -182,15 +182,15 @@ class PostController extends Controller
     {
         // Find the post with the specified ID and update its publication status
         $post = Post::findOrFail($id);
-        
+
         // Check if the authenticated user owns the post
         if ($post->username !== Auth::user()->name) {
             return abort(403, 'Unauthorized action.');
         }
-        
+
         $isPublished = $post->update(['is_published' => true]);
 
-        if($isPublished) {
+        if ($isPublished) {
             // Flash a success notification and redirect to the post index page
             session()->flash('notif.success', 'Post published successfully!');
             return redirect()->route('posts.index');
@@ -206,16 +206,16 @@ class PostController extends Controller
     {
         // Find the post with the specified ID and update its publication status
         $post = Post::findOrFail($id);
-        
+
         // Check if the authenticated user owns the post
         if ($post->username !== Auth::user()->name) {
             return abort(403, 'Unauthorized action.');
         }
-                
-        
+
+
         $isDrafted = $post->update(['is_published' => false]);
 
-        if($isDrafted) {
+        if ($isDrafted) {
             // Flash a success notification and redirect to the post index page
             session()->flash('notif.success', 'Post saved as draft!');
             return redirect()->route('posts.index');
@@ -223,5 +223,4 @@ class PostController extends Controller
 
         return abort(500); // Return a server error if updating the post fails
     }
-
 }
