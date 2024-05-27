@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\CommentStoreRequest;
+use App\Http\Requests\Comment\StoreRequest;
+use App\Http\Requests\Comment\UpdateRequest;
 use App\Models\Comment;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\RedirectResponse;
@@ -31,7 +32,7 @@ class CommentController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(CommentStoreRequest $request): RedirectResponse
+    public function store(StoreRequest $request): RedirectResponse
     {
         $validated = $request->validated();
         $validated['user_id'] = Auth::id();
@@ -52,7 +53,8 @@ class CommentController extends Controller
     public function show(string $id)
     {
         $comment = Comment::findOrFail($id);
-        return response()->view('comments.show', ['comment' => $comment]);
+        //return response()->view('comments.show', ['comment' => $comment]);
+        return response()->json($comment);
     }
 
     /**
@@ -77,13 +79,14 @@ class CommentController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(CommentStoreRequest $request, string $id) :RedirectResponse
+    public function update(UpdateRequest $request, string $id): RedirectResponse
     {
         $comment = Comment::findOrFail($id);
 
         $validated = $request->validated();
-
-        if($comment->update($request)){
+        $update = $comment->update($validated);
+        
+        if($update){
             session()->flash('notif.success', 'Comment updated successfully!');
             return redirect()->back(); // or redirect to a specific post
         }
