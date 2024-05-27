@@ -19,25 +19,48 @@
                 <h3 class="mt-2">Comments:</h3>
                 {{-- Display Comments --}}
                 @forelse ($image->comments as $comment)
-                <div>
-                    <p>{{ $comment->comment }}</p>
-                    <small>By {{ $comment->user->name }}</small>
-                </div>
-                @empty
-                No published posts found.
+                    <div>
+                        <p>{{ $comment->comment }}</p>
+                        <small>By {{ $comment->user->name }}</small>
+                        
+                        @if (Auth::check() && Auth::id() === $comment->user_id)
+                        {{-- Update Comment Form --}}
+                            
+                            {{-- Update Comment Form --}}
+                            <form action="{{ route('comments.update', $comment->id) }}" method="POST">
+                                @csrf
+                                @method('PUT')
+                                <textarea name="comment" required>{{ $comment->comment }}</textarea>
+                                @error('comment')
+                                    <div class="mb-2 text-red-600">{{ $message }}</div>
+                                @enderror
+                                <button type="submit">Update Comment</button>
+                            </form>
+
+                            {{-- Delete Comment Form --}}
+                            <form action="{{ route('comments.destroy', $comment->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this comment?');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit">Delete Comment</button>
+                            </form>
+                        @endif
+
+                    </div>
+                    @empty
+                    <p>No comments found.</p>
                 @endforelse
-                
+
                 {{-- Add Comment Form --}}
                 @if (Auth::check())
-                <form action="{{ route('comments.store') }}" method="POST">
-                    @csrf
-                    <input type="hidden" name="post_id" value="{{ $image->id }}">
-                    <textarea name="comment" required></textarea>
-                    <button type="submit">Add Comment</button>
-                </form>
+                    <form action="{{ route('comments.store') }}" method="POST">
+                        @csrf
+                        <input type="hidden" name="post_id" value="{{ $image->id }}">
+                        <textarea name="comment" required></textarea>
+                        <button type="submit">Add Comment</button>
+                    </form>
                 @endif
-                
+
             </div>
-                @endforeach
+        @endforeach
     </div>
 </div>
