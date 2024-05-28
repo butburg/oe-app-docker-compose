@@ -18,17 +18,26 @@
                         @isset($post)
                             @method('put')
                         @endisset
-
-                        {{-- Post Content Input --}}
+    
+                        {{-- Post Title Input --}}
                         <div>
-                            <x-input-label for="title" value="Post" /> {{-- Label for post content --}}
-                            <x-text-input id="title" name="title" type="text" class="mt-1 block w-full" :value="$post->title ?? old('title')" required autofocus /> {{-- Input field for post content --}}
-                            <x-input-error class="mt-2" :messages="$errors->get('title')" /> {{-- Display validation errors for post content --}}
+                            <x-input-label for="title" value="Post" /> {{-- Label for post title --}}
+                            <x-text-input id="title" name="title" type="text" class="mt-1 block w-full" :value="$post->title ?? old('title')" required autofocus /> {{-- Input field for post title --}}
+                            <x-input-error class="mt-2" :messages="$errors->get('title')" /> {{-- Display validation errors for post title --}}
                         </div>
-
-                        {{-- Info File Input --}}
+    
+                        {{-- Image Input --}}
                         <div>
-                            <x-input-label for="info_file" value="Info File" /> {{-- Label for info file --}}
+                            <x-input-label for="info_file" value="Image" /> {{-- Label for image --}}
+                            
+                            {{-- Display existing image if it exists --}}
+                            @isset($post->info_file)
+                                <div class="my-2">
+                                    <img src="{{ asset('storage/' . $post->info_file) }}" alt="Post Image" class="w-full h-auto max-h-96 object-contain">
+                                </div>
+                            @endisset
+    
+                            {{-- File input field --}}
                             <label class="block mt-2">
                                 <span class="sr-only">Choose file</span> {{-- Screen reader text --}}
                                 <input type="file" id="info_file" name="info_file" accept="image/jpeg,image/png,image/gif,image/svg+xml,image/webp" class="block w-full text-sm text-slate-500
@@ -37,18 +46,12 @@
                                     file:text-sm file:font-semibold
                                     file:bg-violet-50 file:text-violet-700
                                     hover:file:bg-violet-100
-                                " /> {{-- File input field --}}
+                                " />
                             </label>
-                            {{-- Display existing file if it exists --}}
-                            @isset($post->info_file)
-                                <div class="text-sm shrink-0 my-2">
-                                    <span>Saved File: </span> {{-- Display text indicating file existence --}}
-                                    <a href="{{ Storage::url($post->info_file) }}">{{ explode('/', $post->info_file)[3] }}</a> {{-- Display file name with link --}}
-                                </div>
-                            @endisset
+                            
                             <x-input-error class="mt-2" :messages="$errors->get('info_file')" /> {{-- Display validation errors for info file --}}
                         </div>
-
+    
                         {{-- Save and Cancel Buttons --}}
                         <div class="flex items-center gap-2">
                             <x-primary-button>{{ __('Save') }}</x-primary-button> {{-- Primary button for saving --}}
@@ -59,4 +62,5 @@
             </div>
         </div>
     </div>
+    
 </x-app-layout>
