@@ -24,7 +24,7 @@ class StoreRequest extends FormRequest
         // make all of the fields required, set info file to accept only images
         return [
             'title' => 'required|string|min:3|max:255', // minimum length is 3 characters, maximum length is 255 characters
-            'info_file' => 'nullable|file|max:4096|mimes:jpeg,png,gif', // optional, file only, max size is 1024 KB, with some allowed mime types
+            'image_file' => 'required|file|max:4096|mimes:jpeg,png,gif', // optional, file only, max size is 1024 KB, with some allowed mime types
         ];
     }
 }

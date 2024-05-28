@@ -50,10 +50,10 @@ private User $user;
     {
 
         Storage::fake('public');
-        $file = UploadedFile::fake()->image('info_file.jpg');
+        $file = UploadedFile::fake()->image('image_file.jpg');
         $data = [
             'title' => 'Test Post',
-            'info_file' => $file,
+            'image_file' => $file,
         ];
 
         $response = $this->actingAs($this->user)->post(route('posts.store'), $data);
@@ -90,11 +90,11 @@ private User $user;
     {
 
         Storage::fake('public');
-        $post = Post::factory()->create(['info_file' => 'old_image.jpg']);
-        $file = UploadedFile::fake()->image('info_file.jpg');
+        $post = Post::factory()->create(['image_file' => 'old_image.jpg']);
+        $file = UploadedFile::fake()->image('image_file.jpg');
         $data = [
             'title' => 'Updated Post',
-            'info_file' => $file,
+            'image_file' => $file,
         ];
 
         $response = $this->actingAs($this->user)->put(route('posts.update', $post), $data);
@@ -109,7 +109,7 @@ private User $user;
     {
 
         Storage::fake('public');
-        $post = Post::factory()->create(['info_file' => 'image.jpg']);
+        $post = Post::factory()->create(['image_file' => 'image.jpg']);
 
         $response = $this->actingAs($this->user)->delete(route('posts.destroy', $post));
 

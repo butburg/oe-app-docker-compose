@@ -12,7 +12,7 @@ class Post extends Model
     // which fields can be mass-assigned
     protected $fillable = [
         'title',
-        'info_file',
+        'image_file',
         'username',
         'is_published',
         'is_sensitive',

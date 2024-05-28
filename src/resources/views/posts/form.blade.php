@@ -33,20 +33,20 @@
                         <div>
 
                             {{-- Display existing image if it exists --}}
-                            @isset($post->info_file)
-                                <x-input-label for="info_file" value="Actual Image" /> {{-- Label for image --}}
+                            @isset($post->image_file)
+                                <x-input-label for="image_file" value="Actual Image" /> {{-- Label for image --}}
                                 <div class="my-2">
-                                    <img src="{{ asset('storage/' . $post->info_file) }}" alt="Post Image"
+                                    <img src="{{ asset('storage/' . $post->image_file) }}" alt="Post Image"
                                         class="w-full h-auto max-h-96 object-contain">
                                 </div>
                             @endisset
 
                             {{-- File input field --}}
-                            <x-input-label for="info_file"
+                            <x-input-label for="image_file"
                                 value="{{ isset($post) ? 'Replace Image (optional)' : 'Image' }}" />
                             <label class="block mt-2">
                                 <span class="sr-only">Choose image to upload</span> {{-- Screen reader text --}}
-                                <input type="file" id="info_file" name="info_file"
+                                <input type="file" id="image_file" name="image"
                                     accept="image/jpeg,image/png,image/gif,image/svg+xml,image/webp"
                                     class="block w-full text-sm text-slate-500
                                     file:mr-4 file:py-2 file:px-4
@@ -56,8 +56,13 @@
                                     hover:file:bg-violet-100
                                 " />
                             </label>
-
-                            <x-input-error class="mt-2" :messages="$errors->get('info_file')" /> {{-- Display validation errors for info file --}}
+                            {{-- replace the error msg from image file to image. can be implemented as blade template --}}
+                            @if ($errors->has('image_file'))
+                                @foreach ($errors->get('image_file') as $error)
+                                    <div class="text-sm text-red-600 space-y-1">{{ str_replace('image file', 'image', $error) }}
+                                    </div>
+                                @endforeach
+                            @endif {{-- Display validation errors for info file --}}
                         </div>
 
                         {{-- Save and Cancel Buttons --}}

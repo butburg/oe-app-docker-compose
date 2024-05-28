@@ -33,7 +33,7 @@ class PostFactory extends Factory
 
         return [
             'title' => $this->faker->sentence,
-            'info_file' => $imageUrl, // Set to null initially, as we're not providing any file data
+            'image_file' => $imageUrl, // Set to null initially, as we're not providing any file data
             'is_published' => $this->faker->boolean(75), // 75% chance of being published
             'is_sensitive' => $this->faker->boolean(10), // 10% chance of being sensitive
             //'user_id' => $user->id,

@@ -5,9 +5,9 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-2">
 
                 {{-- Check if the image URL is valid --}}
-                @if (@file_exists(public_path('storage/' . $image->info_file)))
+                @if (@file_exists(public_path('storage/' . $image->image_file)))
                     {{-- Display the image if the URL is valid --}}
-                    <img src="{{ asset('storage/' . $image->info_file) }}" alt="{{ $image->title }}" class="w-full h-auto">
+                    <img src="{{ asset('storage/' . $image->image_file) }}" alt="{{ $image->title }}" class="w-full h-auto">
                 @else
                     {{-- Display a placeholder image if the URL is not valid --}}
                     <img src="{{ asset('storage/files/images/broken.png') }}" alt="Placeholder" class="h-10">

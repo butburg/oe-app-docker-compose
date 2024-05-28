@@ -42,9 +42,9 @@
                                         {{ $post->title }}
                                     </span>
                                     <!-- Display info file if exists -->
-                                    @isset ($post->info_file)
+                                    @isset ($post->image_file)
                                     <span>
-                                        <small> | <a href="{{ Storage::url($post->info_file) }}">Open File</a></small>
+                                        <small> | <a href="{{ Storage::url($post->image_file) }}">Open File</a></small>
                                     </span>
                                     @endisset
                                     <!-- Display last update time -->
@@ -103,9 +103,9 @@
                                         {{ $post->title }}
                                     </span>
                                     <!-- Display info file if exists -->
-                                    @isset ($post->info_file)
+                                    @isset ($post->image_file)
                                     <span>
-                                        <small> | <a href="{{ Storage::url($post->info_file) }}">Open File</a></small>
+                                        <small> | <a href="{{ Storage::url($post->image_file) }}">Open File</a></small>
                                     </span>
                                     @endisset
                                     <!-- Display last update time -->
