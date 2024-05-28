@@ -19,8 +19,8 @@ return new class extends Migration
             // 'title' column to store the image title
             $table->string('title');
 
-            // 'info_file' column to store information about attached files (nullable)
-            $table->string('info_file')->nullable();
+            // 'image_file' column to store information about attached files
+            $table->string('image_file');
 
             // to store, if the post should be visible and published in gallery or only for the uploader
             $table->boolean('is_published')->default(false);

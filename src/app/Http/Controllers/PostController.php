@@ -47,12 +47,12 @@ class PostController extends Controller
         $validated = $request->validated();
 
         // If an info file is uploaded, update the file path and delete the old file if exists
-        if ($request->hasFile('info_file')) {
+        if ($request->hasFile('image_file')) {
 
             $filePath = $action->handle($request);
 
             // Add the filepath to validated data
-            $validated['info_file'] = $filePath;
+            $validated['image_file'] = $filePath;
         }
 
         // Get the authenticated user's username
@@ -121,16 +121,16 @@ class PostController extends Controller
         $validated = $request->validated();
 
         // If an info file is uploaded, update the file path and delete the old file if exists
-        if ($request->hasFile('info_file')) {
-            //Delete old file before, if user uploaded one before (so info_file is not empty)
-            if (isset($post->info_file)) {
-                Storage::disk('public')->delete($post->info_file);
+        if ($request->hasFile('image_file')) {
+            //Delete old file before, if user uploaded one before (so image_file is not empty)
+            if (isset($post->image_file)) {
+                Storage::disk('public')->delete($post->image_file);
             }
 
             $filePath = $action->handle($request);
 
             // Add the filepath to validated data
-            $validated['info_file'] = $filePath;
+            $validated['image_file'] = $filePath;
         }
 
         // Update the post with the validated data
@@ -159,8 +159,8 @@ class PostController extends Controller
         }
 
         // If an info file exists, delete it from storage
-        if (isset($post->info_file)) {
-            Storage::disk('public')->delete($post->info_file);
+        if (isset($post->image_file)) {
+            Storage::disk('public')->delete($post->image_file);
         }
 
         // Delete the post

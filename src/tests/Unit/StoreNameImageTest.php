@@ -22,7 +22,7 @@ class StoreNameImageTest extends TestCase
         $file = new UploadedFile($path, 'test_image.png', 'image/png', null, true);
 
         // Mock the request
-        $request = StoreRequest::create('/store', 'POST', [], [], ['info_file' => $file]);
+        $request = StoreRequest::create('/store', 'POST', [], [], ['image_file' => $file]);
 
         $action = new StoreNameImage();
         $filePath = $action->handle($request);
