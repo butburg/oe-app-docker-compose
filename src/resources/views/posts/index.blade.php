@@ -3,9 +3,9 @@
     <!-- Define a slot named "header" -->
     <x-slot name="header">
         <!-- Flex container with space between elements -->
-        <div class="flex justify-between">
+        <div class="flex justify-between items-center">
             <!-- Title for the page -->
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight my-3">
                 {{ 'Posts' }} <!-- Static title -->
             </h2>
             <!-- Link to add a new post -->
