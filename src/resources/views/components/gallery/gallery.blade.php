@@ -19,35 +19,43 @@
                 <h3 class="mt-2">Comments:</h3>
                 {{-- Display Comments --}}
                 @forelse ($image->comments as $comment)
-                    <div>
-                        <p>{{ $comment->comment }}</p>
-                        <small>By {{ $comment->user->name }}</small>
-                        
+                    <div x-data="{ isEditing: false }">
+                        <div x-show="!isEditing">
+                            <p>{{ $comment->comment }}</p>
+                            <small>By {{ (Auth::id() === $comment->user_id) ? 'You' : $comment->user->name }}</small>
+                        </div>
                         @if (Auth::check() && Auth::id() === $comment->user_id)
-                        {{-- Update Comment Form --}}
+                            {{-- Edit Comment  --}}
                             
-                            {{-- Update Comment Form --}}
-                            <form action="{{ route('comments.update', $comment->id) }}" method="POST">
-                                @csrf
-                                @method('PUT')
-                                <textarea name="comment" required>{{ $comment->comment }}</textarea>
-                                @error('comment')
-                                    <div class="mb-2 text-red-600">{{ $message }}</div>
-                                @enderror
-                                <button type="submit">Update Comment</button>
-                            </form>
+                            <div x-show="isEditing">
+                                {{-- Update Comment Form --}}
+                                <form action="{{ route('comments.update', $comment->id) }}" method="POST">
+                                    @csrf
+                                    @method('PUT')
+                                    <textarea class="w-full" name="comment" required>{{ $comment->comment }}</textarea>
+                                    @error('comment')
+                                        <div class="mb-2 text-red-600">{{ $message }}</div>
+                                    @enderror
+                                    <button class="text-blue-500 hover:underline" type="submit">Update</button>
+                                </form>
 
-                            {{-- Delete Comment Form --}}
-                            <form action="{{ route('comments.destroy', $comment->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this comment?');">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit">Delete Comment</button>
-                            </form>
+                                {{-- Delete Comment Form --}}
+                                <form action="{{ route('comments.destroy', $comment->id) }}" method="POST"
+                                    onsubmit="return confirm('Are you sure you want to delete this comment?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button class="text-blue-500 hover:underline" type="submit">Delete</button>
+                                </form>
+                            </div>
+                                <button @click="isEditing = !isEditing" class="text-blue-500 hover:underline">
+                                    <span x-show="!isEditing">Edit</span>
+                                    <span x-show="isEditing">Abort</span>
+                                </button>
                         @endif
 
                     </div>
-                    @empty
-                    <p>No comments found.</p>
+                @empty
+                    <p>Be the first one to comment.</p>
                 @endforelse
 
                 {{-- Add Comment Form --}}
@@ -55,8 +63,8 @@
                     <form action="{{ route('comments.store') }}" method="POST">
                         @csrf
                         <input type="hidden" name="post_id" value="{{ $image->id }}">
-                        <textarea name="comment" required></textarea>
-                        <button type="submit">Add Comment</button>
+                        <textarea  class="w-full" name="comment" required></textarea>
+                        <button class="text-blue-500 hover:underline" type="submit">Add Comment</button>
                     </form>
                 @endif
 
