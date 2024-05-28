@@ -3,7 +3,7 @@
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
             {{-- Use 'Edit' for edit mode and 'Create' for create mode --}}
-            {{ isset($post) ? 'Edit' : 'Create' }} 
+            {{ isset($post) ? 'Edit' : 'Create' }}
         </h2>
     </x-slot>
 
@@ -12,35 +12,43 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
                     {{-- Form for post creation/updation with file upload --}}
-                    <form method="post" action="{{ isset($post) ? route('posts.update', $post->id) : route('posts.store') }}" class="mt-6 space-y-6" enctype="multipart/form-data">
+                    <form method="post"
+                        action="{{ isset($post) ? route('posts.update', $post->id) : route('posts.store') }}"
+                        class="mt-6 space-y-6" enctype="multipart/form-data">
                         @csrf {{-- CSRF protection --}}
                         {{-- Use PUT method for edit mode --}}
                         @isset($post)
                             @method('put')
                         @endisset
-    
+
                         {{-- Post Title Input --}}
                         <div>
-                            <x-input-label for="title" value="Post" /> {{-- Label for post title --}}
-                            <x-text-input id="title" name="title" type="text" class="mt-1 block w-full" :value="$post->title ?? old('title')" required autofocus /> {{-- Input field for post title --}}
+                            <x-input-label for="title" value="Title" /> {{-- Label for post title --}}
+                            <x-text-input id="title" name="title" type="text" class="mt-1 block w-full"
+                                :value="$post->title ?? old('title')" required autofocus /> {{-- Input field for post title --}}
                             <x-input-error class="mt-2" :messages="$errors->get('title')" /> {{-- Display validation errors for post title --}}
                         </div>
-    
+
                         {{-- Image Input --}}
                         <div>
-                            <x-input-label for="info_file" value="Image" /> {{-- Label for image --}}
-                            
+
                             {{-- Display existing image if it exists --}}
                             @isset($post->info_file)
+                                <x-input-label for="info_file" value="Actual Image" /> {{-- Label for image --}}
                                 <div class="my-2">
-                                    <img src="{{ asset('storage/' . $post->info_file) }}" alt="Post Image" class="w-full h-auto max-h-96 object-contain">
+                                    <img src="{{ asset('storage/' . $post->info_file) }}" alt="Post Image"
+                                        class="w-full h-auto max-h-96 object-contain">
                                 </div>
                             @endisset
-    
+
                             {{-- File input field --}}
+                            <x-input-label for="info_file"
+                                value="{{ isset($post) ? 'Replace Image (optional)' : 'Image' }}" />
                             <label class="block mt-2">
-                                <span class="sr-only">Choose file</span> {{-- Screen reader text --}}
-                                <input type="file" id="info_file" name="info_file" accept="image/jpeg,image/png,image/gif,image/svg+xml,image/webp" class="block w-full text-sm text-slate-500
+                                <span class="sr-only">Choose image to upload</span> {{-- Screen reader text --}}
+                                <input type="file" id="info_file" name="info_file"
+                                    accept="image/jpeg,image/png,image/gif,image/svg+xml,image/webp"
+                                    class="block w-full text-sm text-slate-500
                                     file:mr-4 file:py-2 file:px-4
                                     file:rounded-full file:border-0
                                     file:text-sm file:font-semibold
@@ -48,19 +56,20 @@
                                     hover:file:bg-violet-100
                                 " />
                             </label>
-                            
+
                             <x-input-error class="mt-2" :messages="$errors->get('info_file')" /> {{-- Display validation errors for info file --}}
                         </div>
-    
+
                         {{-- Save and Cancel Buttons --}}
                         <div class="flex items-center gap-2">
                             <x-primary-button>{{ __('Save') }}</x-primary-button> {{-- Primary button for saving --}}
-                            <x-secondary-button onclick="history.back()">{{ __('Cancel') }}</x-secondary-button> {{-- Secondary button for canceling --}}
+                            <x-secondary-button onclick="history.back()">{{ __('Cancel') }}</x-secondary-button>
+                            {{-- Secondary button for canceling --}}
                         </div>
                     </form>
                 </div>
             </div>
         </div>
     </div>
-    
+
 </x-app-layout>
