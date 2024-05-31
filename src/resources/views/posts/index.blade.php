@@ -5,11 +5,11 @@
         <!-- Flex container with space between elements -->
         <div class="flex justify-between items-center">
             <!-- Title for the page -->
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight my-3">
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 {{ 'Posts' }} <!-- Static title -->
             </h2>
             <!-- Link to add a new post -->
-            <a href="{{ route('posts.create') }}" class="bg-blue-500 text-white px-4 py-2 rounded-md">ADD</a>
+            <a href="{{ route('posts.create') }}" class="bg-blue-500 text-white px-4 py-2 -my-3 rounded-md">ADD</a>
         </div>
     </x-slot>
 
