@@ -2,9 +2,6 @@
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
     
-    <!-- Login Links for dev only. github.com/spatie/laravel-login-link -->
-    
-    
     <form method="POST" action="{{ route('login') }}">
         @csrf
         
@@ -44,6 +41,7 @@
                 </a>
                 @endif
                 
+                <!-- Login Links for dev only. github.com/spatie/laravel-login-link -->
                 <x-primary-button class="ms-3">
                     {{ __('Log in') }}
                 </x-primary-button>
