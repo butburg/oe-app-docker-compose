@@ -6,23 +6,24 @@
 
                 {{-- Add Comment Form --}}
                 @if (Auth::check())
-                    <div class="flex items-center space-x-1">
-                        <x-gallery.form.form action="{{ route('comments.store') }}" method="POST" :formId="'commentAdd_' . $image->id">
-                            <input type="hidden" name="post_id" value="{{ $image->id }}">
-                            <x-gallery.form.textarea placeholder="Add comment..."
-                                name="comment"></x-gallery.form.textarea>
-                            @error('comment', 'commentAdd_' . $image->id)
-                                <div class="alert alert-danger">{{ $message }}</div>
-                            @enderror
-                        </x-gallery.form.form>
-
-                        <x-text-button color="red" :formId="'commentAdd_' . $image->id">
-                            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path stroke="#464455" stroke-linecap="round" stroke-linejoin="round"
-                                    d="M15.5 9.00001V15H8.5M8.5 15L9.5 14M8.5 15L9.5 16M13 5H17.5C18.0523 5 18.5 5.44772 18.5 6V18C18.5 18.5523 18.0523 19 17.5 19H6.5C5.94772 19 5.5 18.5523 5.5 18V12C5.5 11.4477 5.94772 11 6.5 11H12V6C12 5.44771 12.4477 5 13 5Z" />
-                            </svg>
-                        </x-text-button>
-                    </div>
+<div class="flex items-center space-x-1 p-2">
+    
+    <x-gallery.form.form action="{{ route('comments.store') }}" method="POST" :formId="'commentAdd_' . $image->id">
+        <input type="hidden" name="post_id" value="{{ $image->id }}">
+        <x-gallery.form.textarea placeholder="Add comment..."
+            name="comment"></x-gallery.form.textarea>
+        @error('comment', 'commentAdd_' . $image->id)
+            <div class="alert alert-danger">{{ $message }}</div>
+        @enderror
+    </x-gallery.form.form>
+    
+    <x-text-button color="green" :formId="'commentAdd_' . $image->id">
+        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path stroke="#464455" stroke-linecap="round" stroke-linejoin="round"
+                d="M15.5 9.00001V15H8.5M8.5 15L9.5 14M8.5 15L9.5 16M13 5H17.5C18.0523 5 18.5 5.44772 18.5 6V18C18.5 18.5523 18.0523 19 17.5 19H6.5C5.94772 19 5.5 18.5523 5.5 18V12C5.5 11.4477 5.94772 11 6.5 11H12V6C12 5.44771 12.4477 5 13 5Z" />
+        </svg>
+    </x-text-button>
+</div>
                 @endif
 
                 {{-- show Comments --}}
