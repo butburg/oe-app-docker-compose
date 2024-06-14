@@ -2,23 +2,8 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         @foreach ($images as $image)
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg" x-data="{ showComments: false }">
-                @if (@file_exists(public_path('storage/' . $image->image_file)))
-                    <div class="relative mx-auto">
-                        <img src="{{ asset('storage/' . $image->image_file) }}" alt="{{ $image->title }}"
-                            class="w-full h-auto object-cover cursor-pointer" @click="showComments = !showComments">
-                    </div>
-                @else
-                    <div class="relative mx-auto">
-                        <img rc="{{ asset('storage/files/images/broken.png') }}" alt="Placeholder"
-                            class="w-full h-auto object-cover cursor-pointer" @click="showComments = !showComments">
-                    </div>
-                @endif
-                <div class="p-2 text-right">
-                    <span>
-                        <h3 class="mt-2 font-medium leading-tight">{{ $image->title }}</h3>
-                        <p class="text-sm">{{ $image->username }}</p>
-                    </span>
-                </div>
+                <x-gallery.image-tile :image="$image" />
+                
                 {{-- Add Comment Form --}}
                 @if (Auth::check())
                     <form action="{{ route('comments.store') }}" method="POST" class="p-2 flex items-center mt-4">
