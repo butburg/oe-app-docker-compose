@@ -1,12 +1,9 @@
-<div x-data="{ expanded: false }">
-    <!-- Slot for the comment text -->
-    <p x-ref="comment" class="text-gray-700 truncate" x-bind:class="{ 'truncate': !expanded }">
+<p x-data="{ isCollapsed: false, maxLength: 72, originalContent: '', content: '' }" x-init="originalContent = $el.firstElementChild.textContent.trim();
+content = originalContent.slice(0, maxLength)">
+    <span x-text="isCollapsed ? originalContent : content">
         {{ $slot }}
-    </p>
-    <!-- Button to expand/collapse text -->
-    <button @click="expanded = !expanded" 
-            class="text-blue-500 hover:underline mt-1">
-            <span x-show="!expanded">more</span>
-            <span x-show="expanded">less</span>
-    </button>
-</div>
+    </span><span x-show="!isCollapsed && originalContent.length > maxLength">...</span>
+    <button class="text-blue-500 hover:underline"
+    @click="isCollapsed = !isCollapsed" x-show="originalContent.length > maxLength"
+        x-text="isCollapsed ? '' : 'more'"></button>
+</p>
