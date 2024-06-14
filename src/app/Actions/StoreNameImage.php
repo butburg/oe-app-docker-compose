@@ -11,7 +11,6 @@ class StoreNameImage
 
     public function handle(FormRequest $request): String
     {
-
         $image_size_max = 1400;
 
         // Get the uploaded file
@@ -22,7 +21,7 @@ class StoreNameImage
 
         // Generate a unique filename
         $extension = explode('/', $resizedImage->mimetype())[1];
-        $filename = uniqid('resized_' . $image_size_max) . '.' . $extension;
+        $filename = uniqid('resized_' . $image_size_max . '_') . '.' . $extension;
 
 
         // Store the resized image

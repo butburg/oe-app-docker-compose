@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Actions\StoreNameImage;
 use App\Http\Requests\Post\StoreRequest;
 use Intervention\Image\Laravel\Facades\Image;  // Make sure to import the Image facade
-    
+
 class StoreNameImageTest extends TestCase
 {
     public function test_handle_saves_image_with_correct_name()
@@ -32,6 +32,6 @@ class StoreNameImageTest extends TestCase
 
         // Cleanup: remove the temporary image file
         unlink($path);
-        $this->assertStringStartsWith('files/posts/info-files/resized_', $filePath);
+        $this->assertStringStartsWith('files/posts/images/resized_', $filePath);
     }
 }

@@ -46,7 +46,7 @@
                                 value="{{ isset($post) ? 'Replace Image (optional)' : 'Image' }}" />
                             <label class="block mt-2">
                                 <span class="sr-only">Choose image to upload</span> {{-- Screen reader text --}}
-                                <input type="file" id="image_file" name="image"
+                                <input type="file" id="image_file" name="image_file"
                                     accept="image/jpeg,image/png,image/gif,image/svg+xml,image/webp"
                                     class="block w-full text-sm text-slate-500
                                     file:mr-4 file:py-2 file:px-4
