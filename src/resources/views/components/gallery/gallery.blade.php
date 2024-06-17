@@ -1,35 +1,47 @@
 <div class="max-w-7xl mx-auto py-6">
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        @foreach ($images as $image)
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg" x-data="{ showComments: false }">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        @foreach ($images->reverse() as $image)
+            <div class="bg-gray-600 overflow-hidden shadow-sm sm:rounded-lg" x-data="{ showComments: false }">
                 <x-gallery.image-tile :image="$image" />
+                
 
-                {{-- Add Comment Form --}}
-                @if (Auth::check())
-<div class="flex items-center space-x-1 p-2">
-    
-    <x-gallery.form.form action="{{ route('comments.store') }}" method="POST" :formId="'commentAdd_' . $image->id">
-        <input type="hidden" name="post_id" value="{{ $image->id }}">
-        <x-gallery.form.textarea placeholder="Add comment..."
-            name="comment"></x-gallery.form.textarea>
-        @error('comment', 'commentAdd_' . $image->id)
-            <div class="alert alert-danger">{{ $message }}</div>
-        @enderror
-    </x-gallery.form.form>
-    
-    <x-text-button color="green" :formId="'commentAdd_' . $image->id">
-        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path stroke="#464455" stroke-linecap="round" stroke-linejoin="round"
-                d="M15.5 9.00001V15H8.5M8.5 15L9.5 14M8.5 15L9.5 16M13 5H17.5C18.0523 5 18.5 5.44772 18.5 6V18C18.5 18.5523 18.0523 19 17.5 19H6.5C5.94772 19 5.5 18.5523 5.5 18V12C5.5 11.4477 5.94772 11 6.5 11H12V6C12 5.44771 12.4477 5 13 5Z" />
-        </svg>
-    </x-text-button>
-</div>
-                @endif
+                {{-- show Comments pop out --}}
+                <div x-show="showComments"
+                    class="absolute left-0 right-0 bg-gray-100 p-4 space-y-4 z-10 overflow-auto max-h-80"
+                    @click.away="showComments = false">
 
-                {{-- show Comments --}}
-                <div x-show="showComments" class="bg-gray-100 p-4 space-y-4">
+                    {{-- Add Comment Form --}}
+                    @if (Auth::check())
+                        <div class="flex items-center space-x-1 p-2">
+                            <x-gallery.form.form action="{{ route('comments.store') }}" method="POST" :formId="'commentAdd_' . $image->id">
+                                <input type="hidden" name="post_id" value="{{ $image->id }}">
+                                <x-gallery.form.textarea placeholder="Add comment..."
+                                    name="comment"></x-gallery.form.textarea>
+                                @error('comment', 'commentAdd_' . $image->id)
+                                    <div class="alert alert-danger">{{ $message }}</div>
+                                @enderror
+
+                            </x-gallery.form.form>
+
+                            <x-text-button color="fuchsia" :formId="'commentAdd_' . $image->id">
+                                <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M 17.924 8.386 L 17.924 16.714 L 6.077 16.714 M 13.692 1 L 21.308 1 C 22.245 1 23 1.704 23 2.571 L 23 21.429 C 23 22.296 22.245 23 21.308 23 L 2.692 23 C 1.757 23 1 22.296 1 21.429 L 1 12 C 1 11.133 1.757 10.429 2.692 10.429 L 12 10.429 L 12 2.571 C 12 1.704 12.757 1 13.692 1 Z"
+                                        style="stroke-linecap: round; stroke-linejoin: round; paint-order: fill; stroke: rgb(0, 0, 0); fill: rgba(255, 255, 255, 0); fill-rule: nonzero;"
+                                        transform="matrix(1, 0, 0, 1, 0, 8.881784197001252e-16)" />
+                                    <polyline
+                                        style="fill: rgba(255, 255, 255, 0); stroke: rgb(0, 0, 0); stroke-linecap: round; stroke-linejoin: round; paint-order: fill;"
+                                        points="9 19.9 6 16.700000762939453 8.972000122070312 13.538000106811523"
+                                        transform="matrix(1, 0, 0, 1, 0, 8.881784197001252e-16)" />
+                                </svg>
+                            </x-text-button>
+                        </div>
+                    @endif
+
+                    {{-- list comments --}}
                     @forelse ($image->comments->reverse() as $comment)
-                        <div class=" bg-white p-3 rounded-lg">
+                        <div class="bg-white p-3 rounded-lg">
                             @if (!(Auth::id() === $comment->user_id))
                                 <div class="flex items-start justify-between space-x-3 mb-2">
                                     <x-gallery.comment-creator :comment="$comment" />
@@ -42,11 +54,7 @@
                                 <div x-data="{ isEditing: false }">
                                     <div class="flex items-start justify-between space-x-3 mb-2">
                                         <x-gallery.comment-creator :comment="$comment" />
-                                        <button @click="isEditing = !isEditing"
-                                            class="px-3 py-1 text-blue-500 hover:bg-blue-100 rounded" type="button">
-                                            <span x-show="!isEditing">Edit</span>
-                                            <span x-show="isEditing">Cancel</span>
-                                        </button>
+                                        <x-text-button color="blue" buttonType="editToggle"></x-text-button>
                                     </div>
 
                                     <div x-show="!isEditing">
@@ -68,7 +76,7 @@
                                         <x-gallery.form.form action="{{ route('comments.destroy', $comment->id) }}"
                                             method="DELETE" :formId="'commentDelete_' . $comment->id">
                                         </x-gallery.form.form>
-                                        <div class="flex items-center space-x-3">
+                                        <div class="mt-1 flex items-center space-x-3">
                                             <x-text-button color="red" :formId="'commentDelete_' . $comment->id">Delete</x-text-button>
                                             <x-text-button color="blue" :formId="'commentUpdate_' . $comment->id">Update</x-text-button>
                                         </div>
@@ -80,7 +88,7 @@
                     @empty
                         <p class="text-gray-700">Be the first one to comment.</p>
                     @endforelse
-                </div> {{-- show comments --}}
+                </div> {{-- show comments pop out --}}
 
             </div>
         @endforeach {{-- images as image --}}
