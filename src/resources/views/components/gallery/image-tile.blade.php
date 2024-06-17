@@ -14,10 +14,11 @@
         </dd>
       </dl>
       <div class="mt-4 col-start-1 row-start-3 self-center sm:mt-0 sm:col-start-2 sm:row-start-2 sm:row-span-2 md:mt-6 md:col-start-1 md:row-start-4 md:row-end-4">
-        <button type="button" class="bg-indigo-600 text-white text-sm leading-6 font-medium py-2 px-3 rounded-lg">Send</button>
+        <button type="button" class="bg-indigo-600 text-white text-sm leading-6 font-medium py-2 px-3 rounded-lg"
+        @click="showComments = !showComments">Comments</button>
       </div>
       <p class="mt-4 text-sm leading-6 col-start-1 sm:col-span-2 md:mt-6 md:row-start-3 md:col-span-1">
-        This sunny and spacious room is for those traveling light and looking for a comfy and cosy place to lay their head for a night or two. This beach house sits in a vibrant neighborhood littered with cafes, pubs, restaurants and supermarkets and is close to all the major attractions such as Edinburgh Castle and Arthur's Seat.
+        No description here.
       </p>
     </div>
   </main>
