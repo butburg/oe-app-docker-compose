@@ -6,7 +6,7 @@
     </x-slot>
 
     <div class="">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="bg-gray-200 max-w-7xl mx-auto sm:px-6 lg:px-8">
             <!-- Include the Gallery Component -->
             @php
                 $images = App\Models\Post::where('is_published', true)->get();

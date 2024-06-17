@@ -1,7 +1,8 @@
 <div class="max-w-7xl mx-auto py-6">
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+    <div class="{{--grid grid-cols-1 lg:grid-cols-2 gap-4--}}">
         @foreach ($images->reverse() as $image)
-            <div class="bg-gray-600 overflow-hidden shadow-sm sm:rounded-lg" x-data="{ showComments: false }">
+            <div class="" x-data="{ showComments: false }">
+                
                 <x-gallery.image-tile :image="$image" />
                 
 
