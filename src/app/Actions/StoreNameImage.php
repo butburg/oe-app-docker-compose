@@ -9,23 +9,22 @@ use Illuminate\Support\Facades\Storage;
 class StoreNameImage
 {
 
-    public function handle(FormRequest $request): String
+    public function handle(FormRequest $request, $fileInputName, $directory, $maxSize = 1400, $quality = 100): String
     {
-        $image_size_max = 1400;
-
         // Get the uploaded file
-        $file = $request->file('image_file');
+        $file = $request->file($fileInputName); //'image_file'
 
         // resize and format the image
-        $resizedImage = Image::read($file)->scale($image_size_max, $image_size_max)->toJpeg(quality: 100, progressive: true);
+        $resizedImage = Image::read($file)
+            ->scale($maxSize, $maxSize)->toJpeg(quality: $quality, progressive: true);
 
         // Generate a unique filename
         $extension = explode('/', $resizedImage->mimetype())[1];
-        $filename = uniqid('resized_' . $image_size_max . '_') . '.' . $extension;
+        $filename = uniqid('resized_' . $maxSize . '_') . '.' . $extension;
 
 
         // Store the resized image
-        $filePath = 'files/posts/images/' . $filename;
+        $filePath = $directory . $filename; //'files/posts/images/'
         Storage::disk('public')->put($filePath, $resizedImage);
 
         return $filePath;
