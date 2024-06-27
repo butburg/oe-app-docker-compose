@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
+use App\Actions\StoreNameImage;
+use Illuminate\Foundation\Http\FormRequest;
 
 class ProfileController extends Controller
 {
@@ -24,15 +26,44 @@ class ProfileController extends Controller
     /**
      * Update the user's profile information.
      */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
+    public function update(ProfileUpdateRequest $request, StoreNameImage $storeNameImage): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        $user = $request->user();
+        $user->fill($request->validated());
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        if ($user->isDirty('email')) {
+            $user->email_verified_at = null;
         }
 
-        $request->user()->save();
+        // Handle the profile image
+        if ($request->hasFile('profile_image')) {
+            $filePath = $storeNameImage->handle($request, 'profile_image', 'files/profiles/images');
+            $user->profile_image = $filePath; // 'profile_image' column in users table
+        }
+
+        $user->save();
+
+        return Redirect::route('profile.edit')->with('status', 'profile-updated');
+    }
+
+    /**
+     * Update the user's profile image.
+     */
+    public function updateImage(FormRequest $request, StoreNameImage $storeNameImage): RedirectResponse
+    {
+        $request->validate([
+            'profile_image' => 'required|image|mimes:jpeg,png,jpg,gif|max:4096',
+        ]);
+
+        $user = Auth::user();
+
+        // Handle the profile image
+        if ($request->hasFile('profile_image')) {
+            $filePath = $storeNameImage->handle($request, 'profile_image', 'files/profiles/images');
+            $user->profile_image = $filePath; // 'profile_image' column in users table
+        }
+
+        $user->save();
 
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
