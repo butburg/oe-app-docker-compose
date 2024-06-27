@@ -12,7 +12,7 @@ class StoreNameImage
     public function handle(FormRequest $request, $fileInputName, $directory, $maxSize = 1400, $quality = 100): String
     {
         // Get the uploaded file
-        $file = $request->file($fileInputName); //'image_file'
+        $file = $request->file($fileInputName); //e.g. 'image_file'
 
         // resize and format the image
         $resizedImage = Image::read($file)
@@ -24,7 +24,7 @@ class StoreNameImage
 
 
         // Store the resized image
-        $filePath = $directory . $filename; //'files/posts/images/'
+        $filePath = $directory . $filename; //e.g. 'files/posts/images/'
         Storage::disk('public')->put($filePath, $resizedImage);
 
         return $filePath;

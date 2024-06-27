@@ -48,8 +48,8 @@ class PostController extends Controller
 
         // If an info file is uploaded, update the file path and delete the old file if exists
         if ($request->hasFile('image_file')) {
-
-            $filePath = $action->handle($request);
+           
+            $filePath = $action->handle($request, 'image_file', 'files/posts/images/');
 
             // Add the filepath to validated data
             $validated['image_file'] = $filePath;

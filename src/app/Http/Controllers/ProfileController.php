@@ -35,12 +35,6 @@ class ProfileController extends Controller
             $user->email_verified_at = null;
         }
 
-        // Handle the profile image
-        if ($request->hasFile('profile_image')) {
-            $filePath = $storeNameImage->handle($request, 'profile_image', 'files/profiles/images');
-            $user->profile_image = $filePath; // 'profile_image' column in users table
-        }
-
         $user->save();
 
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
@@ -59,9 +53,10 @@ class ProfileController extends Controller
 
         // Handle the profile image
         if ($request->hasFile('profile_image')) {
-            $filePath = $storeNameImage->handle($request, 'profile_image', 'files/profiles/images');
+            $filePath = $storeNameImage->handle($request, 'profile_image', 'files/profiles/images', 640);
             $user->profile_image = $filePath; // 'profile_image' column in users table
         }
+
 
         $user->save();
 
