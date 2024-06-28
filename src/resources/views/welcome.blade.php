@@ -10,7 +10,7 @@
         </div>
     </x-slot>
     <div class="">
-        <div class="mx-auto      bg-gray-200 sm:px-6 lg:px-8">
+        <div class="mx-auto max-w-screen-2xl bg-gray-200 sm:px-6 lg:px-8">
             <!-- Include the Gallery Component -->
             @php
                 $images = App\Models\Post::where('is_published', true)->get();
