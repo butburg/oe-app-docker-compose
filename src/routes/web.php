@@ -5,6 +5,8 @@ use App\Http\Controllers\PostController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TestMailController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\AdminController;
+use App\Http\Middleware\Admin;
 
 Route::get('/', function () {
     return view('welcome');
@@ -18,12 +20,15 @@ Route::get('/send-test-email', [TestMailController::class, 'sendTestEmail']);
 
 Route::middleware('auth', 'verified')->group(function () {
     // Routes here are accessible to authenticated users only!!
+    
+    Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard')->middleware(Admin::class);
 
     // Profiles
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::put('/profile/update-image', [ProfileController::class, 'updateImage'])->name('profile.updateImage');
+
 
 
     // Posts

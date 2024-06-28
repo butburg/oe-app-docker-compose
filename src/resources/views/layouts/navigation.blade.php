@@ -60,9 +60,15 @@
                                     <div class="text-base font-medium text-gray-800">{{ Auth::user()->name }}</div>
                                     <div class="text-sm font-medium text-gray-500">{{ Auth::user()->email }}</div>
                                 </div>
+                                @if (Auth::user()->usertype == 'admin')
+                                    <x-responsive-nav-link :href="route('admin.dashboard')">
+                                        {{ __('Admin Dashboard') }}
+                                    </x-responsive-nav-link>
+                                @endif
                                 <x-responsive-nav-link :href="route('profile.edit')">
                                     {{ __('Profile') }}
                                 </x-responsive-nav-link>
+
                                 <!-- Authentication -->
                                 <form method="POST" action="{{ route('logout') }}">
                                     @csrf
@@ -96,6 +102,11 @@
                             </button>
                         </x-slot>
                         <x-slot name="content">
+                            @if (Auth::user()->usertype == 'admin')
+                                <x-dropdown-link :href="route('admin.dashboard')">
+                                    {{ __('Admin Dashboard') }}
+                                </x-dropdown-link>
+                            @endif
                             <x-dropdown-link :href="route('profile.edit')">
                                 {{ __('Profile') }}
                             </x-dropdown-link>
