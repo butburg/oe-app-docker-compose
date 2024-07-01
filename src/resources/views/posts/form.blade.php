@@ -1,10 +1,8 @@
+
 <x-app-layout>
     {{-- Header section with 'Edit' or 'Create' depending on the existence of $post --}}
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{-- Use 'Edit' for edit mode and 'Create' for create mode --}}
-            {{ isset($post) ? 'Edit' : 'Create' }}
-        </h2>
+        <x-header2>{{ isset($post) ? 'Edit' : 'Create' }}</x-header2>
     </x-slot>
 
     <div class="py-12">
