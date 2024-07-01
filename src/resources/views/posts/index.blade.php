@@ -13,7 +13,7 @@
 
     <div class="py-12">
         <div class="mx-auto mb-4 max-w-7xl sm:px-6 lg:px-8">
-            <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
+            <div class="overflow-hidden bg-content-bg shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
                     <!-- Title for draft posts -->
                     <h3 class="mb-4 text-lg font-semibold leading-tight text-gray-800">Not yet published</h3>
@@ -28,12 +28,12 @@
                                 <th class="border-b p-4 pb-3 pl-8 pt-0 text-left font-medium text-slate-400">Action</th>
                             </tr>
                         </thead>
-                        <tbody class="bg-white">
+                        <tbody class="">
                             {{-- Loop through draft posts --}}
                             @forelse ($draftPosts as $post)
                                 <tr>
                                     <td
-                                        class="border-b border-slate-100 p-4 pl-8 text-slate-500 dark:border-slate-700 dark:text-slate-400">
+                                        class="border-b border-slate-100 py-4 text-slate-500 dark:border-slate-700 dark:text-slate-400">
                                         <!-- Post Image -->
                                         <img class="h-24 w-24 rounded-full object-cover"
                                             src="{{ asset('storage/' . $post->image_file) }}">
@@ -94,7 +94,7 @@
             </div>
         </div>
         <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
-            <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
+            <div class="overflow-hidden bg-content-bg shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
                     <!-- Title for published posts -->
                     <h3 class="mb-4 text-lg font-semibold leading-tight text-gray-800">Published</h3>
@@ -108,11 +108,11 @@
                                 <th class="border-b p-4 pb-3 pl-8 pt-0 text-left font-medium text-slate-400">Action</th>
                             </tr>
                         </thead>
-                        <tbody class="bg-white">
+                        <tbody class="">
                             {{-- populate our published post data --}}
                             @forelse ($publishedPosts as $post)
                                 <tr>
-                                    <td>
+                                    <td class="py-4">
                                         <!-- Post Image -->
                                         <img class="h-24 w-24 rounded-full object-cover"
                                             src="{{ asset('storage/' . $post->image_file) }}">

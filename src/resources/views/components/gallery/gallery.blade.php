@@ -14,7 +14,7 @@
                             <!-- Title and Author -->
                             <div class="flex flex-col-reverse rounded-lg bg-none">
                                 <p class="mt-1 text-xs font-medium">{{ $image->username }}</p>
-                                <h1 class="mt-1 text-lg font-semibold text-black sm:text-slate-800 md:text-2xl">
+                                <h1 class="mt-1 text-lg font-semibold text-title-text md:text-2xl">
                                     {{ $image->title }}
                                 </h1>
                                 <p class="text-sm font-medium leading-4 text-black sm:text-slate-500">Last updated

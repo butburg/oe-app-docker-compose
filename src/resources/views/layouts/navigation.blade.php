@@ -1,4 +1,4 @@
-<nav class="border-b border-gray-100 bg-white" x-data="{ open: false }">
+<nav class="border-b border-gray-100 bg-nav-bg" x-data="{ open: false }">
     <!-- Navigation Headbar -->
     <div class="mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8">
         <div class="flex h-16 justify-between">
@@ -7,7 +7,7 @@
                 <!-- Logo -->
                 <div class="flex shrink-0 items-center">
                     <a href="{{ route('dashboard') }}">
-                        <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
+                        <x-application-logo class="block h-9 w-auto fill-current text-nav-text" />
                     </a>
                 </div>
                 @auth
@@ -56,9 +56,9 @@
                         <x-slot name="content">
                             <div class="space-y-1">
                                 <div
-                                    class="block w-full border-b-2 border-gray-200 py-2 pe-4 ps-3 text-start text-base font-medium text-gray-600">
-                                    <div class="text-base font-medium text-gray-800">{{ Auth::user()->name }}</div>
-                                    <div class="text-sm font-medium text-gray-500">{{ Auth::user()->email }}</div>
+                                    class="block w-full border-b-2  py-2 pe-4 ps-3 text-start text-base font-medium ">
+                                    <div class="text-base font-medium ">{{ Auth::user()->name }}</div>
+                                    <div class="text-sm font-medium ">{{ Auth::user()->email }}</div>
                                 </div>
                                 @if (Auth::user()->usertype == 'admin')
                                     <x-responsive-nav-link :href="route('admin.dashboard')">
@@ -66,7 +66,7 @@
                                     </x-responsive-nav-link>
                                 @endif
                                 <x-responsive-nav-link :href="route('profile.edit')">
-                                    {{ __('Profile') }}
+                                    {{ __('Profiles') }}
                                 </x-responsive-nav-link>
 
                                 <!-- Authentication -->

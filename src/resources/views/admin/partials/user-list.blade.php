@@ -1,5 +1,5 @@
-<h3 class="text-lg font-medium text-gray-900 mb-4">{{ __('Users List') }}</h3>
-<table class="min-w-full bg-white border">
+<h3 class="text-lg font-medium text-nav-text mb-4">{{ __('Users List') }}</h3>
+<table class="min-w-full bg-nav-bg text-nav-text border">
     <thead>
         <tr>
             <th class="py-2 px-4 border">Name</th>
