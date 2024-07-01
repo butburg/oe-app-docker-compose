@@ -1,10 +1,9 @@
+
 <x-app-layout>
     <x-slot name="header">
         <!-- Flex container with space between elements -->
         <div class="flex items-center justify-between">
-            <h2 class="text-xl font-semibold leading-tight text-gray-800">
-                {{ __('Oh Gallery') }}
-            </h2>
+            <x-header2>Oh Gallery</x-header2>
             <!-- Link to add a new post -->
             <a class="-my-3 rounded-md bg-blue-500 px-4 py-2 text-white" href="{{ route('posts.create') }}">Create</a>
         </div>
