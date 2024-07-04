@@ -35,7 +35,7 @@ class PostController extends Controller
     public function create()
     {
         // Return the view for creating a new post
-        return response()->view('posts.form');
+        return response()->view('posts.edit');
     }
 
     /**
@@ -99,7 +99,7 @@ class PostController extends Controller
         }
 
         // Pass the post to the view for editing
-        return response()->view('posts.form', [
+        return response()->view('posts.edit', [
             'post' => $post
         ]);
     }
