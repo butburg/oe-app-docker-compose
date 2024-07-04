@@ -1,6 +1,6 @@
 {{-- list comments --}}
 @forelse ($image->comments->reverse() as $comment)
-    <div class="rounded-lg bg-comment-bg p-3">
+    <div class="rounded-lg bg-comment-bg text-comment-text p-3">
         @if (!(Auth::id() === $comment->user_id))
             <div class="mb-2 flex items-start justify-between space-x-3">
                 <x-gallery.comment.comment-creator :comment="$comment" />

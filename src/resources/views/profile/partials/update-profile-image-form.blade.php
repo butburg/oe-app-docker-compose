@@ -1,10 +1,10 @@
 <section>
     <header>
-        <h2 class="text-lg font-medium text-gray-900">
+        <h2 class="text-lg font-medium text-content-text">
             {{ __('Update profile image') }}
         </h2>
 
-        <p class="mt-1 text-sm text-gray-600">
+        <p class="mt-1 text-sm text-gray-300">
             {{ __('Make yourself better reconizable to others.') }}
             @isset($user->profile_image)
                 Your actual image:

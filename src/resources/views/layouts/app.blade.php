@@ -22,8 +22,8 @@
 
         <!-- Page Heading -->
         @if (isset($header))
-            <header class="bg-title-bg text-title-text shadow">
-                <div class="mx-auto max-w-screen-2xl px-4 py-3 sm:px-6 lg:px-8">
+            <header class="">
+                <div class="mx-auto max-w-screen-2xl px-4 py-3 sm:px-6 lg:px-8 bg-title-bg text-title-text shadow">
                     {{ $header }}
 
                     {{-- check if there is a notif.success flash session --}}

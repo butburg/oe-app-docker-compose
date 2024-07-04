@@ -2,7 +2,7 @@
     <div class="{{-- grid grid-cols-1 lg:grid-cols-2 gap-4 --}}">
         @foreach ($images->reverse() as $image)
             <div x-data="{ showComments: false }">
-                <main class="px-4 py-6 sm:p-6 md:px-8 md:py-10">
+                <main class="md:x-8 mx-1 mb-4 rounded-lg bg-title-btn-bg px-2 py-6 sm:mb-6 sm:px-6 md:mb-10">
                     <div class="mx-auto grid grid-cols-1 md:grid-cols-3 md:gap-x-10">
                         <!-- Image -->
                         <div class="col-span-3 flex items-center justify-center md:col-span-2">
@@ -13,18 +13,18 @@
                         <div class="relative col-span-3 flex flex-col pt-3 md:col-span-1 md:pt-0">
                             <!-- Title and Author -->
                             <div class="flex flex-col-reverse rounded-lg bg-none">
-                                <p class="mt-1 text-xs font-medium">{{ $image->username }}</p>
-                                <h1 class="mt-1 text-lg font-semibold text-title-text md:text-2xl">
+                                <p class="mt-1 text-xs font-medium text-nav-bg">{{ $image->username }}</p>
+                                <h1 class="mt-1 text-lg font-semibold text-content-bg md:text-2xl">
                                     {{ $image->title }}
                                 </h1>
-                                <p class="text-sm font-medium leading-4 text-black sm:text-slate-500">Last updated
+                                <p class="text-sm font-medium leading-4">Last updated
                                     {{ $image->updated_at->diffForHumans() }}</p>
                             </div>
-                            <!-- Add Comment Form (always visible) -->
-                            <!-- Comments Section (conditionally visible) -->
-                            <div class="mt-4 max-h-64 space-y-4 overflow-auto px-3 text-sm leading-6 sm:px-0 md:max-h-80 md:flex-grow"
+                            <div class="mt-4 max-h-64 space-y-4 overflow-auto px-3 text-sm leading-6 sm:px-0 md:max-h-80 md:flex-grow text-title-bg"
                                 x-show="showComments || window.innerWidth >= 768" @click.away="showComments = false">
+                                <!-- Add Comment Form (always visible) -->
                                 <x-gallery.comment.add-comment-form :image="$image" />
+                                <!-- Comments Section (conditionally visible) -->
                                 <x-gallery.comment.show-comments :image="$image" />
                             </div>
                         </div>

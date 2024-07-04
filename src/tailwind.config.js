@@ -49,7 +49,7 @@ export default {
                 'nav-text': '#A3F1FF',        // Light text color for nav links
                 'nav-text-hover': '#B8F4FF',  // Lighter text on hover
                 'nav-underline-hover': '#00D7FF',  // Underline color on hover
-
+                'yellow-text': '#FFB100',
                 // Title bar
                 'title-bg': '#004957',        // Dark background for title bar
                 'title-text': '#00D7FF',      // Main color for title text
