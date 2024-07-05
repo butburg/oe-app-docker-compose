@@ -104,3 +104,29 @@ Want to build for production? Simply run `docker-compose run --rm npm run build`
 The current version of Laravel (9 as of today) uses MailHog as the default application for testing email sending and general SMTP work during local development. Using the provided Docker Hub image, getting an instance set up and ready is simple and straight-forward. The service is included in the `docker-compose.yml` file, and spins up alongside the webserver and database services.
 
 To see the dashboard and view any emails coming through the system, visit [localhost:8025](http://localhost:8025) after running `docker-compose up -d mailhog`.
+
+
+## Versions
+
+Last Update: 04.07.24
+- Laravel Framework 11.7.0
+- php: 8.3.7
+- composer: 2.7.6
+- npm: 22.1.0
+- vite: 5.2.10
+- SQLite: 3.44.2
+
+Check it with
+```
+docker-compose run --rm artisan --version
+
+docker-compose run --rm php php -v
+
+docker-compose run --rm composer --version
+
+docker-compose run --rm --entrypoint npm npm -v
+
+docker-compose run --rm --entrypoint npm npm list vite
+
+docker-compose run --rm --entrypoint php artisan -r 'echo "SQLite version: " . SQLite3::version()["versionString"] . PHP_EOL;'
+```
