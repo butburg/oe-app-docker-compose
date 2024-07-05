@@ -4,12 +4,12 @@
         <div class="flex items-center justify-between">
             <x-header2>Oh Gallery</x-header2>
             <!-- Link to add a new post -->
-            <a class="-my-3 rounded-md bg-title-btn-bg px-4 py-2 text-title-bg"
+            <a class="-my-3 rounded-md bg-c-accent px-4 py-2 text-c-background"
                 href="{{ route('posts.create') }}">Create</a>
         </div>
     </x-slot>
-    <div class="">
-        <div class="mx-auto max-w-screen-2xl bg-content-bg text-content-text sm:px-6 lg:px-8">
+    <div class="bg-c-background text-c-text">
+        <div class="mx-auto max-w-screen-2xl sm:px-6 lg:px-8">
             <!-- Include the Gallery Component -->
             @php
                 $images = App\Models\Post::where('is_published', true)->get();
@@ -17,7 +17,7 @@
             <x-gallery.gallery :images="$images" />
         </div>
     </div>
-    <footer class="py-16 text-center text-sm text-content-text">
+    <footer class="text-content-text py-16 text-center text-sm">
         Laravel v{{ Illuminate\Foundation\Application::VERSION }} (PHP v{{ PHP_VERSION }})
         @if (app()->environment('local'))
             <br>

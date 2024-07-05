@@ -3,7 +3,7 @@ content = originalContent.slice(0, maxLength)">
     <span x-text="isCollapsed ? originalContent : content">
         {{ $slot }}
     </span><span x-show="!isCollapsed && originalContent.length > maxLength">...</span>
-    <button class="text-blue-500 hover:underline"
+    <button class="text-c-primary hover:underline"
     @click="isCollapsed = !isCollapsed" x-show="originalContent.length > maxLength"
         x-text="isCollapsed ? '' : 'more'"></button>
 </p>

@@ -1,6 +1,6 @@
 {{-- list comments --}}
 @forelse ($image->comments->reverse() as $comment)
-    <div class="rounded-lg bg-comment-bg text-comment-text p-3">
+    <div class="rounded-lg bg-c-primary/40 text-comment-text p-3">
         @if (!(Auth::id() === $comment->user_id))
             <div class="mb-2 flex items-start justify-between space-x-3">
                 <x-gallery.comment.comment-creator :comment="$comment" />
@@ -13,7 +13,7 @@
             <div x-data="{ isEditing: false }">
                 <div class="mb-2 flex items-start justify-between space-x-3">
                     <x-gallery.comment.comment-creator :comment="$comment" />
-                    <x-text-button color="blue" buttonType="editToggle"></x-text-button>
+                    <x-text-button buttonType="editToggle"></x-text-button>
                 </div>
 
                 <div x-show="!isEditing">
@@ -36,8 +36,8 @@
                         :formId="'commentDelete_' . $comment->id">
                     </x-gallery.form.form>
                     <div class="mt-1 flex items-center space-x-3">
-                        <x-text-button color="red" :formId="'commentDelete_' . $comment->id">Delete</x-text-button>
-                        <x-text-button color="blue" :formId="'commentUpdate_' . $comment->id">Update</x-text-button>
+                        <x-text-button :formId="'commentDelete_' . $comment->id">Delete</x-text-button>
+                        <x-text-button :formId="'commentUpdate_' . $comment->id">Update</x-text-button>
                     </div>
                 </div>
 

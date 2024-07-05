@@ -55,10 +55,9 @@
 
                         <x-slot name="content">
                             <div class="space-y-1">
-                                <div
-                                    class="block w-full border-b-2  py-2 pe-4 ps-3 text-start text-base font-medium ">
-                                    <div class="text-base font-medium ">{{ Auth::user()->name }}</div>
-                                    <div class="text-sm font-medium ">{{ Auth::user()->email }}</div>
+                                <div class="block w-full border-b-2 py-2 pe-4 ps-3 text-start text-base font-medium">
+                                    <div class="text-base font-medium">{{ Auth::user()->name }}</div>
+                                    <div class="text-sm font-medium">{{ Auth::user()->email }}</div>
                                 </div>
                                 @if (Auth::user()->usertype == 'admin')
                                     <x-responsive-nav-link :href="route('admin.dashboard')">
@@ -88,7 +87,7 @@
                     <x-dropdown align="right" width="48" contentClasses="py-1 bg-nav-text">
                         <x-slot name="trigger">
                             <button
-                                class="inline-flex items-center rounded-md border border-transparent bg-nav-text px-3 py-2 text-sm font-medium leading-4 text-c-text transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none">
+                                class="bg-nav-text inline-flex items-center rounded-md border border-transparent px-3 py-2 text-sm font-medium leading-4 text-c-text transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none">
                                 <div>{{ Auth::user()->name }}</div>
 
                                 <div class="ms-1">

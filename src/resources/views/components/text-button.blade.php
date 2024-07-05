@@ -1,13 +1,12 @@
-@props(['color' => 'blue', 'formId' => '', 'buttonType' => 'submit'])
+@props(['formId' => '', 'buttonType' => 'submit'])
 
 @if ($buttonType === 'editToggle')
-    <button @click="isEditing = !isEditing"
-    class="p-2 text-{{ $color }}-500 hover:bg-{{ $color }}-100 rounded"
-    type="button">
-    <span x-show="!isEditing">Edit</span>
-    <span x-show="isEditing">Cancel</span>
+    <button class="rounded p-2 text-c-secondary hover:text-c-secondary/80 hover:underline" type="button"
+        @click="isEditing = !isEditing">
+        <span x-show="!isEditing">Edit</span>
+        <span x-show="isEditing">Cancel</span>
     </button>
 @else
-    <button form="{{ $formId }}" class="p-2 text-{{ $color }}-500 hover:bg-{{ $color }}-100 rounded"
+    <button class="rounded p-2 text-c-text hover:text-c-text/80 hover:underline" form="{{ $formId }}"
         type="submit">{{ $slot }}</button>
 @endif

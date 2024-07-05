@@ -16,14 +16,14 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="font-sans antialiased">
-    <div class="min-h-screen bg-body-bg">
+<body class="font-sans antialiased bg-c-background">
+    <div class="bg-body-bg min-h-screen">
         @include('layouts.navigation')
 
         <!-- Page Heading -->
         @if (isset($header))
-            <header class="">
-                <div class="mx-auto max-w-screen-2xl px-4 py-3 sm:px-6 lg:px-8 bg-title-bg text-title-text shadow">
+            <header class=" bg-c-primary/10 text-c-text">
+                <div class="mx-auto max-w-screen-2xl px-4 py-3 shadow sm:px-6 lg:px-8">
                     {{ $header }}
 
                     {{-- check if there is a notif.success flash session --}}

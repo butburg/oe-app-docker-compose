@@ -2,7 +2,7 @@
     <div class="{{-- grid grid-cols-1 lg:grid-cols-2 gap-4 --}}">
         @foreach ($images->reverse() as $image)
             <div x-data="{ showComments: false }">
-                <main class="md:x-8 mx-1 mb-4 rounded-lg bg-title-btn-bg px-2 py-6 sm:mb-6 sm:px-6 md:mb-10">
+                <main class="md:x-8 mx-1 mb-4 rounded-lg bg-c-primary/10 px-2 py-6 sm:mb-6 sm:px-6 md:mb-10">
                     <div class="mx-auto grid grid-cols-1 md:grid-cols-3 md:gap-x-10">
                         <!-- Image -->
                         <div class="col-span-3 flex items-center justify-center md:col-span-2">
