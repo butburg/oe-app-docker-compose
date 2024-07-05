@@ -7,18 +7,47 @@
 
 @layer base {
     :root {
-        --text: 2 27 29;
-        --background: 217 248 252;
-        --primary: 0 217 255;
-        --secondary: 245 102 219;
-        --accent: 119 178 31;
-    }
-
-    .dark {
         --text: 226 251 253;
         --background: 3 34 38;
         --primary: 0 217 255;
         --secondary: 153 10 127;
         --accent: 165 224 77;
     }
+    :light {
+        --text: 2 27 29;
+        --background: 217 248 252;
+        --primary: 0 217 255;
+        --secondary: 245 102 219;
+        --accent: 119 178 31;
+    }
+    /*:root {
+        --swamp: 2 27 29;               
+        --salt-mountain: 217 248 252;
+        --neon-blue: 0 217 255;
+        --candy-pink: 245 102 219;
+        --lima: 119 178 31;
+    }
+
+    .dark {
+        --calm-water: 226 251 253;
+        --midnight-dream: 3 34 38;
+        --neon-blue: 0 217 255;
+        --haunted-purple: 153 10 127;
+        --light-lime: 165 224 77;
+    }
+
+    :root {
+        --text: #021b1d;
+        --background: #d9f8fc;
+        --primary: #00d9ff;
+        --secondary: #f566db;
+        --accent: #77b21f;
+      }
+      .dark {
+        --text: #e2fbfd;
+        --background: #032226;
+        --primary: #00d9ff;
+        --secondary: #990a7f;
+        --accent: #a5e04d;
+      }*/
 }

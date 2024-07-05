@@ -13,14 +13,14 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['"Nanum Myeongjo"', ...defaultTheme.fontFamily.sans],
+                serif: ['"Nanum Myeongjo"', ...defaultTheme.fontFamily.sans],
             },
             colors: {
-                'c-text': 'hsl(var(--text))',
-                'c-background': 'hsl(var(--background))',
-                'c-primary': 'hsl(var(--primary))',
-                'c-secondary': 'hsl(var(--secondary))',
-                'c-accent': 'hsl(var(--accent))',
+                'c-text': 'rgb(var(--text) / <alpha-value>)',
+                'c-background': 'rgb(var(--background) / <alpha-value>)',
+                'c-primary': 'rgb(var(--primary) / <alpha-value>)',
+                'c-secondary': 'rgb(var(--secondary) / <alpha-value>)',
+                'c-accent': 'rgb(var(--accent) / <alpha-value>)',
             },
 
         },
