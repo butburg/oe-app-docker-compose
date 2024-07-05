@@ -1,3 +1,24 @@
+@import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+@layer base {
+    :root {
+        --text: 2 27 29;
+        --background: 217 248 252;
+        --primary: 0 217 255;
+        --secondary: 245 102 219;
+        --accent: 119 178 31;
+    }
+
+    .dark {
+        --text: 226 251 253;
+        --background: 3 34 38;
+        --primary: 0 217 255;
+        --secondary: 153 10 127;
+        --accent: 165 224 77;
+    }
+}
