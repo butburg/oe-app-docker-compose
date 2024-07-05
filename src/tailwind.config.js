@@ -77,6 +77,32 @@ export default {
                 // Links
                 'link-text': '#A3F1FF',       // Text color for links
                 'link-text-hover': '#B8F4FF', // Text color on hover for links
+
+              /*   #C2C2C2
+                #D06B64
+                #F83A22
+                #FA573C
+                #AC725E
+                #FF7537
+                #FFAD46
+                #FAD165
+                #FBE983
+                #B3DC6C
+                #7BD148
+                #41D692
+                #16A765
+                #92E1C0
+                #9FE1E7
+                #00D7FF
+                #9FC5E8
+                #4986E7
+                #9B9CFF
+                #B99AFF
+                #A47AE2
+                #CD74E7
+                #F691B2
+                #CABDBF
+                #CCA6AC */
             },
         },
     },
