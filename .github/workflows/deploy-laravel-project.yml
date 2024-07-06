@@ -25,6 +25,11 @@ jobs:
         echo "$SFTP_HOST ssh-rsa c6:e6:76:98:23:31:2c:b7:ca:1a:15:47:96:91:86:54" >> ~/.ssh/known_hosts
         cat ~/.ssh/known_hosts
     
+    - name: Verify environment variables
+      run: |
+        echo "SFTP_HOST=${{ secrets.SFTP_HOST }}"
+        echo "SFTP_USERNAME=${{ secrets.SFTP_USERNAME }}"
+    
     - name: Test SSH connection
       env:
         SFTP_HOST: ${{ secrets.SFTP_HOST }}
