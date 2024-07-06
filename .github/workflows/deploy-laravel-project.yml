@@ -1,0 +1,48 @@
+name: Deploy Laravel Project
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Setup SSH
+      uses: webfactory/ssh-agent@v0.5.3
+      with:
+        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+    - name: Upload files via SSH
+      env:
+        SFTP_HOST: ${{ secrets.SFTP_HOST }}
+        SFTP_USERNAME: ${{ secrets.SFTP_USERNAME }}
+      run: |
+        rsync -r --delete-after --quiet $GITHUB_WORKSPACE/src/ $SFTP_USERNAME@$SFTP_HOST:oe-app/
+
+    - name: Upload .env file
+      env:
+        SFTP_HOST: ${{ secrets.SFTP_HOST }}
+        SFTP_USERNAME: ${{ secrets.SFTP_USERNAME }}
+        ENV_VARIABLES: ${{ secrets.ENV_VARIABLES }}
+      run: |
+        echo "$ENV_VARIABLES" | ssh $SFTP_USERNAME@$SFTP_HOST 'cat > oe-app/.env'
+
+    - name: Run remote SSH commands
+      env:
+        SFTP_HOST: ${{ secrets.SFTP_HOST }}
+        SFTP_USERNAME: ${{ secrets.SFTP_USERNAME }}
+      run: |
+        ssh $SFTP_USERNAME@$SFTP_HOST << 'EOF'
+        cd oe-app
+        composer install --no-interaction --prefer-dist --optimize-autoloader
+        npm run build
+        php artisan migrate --force
+        php artisan config:cache
+        EOF
