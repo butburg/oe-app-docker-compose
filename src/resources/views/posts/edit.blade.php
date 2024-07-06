@@ -7,8 +7,8 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-content-bg overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900">
+            <div class="bg-c-primary/20 overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 text-c-text">
                     {{-- Form for post creation/updation with file upload --}}
                     <form method="post"
                         action="{{ isset($post) ? route('posts.update', $post->id) : route('posts.store') }}"
@@ -46,7 +46,7 @@
                                 <span class="sr-only">Choose image to upload</span> {{-- Screen reader text --}}
                                 <input type="file" id="image_file" name="image_file"
                                     accept="image/jpeg,image/png,image/gif,image/svg+xml,image/webp"
-                                    class="block w-full text-sm text-slate-500
+                                    class="block w-full text-sm text-slate-100
                                     file:mr-4 file:py-2 file:px-4
                                     file:rounded-full file:border-0
                                     file:text-sm file:font-semibold

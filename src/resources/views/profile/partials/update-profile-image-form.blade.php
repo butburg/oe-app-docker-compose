@@ -28,7 +28,7 @@
         <label class="my-4 block">
             <span class="sr-only">Choose profile image to upload</span> {{-- Screen reader text --}}
             <input
-                class="block w-full text-slate-500 file:mr-4 file:rounded-full file:border-0 file:bg-violet-50 file:px-4 file:py-2 file:font-semibold file:text-violet-700 hover:file:bg-violet-100"
+                class="block w-full text-slate-100 file:mr-4 file:rounded-full file:border-0 file:bg-violet-50 file:px-4 file:py-2 file:font-semibold file:text-violet-700 hover:file:bg-violet-100"
                 id="profile_image" name="profile_image" type="file"
                 accept="image/jpeg,image/png,image/gif,image/svg+xml,image/webp" />
         </label>

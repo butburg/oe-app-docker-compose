@@ -38,7 +38,7 @@
             @auth
                 <!-- Hamburger for small screen -->
                 <div class="ms-6 flex items-center sm:hidden">
-                    <x-dropdown align="right" width="48">
+                    <x-dropdown align="right" width="48"  contentClasses="py-1 bg-c-primary">
                         <x-slot name="trigger">
                             <button
                                 class="inline-flex items-center justify-center rounded-md p-2 text-c-text transition duration-150 ease-in-out hover:bg-c-background hover:text-gray-500 focus:bg-gray-100 focus:text-gray-500 focus:outline-none">
@@ -57,7 +57,6 @@
                             <div class="space-y-1">
                                 <div class="block w-full border-b-2 py-2 pe-4 ps-3 text-start text-base font-medium">
                                     <div class="text-base font-medium">{{ Auth::user()->name }}</div>
-                                    <div class="text-sm font-medium">{{ Auth::user()->email }}</div>
                                 </div>
                                 @if (Auth::user()->usertype == 'admin')
                                     <x-responsive-nav-link :href="route('admin.dashboard')">
@@ -84,10 +83,10 @@
 
                 {{-- user menu for desktop --}}
                 <div class="hidden sm:ms-6 sm:flex sm:items-center">
-                    <x-dropdown align="right" width="48" contentClasses="py-1 bg-nav-text">
+                    <x-dropdown align="right" width="48" contentClasses="py-1 bg-c-primary">
                         <x-slot name="trigger">
                             <button
-                                class="bg-nav-text inline-flex items-center rounded-md border border-transparent px-3 py-2 text-sm font-medium leading-4 text-c-text transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none">
+                                class="inline-flex items-center rounded-md border border-transparent px-3 py-2 text-sm font-medium leading-4 text-c-text transition duration-150 ease-in-out hover:bg-c-primary/20 focus:outline-none">
                                 <div>{{ Auth::user()->name }}</div>
 
                                 <div class="ms-1">
