@@ -23,31 +23,26 @@ jobs:
       run: |
         mkdir -p ~/.ssh
         ssh-keyscan -H ${{ secrets.LIMA_SFTP_HOST }} >> ~/.ssh/known_hosts
-    
-    - name: Verify environment variables
-      run: |
-        echo "SFTP_HOST=${{ secrets.LIMA_SFTP_HOST }}"
-        echo "SFTP_USERNAME=${{ secrets.LIMA_SFTP_USERNAME }}"
-    
+
     - name: Test SSH connection
       env:
         SFTP_HOST: ${{ secrets.LIMA_SFTP_HOST }}
         SFTP_USERNAME: ${{ secrets.LIMA_SFTP_USERNAME }}
       run: |
-        ssh -v eweedy@eweedy.lima-ssh.de "echo Connection Successful"
+        ssh eweedy@eweedy.lima-ssh.de "echo -------- Connection Successful --------"
 
     - name: Upload files via SSH
       env:
         SFTP_HOST: ${{ secrets.LIMA_SFTP_HOST }}
         SFTP_USERNAME: ${{ secrets.LIMA_SFTP_USERNAME }}
       run: |
-        rsync -e "ssh -v" -r --delete-after --quiet $GITHUB_WORKSPACE/src/ $SFTP_USERNAME@$SFTP_HOST:oe-app/
+        rsync -r --delete-after --quiet $GITHUB_WORKSPACE/src/ $SFTP_USERNAME@$SFTP_HOST:oe-app/
 
     - name: Upload .env file
       env:
         SFTP_HOST: ${{ secrets.LIMA_SFTP_HOST }}
         SFTP_USERNAME: ${{ secrets.LIMA_SFTP_USERNAME }}
-        ENV_VARIABLES: ${{ secrets.LIMA_ENV_VARIABLES }}
+        ENV_VARIABLES: ${{ secrets.ENV_VARIABLES }}
       run: |
         echo "$ENV_VARIABLES" | ssh $SFTP_USERNAME@$SFTP_HOST 'cat > oe-app/.env'
 
@@ -59,6 +54,7 @@ jobs:
         ssh $SFTP_USERNAME@$SFTP_HOST << 'EOF'
         cd oe-app
         composer install --no-interaction --prefer-dist --optimize-autoloader
+        npm install
         npm run build
         php artisan migrate --force
         php artisan config:cache
