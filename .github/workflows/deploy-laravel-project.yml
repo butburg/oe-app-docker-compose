@@ -24,13 +24,20 @@ jobs:
         mkdir -p ~/.ssh
         echo "$SFTP_HOST ssh-rsa c6:e6:76:98:23:31:2c:b7:ca:1a:15:47:96:91:86:54" >> ~/.ssh/known_hosts
         cat ~/.ssh/known_hosts
+    
+    - name: Test SSH connection
+      env:
+        SFTP_HOST: ${{ secrets.SFTP_HOST }}
+        SFTP_USERNAME: ${{ secrets.SFTP_USERNAME }}
+      run: |
+        ssh -v $SFTP_USERNAME@$SFTP_HOST "echo Connection Successful"
 
     - name: Upload files via SSH
       env:
         SFTP_HOST: ${{ secrets.LIMA_SFTP_HOST }}
         SFTP_USERNAME: ${{ secrets.LIMA_SFTP_USERNAME }}
       run: |
-        rsync -r --delete-after --quiet $GITHUB_WORKSPACE/src/ $SFTP_USERNAME@$SFTP_HOST:oe-app/
+        rsync -e "ssh -v" -r --delete-after --quiet $GITHUB_WORKSPACE/src/ $SFTP_USERNAME@$SFTP_HOST:oe-app/
 
     - name: Upload .env file
       env:
