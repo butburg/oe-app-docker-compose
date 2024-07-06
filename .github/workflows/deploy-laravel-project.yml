@@ -17,27 +17,27 @@ jobs:
     - name: Setup SSH
       uses: webfactory/ssh-agent@v0.5.3
       with:
-        ssh-private-key: ${{ secrets.LIMA-SSH_PRIVATE_KEY }}
+        ssh-private-key: ${{ secrets.LIMA_SSH_PRIVATE_KEY }}
 
     - name: Upload files via SSH
       env:
-        SFTP_HOST: ${{ secrets.LIMA-SFTP_HOST }}
-        SFTP_USERNAME: ${{ secrets.LIMA-SFTP_USERNAME }}
+        SFTP_HOST: ${{ secrets.LIMA_SFTP_HOST }}
+        SFTP_USERNAME: ${{ secrets.LIMA_SFTP_USERNAME }}
       run: |
         rsync -r --delete-after --quiet $GITHUB_WORKSPACE/src/ $SFTP_USERNAME@$SFTP_HOST:oe-app/
 
     - name: Upload .env file
       env:
-        SFTP_HOST: ${{ secrets.LIMA-SFTP_HOST }}
-        SFTP_USERNAME: ${{ secrets.LIMA-SFTP_USERNAME }}
-        ENV_VARIABLES: ${{ secrets.LIMA-ENV_VARIABLES }}
+        SFTP_HOST: ${{ secrets.LIMA_SFTP_HOST }}
+        SFTP_USERNAME: ${{ secrets.LIMA_SFTP_USERNAME }}
+        ENV_VARIABLES: ${{ secrets.LIMA_ENV_VARIABLES }}
       run: |
         echo "$ENV_VARIABLES" | ssh $SFTP_USERNAME@$SFTP_HOST 'cat > oe-app/.env'
 
     - name: Run remote SSH commands
       env:
-        SFTP_HOST: ${{ secrets.LIMA-SFTP_HOST }}
-        SFTP_USERNAME: ${{ secrets.LIMA-SFTP_USERNAME }}
+        SFTP_HOST: ${{ secrets.LIMA_SFTP_HOST }}
+        SFTP_USERNAME: ${{ secrets.LIMA_SFTP_USERNAME }}
       run: |
         ssh $SFTP_USERNAME@$SFTP_HOST << 'EOF'
         cd oe-app
