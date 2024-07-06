@@ -27,13 +27,13 @@ jobs:
     
     - name: Verify environment variables
       run: |
-        echo "SFTP_HOST=${{ secrets.SFTP_HOST }}"
-        echo "SFTP_USERNAME=${{ secrets.SFTP_USERNAME }}"
+        echo "SFTP_HOST=${{ secrets.LIMA_SFTP_HOST }}"
+        echo "SFTP_USERNAME=${{ secrets.LIMA_SFTP_USERNAME }}"
     
     - name: Test SSH connection
       env:
-        SFTP_HOST: ${{ secrets.SFTP_HOST }}
-        SFTP_USERNAME: ${{ secrets.SFTP_USERNAME }}
+        SFTP_HOST: ${{ secrets.LIMA_SFTP_HOST }}
+        SFTP_USERNAME: ${{ secrets.LIMA_SFTP_USERNAME }}
       run: |
         ssh -v $SFTP_USERNAME@$SFTP_HOST "echo Connection Successful"
 
