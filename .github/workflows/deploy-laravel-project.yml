@@ -19,6 +19,12 @@ jobs:
       with:
         ssh-private-key: ${{ secrets.LIMA_SSH_PRIVATE_KEY }}
 
+    - name: Add SSH key to known_hosts
+      run: |
+        mkdir -p ~/.ssh
+        echo "$SFTP_HOST ssh-rsa c6:e6:76:98:23:31:2c:b7:ca:1a:15:47:96:91:86:54" >> ~/.ssh/known_hosts
+        cat ~/.ssh/known_hosts
+
     - name: Upload files via SSH
       env:
         SFTP_HOST: ${{ secrets.LIMA_SFTP_HOST }}
