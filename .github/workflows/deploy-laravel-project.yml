@@ -31,13 +31,23 @@ jobs:
       run: |
         ssh $SFTP_USERNAME@$SFTP_HOST "echo -------- Connection Successful --------"
 
+        
     - name: Upload files via SSH
       env:
         SFTP_HOST: ${{ secrets.LIMA_SFTP_HOST }}
         SFTP_USERNAME: ${{ secrets.LIMA_SFTP_USERNAME }}
       run: |
-        rsync -r --delete-after --quiet --exclude 'database/database.sqlite' $GITHUB_WORKSPACE/src/ $SFTP_USERNAME@$SFTP_HOST:oe-app/
-
+        rsync -r --delete-after --quiet \
+          --exclude 'vendor/' \
+          --exclude 'node_modules/' \
+          --exclude 'storage/' \
+          --exclude '.env' \
+          --exclude 'bootstrap/cache/' \
+          --exclude 'public/css/' \
+          --exclude 'public/js/' \
+          --exclude 'database/database.sqlite' \
+          $GITHUB_WORKSPACE/src/ $SFTP_USERNAME@$SFTP_HOST:oe-app/        
+      
     - name: Upload .env file
       env:
         SFTP_HOST: ${{ secrets.LIMA_SFTP_HOST }}
