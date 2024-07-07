@@ -36,8 +36,8 @@
                         :formId="'commentDelete_' . $comment->id">
                     </x-gallery.form.form>
                     <div class="mt-1 flex items-center space-x-3">
-                        <x-text-button :formId="'commentDelete_' . $comment->id">Delete</x-text-button>
-                        <x-text-button :formId="'commentUpdate_' . $comment->id">Update</x-text-button>
+                        <x-text-button :formId="'commentDelete_' . $comment->id" class="rounded p-2 text-c-text hover:bg-c-secondary/70 hover:underline bg-c-secondary/50">Delete</x-text-button>
+                        <x-text-button :formId="'commentUpdate_' . $comment->id" class="rounded p-2 text-c-text hover:bg-c-accent/70 hover:underline bg-c-accent/50">Update</x-text-button>
                     </div>
                 </div>
 
