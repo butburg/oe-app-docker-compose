@@ -28,5 +28,10 @@ export default defineConfig(({ mode }) => {
                 refresh: true,
             }),
         ],
+        build: {
+            outDir: resolve(__dirname, 'public'),
+            assetsDir: 'assets', // Ensure this matches your desired output directory
+            manifest: true, // Generate manifest.json for module resolution
+          },
     })
 });
