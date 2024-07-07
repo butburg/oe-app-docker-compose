@@ -126,8 +126,9 @@ class PostController extends Controller
             if (isset($post->image_file)) {
                 Storage::disk('public')->delete($post->image_file);
             }
+            
+            $filePath = $action->handle($request, 'image_file', 'files/posts/images/');
 
-            $filePath = $action->handle($request);
 
             // Add the filepath to validated data
             $validated['image_file'] = $filePath;
