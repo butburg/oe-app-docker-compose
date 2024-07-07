@@ -1,6 +1,6 @@
 import { defineConfig, loadEnv } from 'vite';
 import laravel from 'laravel-vite-plugin';
-
+import { resolve } from 'path';
 
 
 export default defineConfig(({ mode }) => {
@@ -29,8 +29,8 @@ export default defineConfig(({ mode }) => {
             }),
         ],
         build: {
-            outDir: resolve(__dirname, 'public'),
-            assetsDir: 'assets', // Ensure this matches your desired output directory
+            outDir: resolve(__dirname, 'public', 'assets'), // Adjust the output directory
+            //assetsDir: 'assets', // Ensure this matches your desired output directory
             manifest: true, // Generate manifest.json for module resolution
           },
     })
