@@ -29,7 +29,7 @@ jobs:
         SFTP_HOST: ${{ secrets.LIMA_SFTP_HOST }}
         SFTP_USERNAME: ${{ secrets.LIMA_SFTP_USERNAME }}
       run: |
-        ssh eweedy@eweedy.lima-ssh.de "echo -------- Connection Successful --------"
+        ssh $SFTP_USERNAME@$SFTP_HOST "echo -------- Connection Successful --------"
 
     - name: Upload files via SSH
       env:
