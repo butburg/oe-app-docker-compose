@@ -17,7 +17,7 @@ services:
       - php
       - npm
       #- redis
-      #- mysql
+      - mysql
       #- mailhog
     networks:
       - laravel
