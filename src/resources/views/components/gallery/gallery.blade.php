@@ -1,6 +1,6 @@
 <div class="mx-auto py-6">
     <div class="{{-- grid grid-cols-1 lg:grid-cols-2 gap-4 --}}">
-        @foreach ($images->reverse() as $image)
+        @foreach ($images->sortByDesc('created_at') as $image)
             <div x-data="{ showComments: false }">
                 <main class="md:x-8 mx-1 mb-4 rounded-lg bg-c-primary/10 px-2 py-6 sm:mb-6 sm:px-6 md:mb-10">
                     <div class="mx-auto grid grid-cols-1 md:grid-cols-3 md:gap-x-10">
