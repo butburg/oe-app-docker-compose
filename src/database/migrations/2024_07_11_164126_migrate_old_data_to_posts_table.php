@@ -40,7 +40,7 @@ return new class extends Migration
 
             // Construct the new filename with extension
             $newFilename = pathinfo($oldPost->filename, PATHINFO_FILENAME);
-            $imagePath = 'files/posts/images/' . $newFilename . '.' . $extension; // Adjust path as needed
+            $imagePath = 'files/posts/images_legacy/' . $newFilename . '.' . $extension; // Adjust path as needed
 
             // Insert into new 'posts' table
             DB::table('posts')->insert([
@@ -50,7 +50,7 @@ return new class extends Migration
                 'is_sensitive' => false, // Adjust as needed
                 'created_at' => $oldPost->date,
                 'updated_at' => now(),
-                'user_id' => null, // Adjust as needed
+                'user_id' => 1, // Adjust as needed
                 'username' => $oldPost->user,
             ]);
         }
