@@ -19,12 +19,20 @@ class PostController extends Controller
      */
     public function index()
     {
-        $user = Auth::user()->name;
+        $user_id = Auth::user()->id;
 
         // Retrieve published and draft posts from the database and pass them to the view
         return response()->view('posts.index', [
-            'draftPosts' => Post::where('username', $user)->where('is_published', false)->orderBy('updated_at', 'desc')->get(),
-            'publishedPosts' => Post::where('username', $user)->where('is_published', true)->orderBy('updated_at', 'desc')->get(),
+            'draftPosts' => Post::whereNotNull('user_id')
+                ->where('user_id', $user_id)
+                ->where('is_published', false)
+                ->orderBy('updated_at', 'desc')
+                ->paginate(10),
+            'publishedPosts' => Post::whereNotNull('user_id')
+                ->where('user_id', $user_id)
+                ->where('is_published', true)
+                ->orderBy('updated_at', 'desc')
+                ->paginate(10),
         ]);
     }
 
@@ -35,7 +43,7 @@ class PostController extends Controller
     {
         $images = Post::where('is_published', true)
             ->orderBy('created_at', 'desc')
-            ->paginate(5);
+            ->paginate(10);
         return view('welcome', compact('images'));
     }
 
@@ -104,7 +112,7 @@ class PostController extends Controller
         $post = Post::findOrFail($id);
 
         // Check if the authenticated user owns the post
-        if ($post->username !== Auth::user()->name) {
+        if ($post->user_id !== Auth::user()->id) {
             return abort(403, 'Unauthorized action.');
         }
 
@@ -123,7 +131,7 @@ class PostController extends Controller
         $post = Post::findOrFail($id);
 
         // Check if the authenticated user owns the post
-        if ($post->username !== Auth::user()->name) {
+        if ($post->user_id !== Auth::user()->id) {
             return abort(403, 'Unauthorized action.');
         }
 
@@ -165,7 +173,7 @@ class PostController extends Controller
         $post = Post::findOrFail($id);
 
         // Check if the authenticated user owns the post
-        if ($post->username !== Auth::user()->name) {
+        if ($post->user_id !== Auth::user()->id) {
             return abort(403, 'Unauthorized action.');
         }
 
@@ -195,7 +203,7 @@ class PostController extends Controller
         $post = Post::findOrFail($id);
 
         // Check if the authenticated user owns the post
-        if ($post->username !== Auth::user()->name) {
+        if ($post->user_id !== Auth::user()->id) {
             return abort(403, 'Unauthorized action.');
         }
 
@@ -219,7 +227,7 @@ class PostController extends Controller
         $post = Post::findOrFail($id);
 
         // Check if the authenticated user owns the post
-        if ($post->username !== Auth::user()->name) {
+        if ($post->user_id !== Auth::user()->id) {
             return abort(403, 'Unauthorized action.');
         }
 

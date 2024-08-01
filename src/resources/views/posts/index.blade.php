@@ -18,6 +18,10 @@
                 <div class="p-6">
                     <!-- Title for draft posts -->
                     <h3 class="mb-4 text-lg font-semibold leading-tight">Not yet published</h3>
+                    <!-- Pagination links -->
+                    <div class="mt-4">
+                        {{ $draftPosts->links() }}
+                    </div>
                     <!-- Table to display draft posts -->
                     <table class="w-full table-auto border-collapse text-sm">
                         <thead>
@@ -49,7 +53,8 @@
                                         <!-- Display info file if exists -->
                                         @isset($post->image_file)
                                             <span>
-                                                <small> | <a href="{{ Storage::url($post->image_file) }}" class="hover:underline">Open
+                                                <small> | <a class="hover:underline"
+                                                        href="{{ Storage::url($post->image_file) }}">Open
                                                         File</a></small>
                                             </span>
                                         @endisset
@@ -96,6 +101,11 @@
                 <div class="p-6">
                     <!-- Title for published posts -->
                     <h3 class="mb-4 text-lg font-semibold leading-tight">Published</h3>
+                    <!-- Pagination links -->
+                    <div class="mt-4">
+                        <!-- Pagination links -->
+                        {{ $publishedPosts->links() }}
+                    </div>
                     <!-- Table to display published posts -->
                     <table class="w-full table-auto border-collapse text-sm">
                         <thead>
@@ -124,7 +134,8 @@
                                         <!-- Display info file if exists -->
                                         @isset($post->image_file)
                                             <span>
-                                                <small> | <a href="{{ Storage::url($post->image_file) }}" class="hover:underline">Open
+                                                <small> | <a class="hover:underline"
+                                                        href="{{ Storage::url($post->image_file) }}">Open
                                                         File</a></small>
                                             </span>
                                         @endisset
