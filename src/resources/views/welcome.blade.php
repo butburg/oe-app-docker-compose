@@ -10,12 +10,13 @@
     </x-slot>
     <div class="bg-c-background text-c-text">
         <div class="mx-auto max-w-screen-2xl sm:px-6 lg:px-8">
-            <!-- Include the Gallery Component -->
-            @php
-                $images = App\Models\Post::where('is_published', true)->get();
-            @endphp
             <x-gallery.gallery :images="$images" />
+            <!-- Pagination links -->
+            <div class="mt-4">
+                {{ $images->links() }}
+            </div>
         </div>
+
     </div>
     <footer class="text-content-text py-16 text-center text-sm">
         Laravel v{{ Illuminate\Foundation\Application::VERSION }} (PHP v{{ PHP_VERSION }})

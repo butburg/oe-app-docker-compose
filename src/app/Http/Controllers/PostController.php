@@ -19,7 +19,6 @@ class PostController extends Controller
      */
     public function index()
     {
-
         $user = Auth::user()->name;
 
         // Retrieve published and draft posts from the database and pass them to the view
@@ -27,6 +26,17 @@ class PostController extends Controller
             'draftPosts' => Post::where('username', $user)->where('is_published', false)->orderBy('updated_at', 'desc')->get(),
             'publishedPosts' => Post::where('username', $user)->where('is_published', true)->orderBy('updated_at', 'desc')->get(),
         ]);
+    }
+
+    /**
+     * Display the gallery with pagination.
+     */
+    public function gallery(Request $request)
+    {
+        $images = Post::where('is_published', true)
+            ->orderBy('created_at', 'desc')
+            ->paginate(5);
+        return view('welcome', compact('images'));
     }
 
     /**
@@ -48,7 +58,7 @@ class PostController extends Controller
 
         // If an info file is uploaded, update the file path and delete the old file if exists
         if ($request->hasFile('image_file')) {
-           
+
             $filePath = $action->handle($request, 'image_file', 'files/posts/images/');
 
             // Add the filepath to validated data
@@ -126,7 +136,7 @@ class PostController extends Controller
             if (isset($post->image_file)) {
                 Storage::disk('public')->delete($post->image_file);
             }
-            
+
             $filePath = $action->handle($request, 'image_file', 'files/posts/images/');
 
 
