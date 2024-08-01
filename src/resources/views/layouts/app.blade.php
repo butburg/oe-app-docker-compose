@@ -18,6 +18,8 @@
     <link type="image/png" href="{{ asset('favicons/favicon-16x16.png') }}" rel="icon" sizes="16x16">
     <link type="image/png" href="{{ asset('favicons/favicon-32x32.png') }}" rel="icon" sizes="32x32">
     <link href="{{ asset('favicons/site.webmanifest') }}" rel="manifest">
+    <meta name="msapplication-TileColor" content="#032226">
+    <meta name="theme-color" content="#032226">
 
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])

@@ -1,19 +1,19 @@
 {
-    "name": "Oh Eweedy - Gallery",
-    "short_name": "OE",
+    "name": "Weedy Gallery",
+    "short_name": "Weedy G",
     "icons": [
-       {
-          "src": "android-chrome-192x192.png",
-          "sizes": "192x192",
-          "type": "image/png"
-       },
-       {
-        "src": "android-chrome-512x512.png",
-        "sizes": "512x512",
-        "type": "image/png"
+        {
+            "src": "/android-chrome-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "/android-chrome-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png"
         }
     ],
-    "theme_color": "#00D9FF",
+    "theme_color": "#032226",
     "background_color": "#032226",
     "display": "standalone"
- }
+}
