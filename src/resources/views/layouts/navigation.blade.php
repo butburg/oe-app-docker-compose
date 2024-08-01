@@ -4,23 +4,29 @@
         <div class="flex h-16 justify-between">
             {{-- Left navigation side --}}
             <div class="flex">
-                <!-- Logo -->
-                <div class="flex shrink-0 items-center">
-                    <a href="{{ route('dashboard') }}">
-                        <x-application-logo class="block h-9 w-auto fill-current text-c-primary" />
-                    </a>
-                </div>
                 @auth
+                    <!-- Logo -->
+                    <div class="flex shrink-0 items-center">
+                        <a href="{{ route('dashboard') }}">
+                            <x-application-logo class="h-14" />
+                        </a>
+                    </div>
                     {{-- left nav links logged in --}}
                     <div class="mx-5 flex space-x-8 sm:-my-px">
                         <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                            {{ __('Oh Gallery') }}
+                            {{ config('app.name', 'Start') }}
                         </x-nav-link>
                         <x-nav-link :href="route('posts.index')" :active="request()->routeIs('posts.index')">
                             {{ 'My Images' }}
                         </x-nav-link>
                     </div>
                 @else
+                    <!-- Logo -->
+                    <div class="flex shrink-0 items-center">
+                        <a href="{{ route('welcome') }}">
+                            <x-application-logo class="h-14 " />
+                        </a>
+                    </div>
                     {{-- left nav links logged out --}}
                     <div class="mx-5 flex space-x-8 sm:-my-px">
                         <x-nav-link :href="route('login')" :active="request()->routeIs('login')">
@@ -38,7 +44,7 @@
             @auth
                 <!-- Hamburger for small screen -->
                 <div class="ms-6 flex items-center sm:hidden">
-                    <x-dropdown align="right" width="48"  contentClasses="py-1 bg-c-primary">
+                    <x-dropdown align="right" width="48" contentClasses="py-1 bg-c-primary">
                         <x-slot name="trigger">
                             <button
                                 class="inline-flex items-center justify-center rounded-md p-2 text-c-text transition duration-150 ease-in-out hover:bg-c-background hover:text-gray-500 focus:bg-gray-100 focus:text-gray-500 focus:outline-none">

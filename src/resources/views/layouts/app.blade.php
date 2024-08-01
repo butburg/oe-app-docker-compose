@@ -35,13 +35,7 @@
                 <div class="mx-auto max-w-screen-2xl px-4 py-3 shadow sm:px-6 lg:px-8">
                     {{ $header }}
 
-                    {{-- check if there is a notif.success flash session --}}
-                    @if (Session::has('notif.success'))
-                        <div class="mt-2 rounded-lg bg-blue-300 p-4">
-                            {{-- if it's there then print the notification --}}
-                            <span class="text-white">{{ Session::get('notif.success') }}</span>
-                        </div>
-                    @endif
+                    
 
                 </div>
             </header>
