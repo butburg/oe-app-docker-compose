@@ -8,19 +8,15 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\AdminController;
 use App\Http\Middleware\Admin;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [PostController::class, 'gallery'])->name('welcome');
 
-Route::get('/dashboard', function () {
-    return view('welcome');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [PostController::class, 'gallery'])->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::get('/send-test-email', [TestMailController::class, 'sendTestEmail']);
 
 Route::middleware('auth', 'verified')->group(function () {
     // Routes here are accessible to authenticated users only!!
-    
+
     Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard')->middleware(Admin::class);
 
     // Profiles
@@ -34,7 +30,7 @@ Route::middleware('auth', 'verified')->group(function () {
     // Posts
     Route::get('/posts/{post}/publish', [PostController::class, 'publish'])->name('posts.publish');
     Route::get('/posts/{post}/make-draft', [PostController::class, 'makedraft'])->name('posts.make-draft');
-    
+
     // Resources route because it contains exact routes we need for a typical CRUD.
     Route::resources([
         'posts' => PostController::class,
