@@ -45,22 +45,21 @@
 
                                     <!-- Display post details -->
                                     <td class="dark:400 border-b border-slate-100 p-4 pl-8 dark:border-slate-700">
-
                                         <!-- Post content -->
                                         <span>
                                             {{ $post->title }}
                                         </span>
-                                        <!-- Display info file if exists -->
-                                        @isset($post->image_file)
-                                            <span>
-                                                <small> | <a class="hover:underline"
-                                                        href="{{ Storage::url($post->image_file) }}">Open
-                                                        File</a></small>
-                                            </span>
-                                        @endisset
+                                        <!-- Display create time -->
+                                        <span>
+                                            <small> | Created {{ $post->created_at->diffForHumans() }}</small>
+                                        </span>
                                         <!-- Display last update time -->
                                         <span>
-                                            <small>{{ ' | ' . $post->updated_at->diffForHumans() }}</small>
+                                            <small> | Update {{ $post->updated_at->diffForHumans() }}</small>
+                                        </span>
+                                        <!-- Number of comments  --> 
+                                        <span>
+                                            <small> | Comments: {{ $post->comments->count() }}</small>
                                         </span>
                                     </td>
                                     <!-- Actions for the post -->
@@ -122,8 +121,10 @@
                                 <tr>
                                     <td class="py-4">
                                         <!-- Post Image -->
-                                        <img class="h-24 w-24 rounded-full object-cover"
-                                            src="{{ asset('storage/' . $post->image_file) }}">
+                                        <a class="hover:underline" href="{{ Storage::url($post->image_file) }}">
+                                            <img class="h-24 w-24 rounded-full object-cover"
+                                                src="{{ asset('storage/' . $post->image_file) }}">
+                                        </a>
                                     </td>
                                     <td
                                         class="dark:400 items-center justify-center border-b border-slate-100 p-4 pl-8 dark:border-slate-700">
@@ -131,17 +132,17 @@
                                         <span>
                                             {{ $post->title }}
                                         </span>
-                                        <!-- Display info file if exists -->
-                                        @isset($post->image_file)
-                                            <span>
-                                                <small> | <a class="hover:underline"
-                                                        href="{{ Storage::url($post->image_file) }}">Open
-                                                        File</a></small>
-                                            </span>
-                                        @endisset
+                                        <!-- Display create time -->
+                                        <span>
+                                            <small> | Created {{ $post->created_at->diffForHumans() }}</small>
+                                        </span>
                                         <!-- Display last update time -->
                                         <span>
-                                            <small>{{ ' | ' . $post->updated_at->diffForHumans() }}</small>
+                                            <small> | Update {{ $post->updated_at->diffForHumans() }}</small>
+                                        </span>
+                                        <!-- Number of comments  --> 
+                                        <span>
+                                            <small> | Comments: {{ $post->comments->count() }}</small>
                                         </span>
                                     </td>
                                     <td

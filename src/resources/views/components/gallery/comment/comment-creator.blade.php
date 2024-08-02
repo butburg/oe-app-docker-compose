@@ -8,7 +8,7 @@
 
 <div class="flex-grow text-sm font-semibold text-title-text">
     {{ Auth::id() === $comment->user_id ? 'You' : $comment->user->name }}
-    <p class="text-xs ">
+    <p class="text-xs" title="Last update {{ $comment->updated_at->diffForHumans() }}">
         {{ $comment->created_at->diffInHours() < 24 ? $comment->created_at->diffForHumans() : $comment->created_at->format('M d, Y') }}
     </p>
 </div>
