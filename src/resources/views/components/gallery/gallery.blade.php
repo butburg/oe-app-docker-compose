@@ -17,8 +17,8 @@
                                 <h1 class="text-content-bg mt-1 text-lg font-semibold md:text-2xl">
                                     {{ $image->title }}
                                 </h1>
-                                <p class="text-xs font-medium leading-4">Last updated
-                                    {{ $image->updated_at->diffForHumans() }}</p>
+                                <p class="text-xs font-medium leading-4" title="Last update {{ $image->updated_at->diffForHumans() }}"> 
+                                    {{ $image->created_at->diffForHumans() }}</p>
                             </div>
                             <div class="text-title-bg mt-4 max-h-64 space-y-4 overflow-auto px-3 text-sm leading-6 sm:px-0 md:max-h-[420px] md:flex-grow"
                                 x-show="showComments || window.innerWidth >= 768" @click.away="showComments = false">
