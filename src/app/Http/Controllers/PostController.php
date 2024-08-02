@@ -79,6 +79,12 @@ class PostController extends Controller
         // Add the username to validated data
         $validated['username'] = $username;
 
+        // Get the authenticated user's username
+        $user_id = Auth::user()->id;
+
+        // Add the username to validated data
+        $validated['user_id'] = $user_id;
+
         #dd($validated);
         // Create a new post with the validated data
         $create = Post::create($validated);

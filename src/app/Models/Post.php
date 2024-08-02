@@ -14,6 +14,7 @@ class Post extends Model
         'title',
         'image_file',
         'username',
+        'user_id',
         'is_published',
         'is_sensitive',
     ];

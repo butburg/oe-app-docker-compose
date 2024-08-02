@@ -35,7 +35,7 @@
                         </thead>
                         <tbody class="text-gray-100">
                             {{-- Loop through draft posts --}}
-                            @forelse ($draftPosts as $post)
+                            @forelse ($draftPosts->sortByDesc('created_at') as $post)
                                 <tr>
                                     <td class="dark:400 border-b border-slate-100 py-4 dark:border-slate-700">
                                         <!-- Post Image -->
@@ -57,7 +57,7 @@
                                         <span>
                                             <small> | Update {{ $post->updated_at->diffForHumans() }}</small>
                                         </span>
-                                        <!-- Number of comments  --> 
+                                        <!-- Number of comments  -->
                                         <span>
                                             <small> | Comments: {{ $post->comments->count() }}</small>
                                         </span>
@@ -77,7 +77,9 @@
                                             @method('delete')
                                             <button
                                                 class="relative top-[1px] h-[35px] rounded-md border border-red-500 px-4 py-2 hover:bg-red-500 hover:text-white"
-                                                type="submit">DELETE</button>
+                                                type="submit"
+                                                onclick="return confirm('Are you sure you want to delete this post?')">
+                                                DELETE</button>
                                         </form>
                                     </td>
                                 </tr>
@@ -117,7 +119,7 @@
                         </thead>
                         <tbody class="text-gray-100">
                             {{-- populate our published post data --}}
-                            @forelse ($publishedPosts as $post)
+                            @forelse ($publishedPosts->sortByDesc('created_at') as $post)
                                 <tr>
                                     <td class="py-4">
                                         <!-- Post Image -->
@@ -140,7 +142,7 @@
                                         <span>
                                             <small> | Update {{ $post->updated_at->diffForHumans() }}</small>
                                         </span>
-                                        <!-- Number of comments  --> 
+                                        <!-- Number of comments  -->
                                         <span>
                                             <small> | Comments: {{ $post->comments->count() }}</small>
                                         </span>
