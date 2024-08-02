@@ -7,7 +7,7 @@
             <!-- Title for the page -->
             <x-header2>Posts</x-header2>
             <!-- Link to add a new post -->
-            <a class="-my-3 rounded-md bg-c-accent/80 px-4 py-2 text-c-background hover:bg-c-accent"
+            <a class="-my-3 rounded-lg border-2 border-c-accent/80 bg-c-accent/80 px-3 py-1 text-c-background hover:bg-c-accent active:border-c-primary"
                 href="{{ route('posts.create') }}">Create</a>
         </div>
     </x-slot>

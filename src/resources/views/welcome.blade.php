@@ -8,12 +8,12 @@
             @if (Session::has('notif.success'))
                 <div class="-my-3 rounded-lg bg-blue-300 px-4 py-2">
                     {{-- if it's there then print the notification --}}
-                    <span class="text-white italic">{{ Session::get('notif.success') }}</span>
+                    <span class="italic text-white">{{ Session::get('notif.success') }}</span>
                 </div>
             @endif
 
             <!-- Link to add a new post -->
-            <a class="-my-3 rounded-lg bg-c-accent/80 px-4 py-2 text-c-background hover:bg-c-accent"
+            <a class="-my-3 rounded-lg border-2 border-c-accent/80 bg-c-accent/80 px-3 py-1 text-c-background hover:bg-c-accent active:border-c-primary"
                 href="{{ route('posts.create') }}">Create</a>
         </div>
     </x-slot>
