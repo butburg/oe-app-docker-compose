@@ -11,7 +11,7 @@ use App\Http\Middleware\Admin;
 Route::get('/', [PostController::class, 'gallery'])->name('welcome');
 
 Route::get('/dashboard', [PostController::class, 'gallery'])->middleware(['auth', 'verified'])->name('dashboard');
-
+Route::view('/impressum', 'impressum')->name('impressum');
 Route::get('/send-test-email', [TestMailController::class, 'sendTestEmail']);
 
 Route::middleware('auth', 'verified')->group(function () {

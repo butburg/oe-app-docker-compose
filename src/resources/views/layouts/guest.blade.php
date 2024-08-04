@@ -41,6 +41,25 @@
             class="m-3 inline-flex items-center rounded-md border border-transparent bg-gray-800 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white transition duration-150 ease-in-out hover:bg-gray-700 focus:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 active:bg-gray-900" />
         @endenv
     </div>
+
+    <footer class="text-content-text py-16 text-center text-sm">
+        <p>
+            <a class="font-medium text-c-primary underline hover:no-underline" href="{{ route('impressum') }}">
+                Impressum & Datenschutz
+            </a>
+        </p>
+        <p class="text-c-primary/30">Laravel v{{ Illuminate\Foundation\Application::VERSION }} (PHP v{{ PHP_VERSION }})
+            @if (app()->environment('local'))
+                <br>
+                Laravel: {{ app()->version() }}<br>
+                PHP {{ PHP_VERSION }}<br>
+                Composer: {{ shell_exec('composer --version | grep -o -E "[0-9]+\.[0-9]+\.[0-9]+"') }}<br>
+                npm: {{ shell_exec('npm --version | grep -o -E "[0-9]+\.[0-9]+\.[0-9]+"') }}<br>
+                Vite: {{ shell_exec('npm show vite version | grep -o -E "[0-9]+\.[0-9]+\.[0-9]+"') }}<br>
+                SQLite: {{ shell_exec('sqlite3 --version | grep -o -E "[0-9]+\.[0-9]+\.[0-9]+"') }}
+            @endif
+        <p>
+    </footer>
 </body>
 
 </html>

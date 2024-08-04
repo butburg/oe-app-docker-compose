@@ -70,7 +70,7 @@
                                     </x-responsive-nav-link>
                                 @endif
                                 <x-responsive-nav-link :href="route('profile.edit')">
-                                    {{ __('Profiles') }}
+                                    {{ __('Profile') }}
                                 </x-responsive-nav-link>
 
                                 <!-- Authentication -->

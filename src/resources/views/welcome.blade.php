@@ -27,16 +27,5 @@
         </div>
 
     </div>
-    <footer class="text-content-text py-16 text-center text-sm">
-        Laravel v{{ Illuminate\Foundation\Application::VERSION }} (PHP v{{ PHP_VERSION }})
-        @if (app()->environment('local'))
-            <br>
-            Laravel: {{ app()->version() }}<br>
-            PHP {{ PHP_VERSION }}<br>
-            Composer: {{ shell_exec('composer --version | grep -o -E "[0-9]+\.[0-9]+\.[0-9]+"') }}<br>
-            npm: {{ shell_exec('npm --version | grep -o -E "[0-9]+\.[0-9]+\.[0-9]+"') }}<br>
-            Vite: {{ shell_exec('npm show vite version | grep -o -E "[0-9]+\.[0-9]+\.[0-9]+"') }}<br>
-            SQLite: {{ shell_exec('sqlite3 --version | grep -o -E "[0-9]+\.[0-9]+\.[0-9]+"') }}
-        @endif
-    </footer>
+
 </x-app-layout>
