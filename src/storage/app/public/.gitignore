@@ -1,2 +1,14 @@
+# Ignore everything in this directory
 *
-!.gitignore
+
+# Except the files directory
+!files/
+
+# Ignore everything in the files directory
+files/*
+
+# Except the images directory
+!files/images/
+
+# Do not ignore files within the images directory
+!files/images/*
