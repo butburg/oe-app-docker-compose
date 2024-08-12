@@ -8,20 +8,17 @@ use Illuminate\Support\Facades\Storage;
 
 class StoreNameImage
 {
-
-    public function handle(FormRequest $request, $fileInputName, $directory, $maxSize = 1400, $quality = 100): String
+    public function handle(FormRequest $request, $fileInputName, $directory, $fileOutputName, $maxSize = 2560, $quality = 100): String
     {
         // Get the uploaded file
         $file = $request->file($fileInputName); //e.g. 'image_file'
 
-        // resize and format the image
+        // resize and format the image as jpeg
         $resizedImage = Image::read($file)
             ->scale($maxSize, $maxSize)->toJpeg(quality: $quality, progressive: true);
 
         // Generate a unique filename
-        $extension = explode('/', $resizedImage->mimetype())[1];
-        $filename = uniqid('resized_' . $maxSize . '_') . '.' . $extension;
-
+        $filename = "resized_{$maxSize}_{$fileOutputName}.jpeg";
 
         // Store the resized image
         $filePath = $directory . $filename; //e.g. 'files/posts/images/'

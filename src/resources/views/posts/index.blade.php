@@ -39,8 +39,10 @@
                                 <tr>
                                     <td class="dark:400 border-b border-slate-100 py-4 dark:border-slate-700">
                                         <!-- Post Image -->
-                                        <img class="h-24 w-24 rounded-full object-cover"
-                                            src="{{ asset('storage/' . $post->image_file) }}">
+                                        <a class="hover:underline" href="{{ Storage::url($post->image_file) }}">
+                                            <img class="h-24 w-24 rounded-full object-cover"
+                                                src="{{ asset('storage/' . $post->image_file) }}">
+                                        </a>
                                     </td>
 
                                     <!-- Display post details -->
