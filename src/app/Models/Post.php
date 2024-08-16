@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class Post extends Model
 {
     use HasFactory;
-
     // which fields can be mass-assigned
     protected $fillable = [
         'user_id',
@@ -19,19 +18,16 @@ class Post extends Model
         'once_published',
         'is_sensitive',
     ];
-
     // Define the relationship with User
     public function user()
     {
         return $this->belongsTo(User::class);
     }
-
     // Define the relationship with Image
     public function images()
     {
         return $this->hasOne(Image::class);
     }
-
     public function comments()
     {
         return $this->hasMany(Comment::class);
