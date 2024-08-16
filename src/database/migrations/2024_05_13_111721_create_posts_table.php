@@ -15,31 +15,21 @@ return new class extends Migration
         Schema::create('posts', function (Blueprint $table) {
             // Primary key 'id' field auto-incremented
             $table->id();
-
             // 'title' column to store the image title
             $table->string('title');
-
-            // 'image_file' column to store information about attached files
-            $table->string('image_file');
-
             // to store, if the post should be visible and published in gallery or only for the uploader
             $table->boolean('is_published')->default(false);
-
+            $table->boolean('once_published')->default(false);
             // to store, if the impage from post contains faces or other content, that sould only available to logged in users
             $table->boolean('is_sensitive')->default(false);
-
             // 'created_at' and 'updated_at' columns to store timestamps of creation and updates
             $table->timestamps();
-
-            // Add user_id column and make it nullable to handle cases where the user is deleted
-            $table->unsignedBigInteger('user_id')->nullable();
-            
             // Store the username to keep track of the uploader even after user deletion
-            $table->string('username');
-
-            // Define the foreign key constraint without cascading on delete
-            $table->foreign('user_id')->references('id')->on('users')->nullOnDelete();
-
+            //$table->string('username');
+            // Add user_id column, make it nullable, and define the foreign key constraint
+            $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('set null');
+            // 'image_id' column to store information about image references
+            $table->foreignId('image_id')->nullable()->constrained('images')->onDelete('cascade');
         });
     }
 

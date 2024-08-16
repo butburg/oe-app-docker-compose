@@ -45,13 +45,13 @@ return new class extends Migration
             // Insert into new 'posts' table
             DB::table('posts')->insert([
                 'title' => $newFilename,
-                'image_file' => $imagePath,
+                // TODO 'image_file' => $imagePath, removed for image variants
                 'is_published' => true, // Assuming all are published
                 'is_sensitive' => false, // Adjust as needed
                 'created_at' => $oldPost->date,
                 'updated_at' => now(),
-                'user_id' => 1, // Adjust as needed
-                'username' => $oldPost->user,
+                'user_id' => NULL, // Adjust as needed
+                //'username' => $oldPost->user,
             ]);
         }
     }
