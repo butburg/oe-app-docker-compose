@@ -2,13 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use App\Actions\StoreNameImage;
+use App\Actions\StoreImage;
+use App\Actions\CreateImageVariants;
+use App\Enums\ImageSizeType;
+
 use App\Http\Requests\Post\StoreRequest; // Importing the StoreRequest form request
 use App\Http\Requests\Post\UpdateRequest; // Importing the UpdateRequest form request
-use App\Models\Post; // Importing the Post model
-use Illuminate\Contracts\View\View;
-use Illuminate\Http\RedirectResponse;
+
 use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
+
+use App\Models\Post; // Importing the Post model
+use App\Models\Image;
+use App\Models\ImageVariant;
+
+use Illuminate\Contracts\View\View;
+
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Auth;
 
@@ -65,24 +74,39 @@ class PostController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreRequest $request, StoreNameImage $action): RedirectResponse
+    public function store(StoreRequest $request, CreateImageVariants $createImageVariants): RedirectResponse
     {
         // Validate the incoming request
         $validated = $request->validated();
+
+        // Remove the image file from the validated data
+        $imageFile = $validated['image_file'];
+        unset($validated['image_file']);
 
         // Add the user who uploads the image to validated data
         $validated['user_id'] = Auth::id();
         $validated['username'] = Auth::user()->name;
 
-        // generate unique id for all image versions
-        // save the image and its thumbnails
-        // Add the filepath to validated data
-        $imageNameId = uniqid();
-        $filePath = $this->saveImageSizes($request, $action, $imageNameId);
-        $validated['image_file'] = $filePath;
+        // Create the post
+        $post = Post::create($validated);
 
-        // Create a new post with the validated data
-        if (Post::create($validated)) {
+        // Create the image in database and reference image with post
+        // Is implement for adding more than one image or more metadata later
+        $image = Image::create([
+            'post_id' => $post->id
+        ]);
+
+        // Define the desired (wanted) image sizes
+        $desiredSizes = [
+            ImageSizeType::MEDIUM->value,
+            ImageSizeType::LARGE->value,
+            ImageSizeType::EXTRA_LARGE->value
+        ];
+
+        //save models db and files in storage
+        app(CreateImageVariants::class)->handle($image, $imageFile, $desiredSizes);
+
+        if ($post) {
             // Flash a success notification and redirect to the post index page
             session()->flash('notif.success', 'Post created successfully!');
             return redirect()->route('posts.index');
@@ -118,7 +142,7 @@ class PostController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateRequest $request, string $id, StoreNameImage $action): RedirectResponse
+    public function update(UpdateRequest $request, string $id, StoreImage $action): RedirectResponse
     {
         // Find the post with the specified ID
         $post = Post::findOrFail($id);
@@ -130,7 +154,7 @@ class PostController extends Controller
         $validated = $request->validated();
 
         // If an info file is uploaded, update the file path  
-        if ($request->hasFile('image_file')) {
+        /* if ($request->hasFile('image_file')) {
             //extract image id
             $imageNameId = $this->getImageNameId($post->image_file);
 
@@ -142,7 +166,7 @@ class PostController extends Controller
 
             // Add the filepath to validated data
             $validated['image_file'] = $filePath;
-        }
+        } */
 
         // Update the post with the validated data
         if ($post->update($validated)) {
@@ -219,18 +243,36 @@ class PostController extends Controller
         return $matches[1];
     }
 
-    private function saveImageSizes(Request $request, StoreNameImage $action, string $fileOutputName): string
+    private function saveImageSizes(Request $request, StoreImage $action, string $fileOutputName): array
     {
-        // generate "full" (limited by action) image size with 100 quality
-        $filePath = $action->handle($request, 'image_file', self::IMAGE_DIRECTORY, $fileOutputName);
+        $filePaths = [];
 
-        // generate thumbnailversions with lower quality
+        // generate "full" (limited by action) image size with 100 quality
+        $filePaths['original'] = $action->handle($request, 'image_file', self::IMAGE_DIRECTORY, $fileOutputName);
+
+        // Save variants
         foreach ($this->thumbnailSizes as $size) {
-            $action->handle($request, 'image_file', self::IMAGE_DIRECTORY, $fileOutputName, $size, self::IMAGE_QUALITY);
+            $filePaths[$size] = $action->handle($request, 'image_file', self::IMAGE_DIRECTORY, $fileOutputName, $size, $this->getQuality($size));
         }
 
-        return $filePath;
+        return $filePaths;
     }
+
+    private function getSizeType(string $variant): int
+    {
+        // Return a numeric value to represent size types
+        return match ($variant) {
+            'original' => 0,
+            'thumbnail' => 1,
+            'mobile' => 2,
+            'desktop' => 3,
+            default => 0,
+        };
+    }
+
+
+
+
 
     private function deleteOldImages(string $imageNameId): bool
     {

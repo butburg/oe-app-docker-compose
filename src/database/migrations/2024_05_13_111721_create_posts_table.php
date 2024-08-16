@@ -25,7 +25,7 @@ return new class extends Migration
             // 'created_at' and 'updated_at' columns to store timestamps of creation and updates
             $table->timestamps();
             // Store the username to keep track of the uploader even after user deletion
-            //$table->string('username');
+            $table->string('username');
             // Add user_id column, make it nullable, and define the foreign key constraint
             $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('set null');
             // 'image_id' column to store information about image references
