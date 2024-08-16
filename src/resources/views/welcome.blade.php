@@ -19,10 +19,10 @@
     </x-slot>
     <div class="bg-c-background text-c-text">
         <div class="mx-auto max-w-screen-2xl sm:px-6 lg:px-8">
-            <x-gallery.gallery :images="$images" />
+            <x-gallery.gallery :posts="$posts" />
             <!-- Pagination links -->
             <div class="mt-4">
-                {{ $images->links() }}
+                {{ $posts->links() }}
             </div>
         </div>
 

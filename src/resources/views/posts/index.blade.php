@@ -39,9 +39,9 @@
                                 <tr>
                                     <td class="dark:400 border-b border-slate-100 py-4 dark:border-slate-700">
                                         <!-- Post Image -->
-                                        <a class="hover:underline" href="{{ Storage::url($post->image_file) }}">
-                                            <img class="h-24 w-24 rounded-full object-cover"
-                                                src="{{ asset('storage/' . $post->image_file) }}">
+                                        <a class="hover:underline" href="{{ Storage::url($post->images) }}">
+                                            <x-image_or_placeholder style="h-24 w-24 rounded-full object-cover"
+                                                :image="$post->images" size_type="l" />
                                         </a>
                                     </td>
 
@@ -126,8 +126,8 @@
                                     <td class="py-4">
                                         <!-- Post Image -->
                                         <a class="hover:underline" href="{{ Storage::url($post->image_file) }}">
-                                            <img class="h-24 w-24 rounded-full object-cover"
-                                                src="{{ asset('storage/' . $post->image_file) }}">
+                                            <x-image_or_placeholder style="h-24 w-24 rounded-full object-cover"
+                                                :image="$post->images" size_type="l" />
                                         </a>
                                     </td>
                                     <td

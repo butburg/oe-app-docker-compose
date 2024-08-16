@@ -1,16 +1,16 @@
 {{-- Add Comment Form --}}
 @if (Auth::check())
     <div class="flex items-center space-x-1" @click="showComments = true">
-        <x-gallery.form.form action="{{ route('comments.store') }}" method="POST" :formId="'commentAdd_' . $image->id">
-            <input name="post_id" type="hidden" value="{{ $image->id }}">
+        <x-gallery.form.form action="{{ route('comments.store') }}" method="POST" :formId="'commentAdd_' . $post->id">
+            <input name="post_id" type="hidden" value="{{ $post->id }}">
             <x-gallery.form.textarea name="comment" placeholder="Add comment..."></x-gallery.form.textarea>
-            @error('comment', 'commentAdd_' . $image->id)
+            @error('comment', 'commentAdd_' . $post->id)
                 <div class="alert alert-danger">{{ $message }}</div>
             @enderror
         </x-gallery.form.form>
 
         <x-text-button class="rounded-lg border-2 border-c-accent/80 active:border-c-primary  bg-c-accent/80 px-3 py-1 text-c-background hover:bg-c-accent"
-            :formId="'commentAdd_' . $image->id">
+            :formId="'commentAdd_' . $post->id">
             <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path
                     style="stroke-linecap: round; stroke-linejoin: round; paint-order: fill; stroke: rgb(0, 0, 0); fill: rgba(255, 255, 255, 0); fill-rule: nonzero;"

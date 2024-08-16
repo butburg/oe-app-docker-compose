@@ -55,11 +55,11 @@ class PostController extends Controller
      */
     public function gallery(Request $request): View
     {
-        $images = Post::where('is_published', true)
+        $posts = Post::where('is_published', true)
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
-        return view('welcome', compact('images'));
+        return view('welcome', compact('posts'));
     }
 
     /**
@@ -98,6 +98,7 @@ class PostController extends Controller
 
         // Define the desired (wanted) image sizes
         $desiredSizes = [
+            ImageSizeType::SMALL->value,
             ImageSizeType::MEDIUM->value,
             ImageSizeType::LARGE->value,
             ImageSizeType::EXTRA_LARGE->value
