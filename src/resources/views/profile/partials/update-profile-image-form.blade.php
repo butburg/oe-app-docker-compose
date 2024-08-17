@@ -1,6 +1,6 @@
 <section>
     <header>
-        <h2 class="text-lg font-medium text-content-text">
+        <h2 class="text-content-text text-lg font-medium">
             {{ __('Update profile image') }}
         </h2>
 
@@ -17,10 +17,10 @@
         @method('PUT')
 
         {{-- Display existing image if it exists --}}
-        @isset($user->profile_image)
+        @isset($user->image)
             <div class="my-2">
-                <img class="h-80 w-80 rounded-full object-cover" src="{{ asset('storage/' . $user->profile_image) }}"
-                    title="Your Profile Image" alt="Your Profile Image">
+                <x-image_or_placeholder alt_title="Your Profile Image" style="h-80 w-80 rounded-full object-cover"
+                    :image="$user->image" size_type="l" />
             </div>
         @endisset
 

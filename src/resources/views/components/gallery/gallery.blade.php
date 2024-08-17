@@ -7,8 +7,8 @@
                         <!-- Image -->
                         <div class="col-span-3 flex items-center justify-center md:col-span-2"
                             @click="showComments = !showComments">
-                            <x-image_or_placeholder style="max-w-full max-h-[570px] object-contain" :image="$post->images"
-                                size_type="l" />
+                            <x-image_or_placeholder style="max-w-full max-h-[570px] object-contain" :image="$post->image"
+                                :alt_title="$post->title" size_type="l" />
                         </div>
                         <!-- Text and Comments -->
                         <div class="relative col-span-3 flex flex-col pt-3 md:col-span-1 md:pt-0">
