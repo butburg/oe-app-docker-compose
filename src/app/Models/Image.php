@@ -9,7 +9,7 @@ class Image extends Model
 {
     use HasFactory;
     // Define the fillable attributes for mass assignment
-    protected $fillable = ['original_path', 'post_id'];
+    protected $fillable = ['upload_size', 'post_id', 'user_id'];
     // Define the relationship with ImageVariant
     public function variants()
     {
@@ -19,5 +19,10 @@ class Image extends Model
     public function post()
     {
         return $this->belongsTo(Post::class);
+    }
+    // Define the relationship with User
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

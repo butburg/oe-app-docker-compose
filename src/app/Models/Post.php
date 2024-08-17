@@ -11,7 +11,6 @@ class Post extends Model
     // which fields can be mass-assigned
     protected $fillable = [
         'user_id',
-        //'image_id',
         'title',
         'username',
         'is_published',
@@ -24,10 +23,11 @@ class Post extends Model
         return $this->belongsTo(User::class);
     }
     // Define the relationship with Image
-    public function images()
+    public function image()
     {
         return $this->hasOne(Image::class);
     }
+
     public function comments()
     {
         return $this->hasMany(Comment::class);
