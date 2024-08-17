@@ -8,7 +8,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
-use App\Actions\StoreNameImage;
+use App\Actions\CreateImageVariants;
+use Illuminate\Support\Facades\Storage;
+use App\Enums\ImageSizeType;
+use App\Models\Image;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ProfileController extends Controller
@@ -26,7 +29,7 @@ class ProfileController extends Controller
     /**
      * Update the user's profile information.
      */
-    public function update(ProfileUpdateRequest $request, StoreNameImage $storeNameImage): RedirectResponse
+    public function update(ProfileUpdateRequest $request): RedirectResponse
     {
         $user = $request->user();
         $user->fill($request->validated());
@@ -43,22 +46,32 @@ class ProfileController extends Controller
     /**
      * Update the user's profile image.
      */
-    public function updateImage(FormRequest $request, StoreNameImage $storeNameImage): RedirectResponse
+    public function updateImage(FormRequest $request, CreateImageVariants $createImageVariants): RedirectResponse
     {
-        $request->validate([
+        $validated = $request->validate([
             'profile_image' => 'required|image|mimes:jpeg,png,jpg,gif|max:4096',
         ]);
 
+        $imageFile =  $validated['profile_image'];
+
         $user = Auth::user();
 
-        // Handle the profile image
-        if ($request->hasFile('profile_image')) {
-            $filePath = $storeNameImage->handle($request, 'profile_image', 'files/profiles/images', 640);
-            $user->profile_image = $filePath; // 'profile_image' column in users table
-        }
+        // Check if the user already has a profile image
+        $image = $user->image ?: new Image(['user_id' => $user->id]);
 
+        // Update the upload_size
+        $image->upload_size = $imageFile->getSize();
+        $image->save();
 
-        $user->save();
+        // Define the desired (wanted) image sizes
+        $desiredSizes = [
+            ImageSizeType::EXTRA_SMALL->value,
+            ImageSizeType::SMALL->value,
+            ImageSizeType::LARGE->value,
+        ];
+
+        // Save models in the database and files in storage
+        $createImageVariants->handleVariant($image, $imageFile, $desiredSizes, 'profiles/');
 
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
@@ -73,6 +86,18 @@ class ProfileController extends Controller
         ]);
 
         $user = $request->user();
+
+        if ($user->image) {
+            $image = $user->image;
+
+            // Delete the image variants from storage
+            foreach ($image->variants as $variant) {
+                Storage::disk('public')->delete($variant->path);
+            }
+
+            // Delete the image record (this will cascade and delete associated variants)
+            $image->delete();
+        }
 
         Auth::logout();
 

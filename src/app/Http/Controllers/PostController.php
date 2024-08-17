@@ -8,6 +8,7 @@ use App\Enums\ImageSizeType;
 
 use App\Http\Requests\Post\StoreRequest; // Importing the StoreRequest form request
 use App\Http\Requests\Post\UpdateRequest; // Importing the UpdateRequest form request
+use Illuminate\Support\Facades\Storage;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
@@ -93,7 +94,8 @@ class PostController extends Controller
         // Create the image in database and reference image with post
         // Is implement for adding more than one image or more metadata later
         $image = Image::create([
-            'post_id' => $post->id
+            'post_id' => $post->id,
+            'upload_size' => $imageFile->getSize()
         ]);
 
         // Define the desired (wanted) image sizes
@@ -105,7 +107,7 @@ class PostController extends Controller
         ];
 
         //save models db and files in storage
-        app(CreateImageVariants::class)->handle($image, $imageFile, $desiredSizes);
+        app(CreateImageVariants::class)->handleVariant($image, $imageFile, $desiredSizes);
 
         if ($post) {
             // Flash a success notification and redirect to the post index page
@@ -143,7 +145,7 @@ class PostController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateRequest $request, string $id, StoreImage $action): RedirectResponse
+    public function update(UpdateRequest $request, string $id, CreateImageVariants $createImageVariants): RedirectResponse
     {
         // Find the post with the specified ID
         $post = Post::findOrFail($id);
@@ -154,22 +156,29 @@ class PostController extends Controller
         // Validate the incoming request
         $validated = $request->validated();
 
-        // If an info file is uploaded, update the file path  
-        /* if ($request->hasFile('image_file')) {
-            //extract image id
-            $imageNameId = $this->getImageNameId($post->image_file);
+        // Check if an image file is uploaded
+        if ($request->hasFile('image_file')) {
+            $imageFile = $validated['image_file'];
+            unset($validated['image_file']);
 
-            // delete old ones
-            $this->deleteOldImages($imageNameId);
+            $imageRecord = $post->image;
 
-            // save new ones
-            $filePath = $this->saveImageSizes($request, $action, $imageNameId);
+            // Update the upload size
+            $imageRecord->upload_size = $imageFile->getSize();
+            $imageRecord->save();
 
-            // Add the filepath to validated data
-            $validated['image_file'] = $filePath;
-        } */
+            // Define the desired (wanted) image sizes
+            $desiredSizes = [
+                ImageSizeType::SMALL->value,
+                ImageSizeType::MEDIUM->value,
+                ImageSizeType::LARGE->value,
+                ImageSizeType::EXTRA_LARGE->value
+            ];
 
-        // Update the post with the validated data
+            // Save models in the database and files in storage
+            $createImageVariants->handleVariant($imageRecord, $imageFile, $desiredSizes);
+        }
+
         if ($post->update($validated)) {
             session()->flash('notif.success', 'Your Post updated successfully!');
             return redirect()->route('posts.index');
@@ -187,19 +196,27 @@ class PostController extends Controller
 
         $this->userIsOwner($post->user_id);
 
-        // If an image file (name) exists in database, delete all versions that contain the ID
-        if (isset($post->image_file)) {
-            $imageNameId = $this->getImageNameId($post->image_file);
-            $this->deleteOldImages($imageNameId);
+        // Check if the post has an associated image
+        if ($post->image) {
+            $image = $post->image;
+
+            // Delete the image variants from storage
+            foreach ($image->variants as $variant) {
+                Storage::disk('public')->delete($variant->path);
+            }
+
+            // Delete the image record (this will cascade and delete associated variants)
+            $image->delete();
         }
 
         // Delete the post
-        if ($post->delete($id)) {
+        if ($post->delete()) {
             session()->flash('notif.success', 'Post deleted successfully!');
             return redirect()->route('posts.index');
         }
 
         return abort(500); // Return a server error if the post deletion fails
+
     }
 
     /**
@@ -236,50 +253,6 @@ class PostController extends Controller
         }
 
         return abort(500); // Return a server error if updating the post fails
-    }
-
-    private function getImageNameId(string $filePath): string
-    {
-        preg_match('/_([a-z0-9]+)\./', $filePath, $matches);
-        return $matches[1];
-    }
-
-    private function saveImageSizes(Request $request, StoreImage $action, string $fileOutputName): array
-    {
-        $filePaths = [];
-
-        // generate "full" (limited by action) image size with 100 quality
-        $filePaths['original'] = $action->handle($request, 'image_file', self::IMAGE_DIRECTORY, $fileOutputName);
-
-        // Save variants
-        foreach ($this->thumbnailSizes as $size) {
-            $filePaths[$size] = $action->handle($request, 'image_file', self::IMAGE_DIRECTORY, $fileOutputName, $size, $this->getQuality($size));
-        }
-
-        return $filePaths;
-    }
-
-    private function getSizeType(string $variant): int
-    {
-        // Return a numeric value to represent size types
-        return match ($variant) {
-            'original' => 0,
-            'thumbnail' => 1,
-            'mobile' => 2,
-            'desktop' => 3,
-            default => 0,
-        };
-    }
-
-
-
-
-
-    private function deleteOldImages(string $imageNameId): bool
-    {
-        // get all names of the different image sizes with wildcard as an array and delete them
-        $filesToDelete = File::glob(storage_path("app/public/" . self::IMAGE_DIRECTORY . "resized_*_{$imageNameId}.jpeg"));
-        return File::delete($filesToDelete);
     }
 
     private function userIsOwner($user_id_from_post): void

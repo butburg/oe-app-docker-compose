@@ -5,10 +5,11 @@ namespace App\Actions;
 use Intervention\Image\Laravel\Facades\Image; // Import Image facade
 use Illuminate\Support\Facades\Storage;
 use App\Enums\ImageSizeType;
+use Illuminate\Http\UploadedFile;
 
 class StoreImage
 {
-    public function handle($file, ImageSizeType $sizeType, string $filePath): array
+    public function handleStore(UploadedFile $file, ImageSizeType $sizeType, string $filePath): array
     {
         // Load the image
         $image  = Image::read($file);
