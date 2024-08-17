@@ -28,8 +28,6 @@ return new class extends Migration
             $table->string('username');
             // Add user_id column, make it nullable, and define the foreign key constraint
             $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('set null');
-            // 'image_id' column to store information about image references
-            $table->foreignId('image_id')->nullable()->constrained('images')->onDelete('cascade');
         });
     }
 
