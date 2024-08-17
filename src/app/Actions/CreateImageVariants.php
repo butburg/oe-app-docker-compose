@@ -5,12 +5,12 @@ namespace App\Actions;
 use App\Models\Image;
 use App\Models\ImageVariant;
 use App\Enums\ImageSizeType;
-use Illuminate\Http\UploadedFile;
+
 
 
 class CreateImageVariants
 {
-    public function handleVariant(Image $image, UploadedFile $file, array $sizeTypes, string $path = 'posts/images/'): void
+    public function handleVariant(Image $image, $file, array $sizeTypes, string $path = 'posts/images/'): void
     {
         foreach ($sizeTypes as $sizeType) {
             $sizeTypeEnum = ImageSizeType::from($sizeType);
