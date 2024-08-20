@@ -5,11 +5,19 @@ namespace App\Actions;
 use Intervention\Image\Laravel\Facades\Image; // Import Image facade
 use Illuminate\Support\Facades\Storage;
 use App\Enums\ImageSizeType;
+use Illuminate\Http\UploadedFile;
+use Symfony\Component\Finder\SplFileInfo;
+use InvalidArgumentException;
 
 class StoreImage
 {
     public function handleStore($file, ImageSizeType $sizeType, string $filePath): array
     {
+        // Check if the file is an instance of either UploadedFile or SplFileInfo
+        if (!($file instanceof UploadedFile || $file instanceof SplFileInfo)) {
+            throw new InvalidArgumentException('The $file parameter must be an instance of UploadedFile or SplFileInfo.');
+        }
+
         // Load the image
         $image  = Image::read($file);
 

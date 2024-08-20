@@ -2,18 +2,12 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
-use App\Models\Post;
-use App\Models\Image;
 use App\Actions\CreateImageVariants;
 use App\Enums\ImageSizeType;
+use App\Models\Image;
+use App\Models\Post;
+use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
-
-
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\DB;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
-
 
 
 class MigrateLegacyImages extends Command
@@ -37,7 +31,7 @@ class MigrateLegacyImages extends Command
      */
     public function handle()
     {
-        $legacyImagePath = '/var/www/html/storage/app/public/files/posts/images_legacy';
+        $legacyImagePath = storage_path('app/public/files/posts/images_legacy');
 
         // Check if the directory exists
         if (!File::exists($legacyImagePath)) {

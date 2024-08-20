@@ -2,11 +2,9 @@
 
 namespace App\Actions;
 
+use App\Enums\ImageSizeType;
 use App\Models\Image;
 use App\Models\ImageVariant;
-use App\Enums\ImageSizeType;
-
-
 
 class CreateImageVariants
 {
@@ -41,6 +39,7 @@ class CreateImageVariants
                     'height' => $imageData['height'],
                 ]);
             }
+            break;
         }
     }
 }

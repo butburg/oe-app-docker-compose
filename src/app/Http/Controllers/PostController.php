@@ -2,31 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use App\Actions\StoreImage;
 use App\Actions\CreateImageVariants;
 use App\Enums\ImageSizeType;
-
 use App\Http\Requests\Post\StoreRequest; // Importing the StoreRequest form request
 use App\Http\Requests\Post\UpdateRequest; // Importing the UpdateRequest form request
-use Illuminate\Support\Facades\Storage;
-
-use Illuminate\Http\Request;
-use Illuminate\Http\RedirectResponse;
-
-use App\Models\Post; // Importing the Post model
 use App\Models\Image;
-use App\Models\ImageVariant;
-
+use App\Models\Post; // Importing the Post model
 use Illuminate\Contracts\View\View;
-
-use Illuminate\Support\Facades\File;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
 {
-    protected const IMAGE_DIRECTORY = 'files/posts/images/';
-    protected const IMAGE_QUALITY = 90;
-    protected array $thumbnailSizes = ['1400', '640'];
 
     /**
      * Display a listing of the resource.
@@ -257,7 +246,7 @@ class PostController extends Controller
 
     private function userIsOwner($user_id_from_post): void
     {
-        if ($user_id_from_post !== Auth::id()) {
+        if ($user_id_from_post !== Auth::id() and Auth::user()->usertype !== 'admin') {
             abort(403, 'Unauthorized action.');
         }
     }
