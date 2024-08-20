@@ -51,7 +51,7 @@ return new class extends Migration
                 'is_sensitive' => false, // Adjust as needed
                 'created_at' => $oldPost->date,
                 'updated_at' => now(),
-                'user_id' => NULL, // Adjust as needed
+                'user_id' => NULL, // Adjust as neededHello World! The new website is here ☼
                 'username' => $oldPost->user,
             ]);
         }

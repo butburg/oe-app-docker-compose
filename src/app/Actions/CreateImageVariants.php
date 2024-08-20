@@ -39,7 +39,6 @@ class CreateImageVariants
                     'height' => $imageData['height'],
                 ]);
             }
-            break;
         }
     }
 }
