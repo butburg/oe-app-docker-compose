@@ -41,6 +41,23 @@ class PostController extends Controller
     }
 
     /**
+     * Display a special listing of the resources with all only for admin.
+     */
+    public function all(): View
+    {
+        // Retrieve published and draft posts from the database and pass them to the view
+        return view('posts.index', [
+            'draftPosts' => Post::where('is_published', false)
+                ->orderBy('updated_at', 'desc')
+                ->paginate(10),
+
+            'publishedPosts' => Post::where('is_published', true)
+                ->orderBy('updated_at', 'desc')
+                ->paginate(10),
+        ]);
+    }
+
+    /**
      * Display the gallery with pagination.
      */
     public function gallery(Request $request): View

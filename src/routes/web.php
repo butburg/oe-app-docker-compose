@@ -18,6 +18,7 @@ Route::middleware('auth', 'verified')->group(function () {
     // Routes here are accessible to authenticated users only!!
 
     Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard')->middleware(Admin::class);
+    Route::get('/admin/posts', [PostController::class, 'all'])->name('posts.index')->middleware(Admin::class);
 
     // Profiles
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
