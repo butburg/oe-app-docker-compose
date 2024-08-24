@@ -20,9 +20,9 @@ return new class extends Migration
             // Stores the path to the image variant file on the server.
             $table->string('path');
             // Represents the maximum dimension (either width or height, whichever is larger) of the image variant.
-            $table->integer('size_type'); // e.g. max-allowed, desktop, mobile
+            $table->string('size_type', 3); // e.g. max-allowed, desktop, mobile
             // Stores the quality of the image variant (e.g., for JPEG compression).
-            $table->integer('quality');
+            $table->tinyInteger('quality');
             // Stores the width of the image variant. Nullable because not all image variants may have an explicit width.
             $table->integer('width')->nullable();
             // Stores the height of the image variant. Nullable because not all image variants may have an explicit height.

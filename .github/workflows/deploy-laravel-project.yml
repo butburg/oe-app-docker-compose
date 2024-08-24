@@ -46,6 +46,7 @@ jobs:
           --exclude 'public/css/' \
           --exclude 'public/js/' \
           --exclude 'database/database.sqlite' \
+          --exclude 'database/old_database.sqlite' \
           $GITHUB_WORKSPACE/src/ $SFTP_USERNAME@$SFTP_HOST:oe-app/        
       
     - name: Upload .env file
