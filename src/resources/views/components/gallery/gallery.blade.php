@@ -17,7 +17,17 @@
                                 <p class="text-nav-bg mt-1 text-sm font-medium"
                                     title="{{ $post->user->name ?? $post->username }}">
                                     {{ Str::limit($post->user->name ?? $post->username, 40, '...') }}
+                                    {{-- Display former name if applicable --}}
+                                    @if ($post->user)
+                                        @php
+                                            $formerName = $post->user->getFormerNameIfApplicable(90);
+                                        @endphp
 
+                                        @if ($formerName)
+                                            <span class="text-xs text-gray-500">(Formerly:
+                                                {{ Str::limit($formerName, 40, '...') }})</span>
+                                        @endif
+                                    @endif
                                 </p>
                                 <h1 class="text-content-bg mt-1 text-lg font-semibold md:text-2xl">
                                     {{ $post->title }}

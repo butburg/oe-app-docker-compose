@@ -23,23 +23,24 @@ class PostController extends Controller
     {
         $userId = Auth::id();
         $userType = Auth::user()->usertype;
+        
+        // Retrieve published and draft posts from the database
+        $draftPosts = Post::whereNotNull('user_id')
+            ->where('user_id', $userId)
+            ->where('once_published', false)
+            ->orderBy('updated_at', 'desc')
+            ->paginate(10);
 
-        // Retrieve published and draft posts from the database and pass them to the view
+        $publishedPosts = Post::whereNotNull('user_id')
+            ->where('user_id', $userId)
+            ->where('once_published', true)
+            ->orderBy('updated_at', 'desc')
+            ->paginate(10);
+
         return view('posts.index', [
-            'draftPosts' => Post::whereNotNull('user_id')
-                ->where('user_id', $userId)
-                ->where('once_published', false)
-                ->orderBy('updated_at', 'desc')
-                ->paginate(10),
-
-            'publishedPosts' => Post::whereNotNull('user_id')
-                ->where('user_id', $userId)
-                ->where('once_published', true)
-                ->orderBy('updated_at', 'desc')
-                ->paginate(10),
-
+            'draftPosts' => $draftPosts,
+            'publishedPosts' => $publishedPosts,
             'isAdmin' => $userType === 'admin',
-
         ]);
     }
     /**

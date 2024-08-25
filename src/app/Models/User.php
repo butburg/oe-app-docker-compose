@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
+use Illuminate\Auth\Passwords\CanResetPassword;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Auth\Passwords\CanResetPassword;
+
 
 class User extends Authenticatable #implements MustVerifyEmail
 {
@@ -32,6 +34,27 @@ class User extends Authenticatable #implements MustVerifyEmail
     public function image()
     {
         return $this->hasOne(Image::class);
+    }
+
+
+    /**
+     * Get the former name if it is within the given days limit.
+     *
+     * @param int $daysLimit
+     * @return string|null
+     */
+    public function getFormerNameIfApplicable(int $daysLimit = 90): ?string
+    {
+        if ($this->previous_name) {
+            $lastNameChangeDate = $this->last_name_change ? Carbon::parse($this->last_name_change) : null;
+            $daysPassed = $lastNameChangeDate ? $lastNameChangeDate->diffInDays(Carbon::now()) : null;
+
+            if ($daysPassed !== null && $daysPassed <= $daysLimit) {
+                return $this->previous_name;
+            }
+        }
+
+        return null;
     }
 
     /**

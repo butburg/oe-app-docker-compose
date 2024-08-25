@@ -2,20 +2,56 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ProfileUpdateRequest;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\View\View;
 use App\Actions\CreateImageVariants;
-use Illuminate\Support\Facades\Storage;
+use App\Actions\LastNameChange;
 use App\Enums\ImageSizeType;
+use App\Http\Requests\ProfileUpdateRequest;
 use App\Models\Image;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\View\View;
 
 class ProfileController extends Controller
 {
+    /**
+     * Update the user's profile information.
+     */
+    public function update(ProfileUpdateRequest $request): RedirectResponse
+    {
+        $user = $request->user();
+        $validatedData = $request->validated();
+
+        // Check if the name has changed
+        if ($user->name !== $validatedData['name']) {
+
+           // Validate the name change interval
+           $statusMessage = LastNameChange::getNameChangeStatus($user->last_name_change, 30);
+           if ($statusMessage) {
+               return Redirect::back()->withErrors(['name' => $statusMessage]);
+           }
+
+           // Update previous_name and last_name_change
+           $user->previous_name = $user->name;
+           $user->last_name_change = now();
+        }
+
+        // Update user profile information
+        $user->fill($validatedData);
+
+        // Handle email verification reset if email has changed
+        if ($user->isDirty('email')) {
+            $user->email_verified_at = null;
+        }
+
+        $user->save();
+
+        return Redirect::route('profile.edit')->with('status', 'profile-updated');
+    }
     /**
      * Display the user's profile form.
      */
@@ -26,22 +62,6 @@ class ProfileController extends Controller
         ]);
     }
 
-    /**
-     * Update the user's profile information.
-     */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
-    {
-        $user = $request->user();
-        $user->fill($request->validated());
-
-        if ($user->isDirty('email')) {
-            $user->email_verified_at = null;
-        }
-
-        $user->save();
-
-        return Redirect::route('profile.edit')->with('status', 'profile-updated');
-    }
 
     /**
      * Update the user's profile image.
