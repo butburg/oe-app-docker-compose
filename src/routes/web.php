@@ -31,6 +31,8 @@ Route::middleware('auth', 'verified')->group(function () {
     // Posts
     Route::get('/posts/{post}/publish', [PostController::class, 'publish'])->name('posts.publish');
     Route::get('/posts/{post}/make-draft', [PostController::class, 'makedraft'])->name('posts.make-draft');
+    Route::get('/posts/{post}/hide', [PostController::class, 'hide'])->name('posts.hide');
+
 
     // Resources route because it contains exact routes we need for a typical CRUD.
     Route::resources([
