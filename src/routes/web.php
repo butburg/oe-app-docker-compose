@@ -7,12 +7,21 @@ use App\Http\Controllers\TestMailController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\AdminController;
 use App\Http\Middleware\Admin;
+use Illuminate\Support\Facades\Mail;
+
 
 Route::get('/', [PostController::class, 'gallery'])->name('welcome');
 
 Route::get('/dashboard', [PostController::class, 'gallery'])->middleware(['auth', 'verified'])->name('dashboard');
 Route::view('/impressum', 'impressum')->name('impressum');
-Route::get('/send-test-email', [TestMailController::class, 'sendTestEmail']);
+#Route::get('/send-test-email', [TestMailController::class, 'sendTestEmail']);
+
+Route::get('/send-test-email', function () {
+    Mail::raw('This is a test email', function ($message) {
+        $message->to('recipient@example.com')->subject('Test Email');
+    });
+    return 'Test email sent!';
+});
 
 Route::middleware('auth', 'verified')->group(function () {
     // Routes here are accessible to authenticated users only!!
