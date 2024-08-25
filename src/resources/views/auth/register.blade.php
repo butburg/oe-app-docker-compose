@@ -21,7 +21,7 @@
 
             <!-- Password -->
             <div class="mt-4">
-                <x-input-label for="password" :value="__('Password')" />
+                <x-input-label for="password" :value="__('New Password')" />
 
                 <x-text-input class="mt-1 block w-full" id="password" name="password" type="password" required
                     autocomplete="new-password" />
@@ -29,6 +29,7 @@
                 <x-input-error class="mt-2" :messages="$errors->get('password')" />
             </div>
 
+            {{-- Removed for eady of usage
             <!-- Confirm Password -->
             <div class="mt-4">
                 <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
@@ -38,7 +39,8 @@
 
                 <x-input-error class="mt-2" :messages="$errors->get('password_confirmation')" />
             </div>
-
+            --}}
+            <!-- Check for privacy policy -->
             <div class="mt-4 flex items-center">
                 <input
                     class="h-4 w-4 rounded border-gray-300 bg-gray-100 text-blue-600 focus:ring-2 focus:ring-blue-500"
