@@ -13,8 +13,8 @@
             @endif
 
             <!-- Link to add a new post -->
-            <a class="-my-3 rounded-lg border-2 border-c-accent/80 bg-c-accent/80 px-3 py-1 text-c-background hover:bg-c-accent active:border-c-primary"
-                href="{{ route('posts.create') }}">Create</a>
+            <x-create-post-button />
+
         </div>
     </x-slot>
     <div class="bg-c-background text-c-text">

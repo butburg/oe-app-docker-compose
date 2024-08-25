@@ -3,7 +3,7 @@
         <x-header2>Impressum und Datenschutz</x-header2>
     </x-slot>
 
-    <div class="py-12">
+    <div class="py-6">
         <div class="mx-auto max-w-7xl py-2 sm:px-6 lg:px-8">
             <div class="overflow-hidden bg-white/80 p-6 shadow-xl sm:rounded-lg">
                 <x-header2>Impressum</x-header2>

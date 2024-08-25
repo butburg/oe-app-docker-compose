@@ -6,185 +6,177 @@
         <div class="flex items-center justify-between">
             <!-- Title for the page -->
             <x-header2>Your Posts</x-header2>
+
             <!-- Link to add a new post -->
-            <a class="-my-3 rounded-lg border-2 border-c-accent/80 bg-c-accent/80 px-3 py-1 text-c-background hover:bg-c-accent active:border-c-primary"
-                href="{{ route('posts.create') }}">Create</a>
+            <x-create-post-button />
         </div>
     </x-slot>
 
-    <div class="py-12 text-c-text">
-        <div class="mx-auto mb-4 max-w-7xl sm:px-6 lg:px-8">
-            <div class="overflow-hidden bg-c-primary/20 shadow-sm sm:rounded-lg">
-                <div class="p-6">
-                    <!-- Title for draft posts -->
-                    <h3 class="mb-4 text-lg font-semibold leading-tight">Not yet published</h3>
-                    <!-- Pagination links -->
-                    <div class="mt-4">
-                        {{ $draftPosts->links() }}
-                    </div>
-                    <!-- Table to display draft posts -->
-                    <table class="w-full table-auto border-collapse text-sm">
-                        <thead>
-                            <tr>
-                                <!-- Table header for post and action -->
-                                <th class="400 border-b p-4 pb-3 pl-8 pt-0 text-left font-medium">Image</th>
-                                <th class="400 border-b p-4 pb-3 pl-8 pt-0 text-left font-medium">Details
-                                </th>
-                                <th class="400 border-b p-4 pb-3 pl-8 pt-0 text-left font-medium">Actions:</th>
-                            </tr>
-                        </thead>
-                        <tbody class="text-gray-100">
-                            {{-- Loop through draft posts --}}
-                            @forelse ($draftPosts->sortByDesc('created_at') as $post)
-                                <tr>
-                                    <td class="dark:400 border-b border-slate-100 py-4 dark:border-slate-700">
-                                        <!-- Post Image -->
-                                        <a class="hover:underline"
-                                            href="{{ Storage::url($post->image->variants->firstWhere('size_type', 'xl')->path) }}">
-                                            <x-image_or_placeholder alt_title="Open"
-                                                style="h-24 w-24 rounded-full object-cover" :image="$post->image"
-                                                size_type="l" />
-                                        </a>
-                                    </td>
+    <div class="mx-auto max-w-7xl py-6 text-c-text sm:px-6 lg:px-8">
+        <!-- Drafts -->
 
-                                    <!-- Display post details -->
-                                    <td class="dark:400 border-b border-slate-100 p-4 pl-8 dark:border-slate-700">
-                                        <!-- Post content -->
-                                        <span>
-                                            {{ $post->title }}
-                                        </span>
-                                        <!-- Display create time -->
-                                        <span>
-                                            <small> | Created {{ $post->created_at->diffForHumans() }}</small>
-                                        </span>
-                                        <!-- Display last update time -->
-                                        <span>
-                                            <small> | Update {{ $post->updated_at->diffForHumans() }}</small>
-                                        </span>
-                                        <!-- Number of comments  -->
-                                        <span>
-                                            <small> | Comments: {{ $post->comments->count() }}</small>
-                                        </span>
-                                    </td>
-                                    <!-- Actions for the post -->
-                                    <td class="dark:400 border-b border-slate-100 p-4 pl-8 dark:border-slate-700">
-                                        <!-- Link to publish post -->
-                                        <a class="rounded-md border border-green-500 px-4 py-2 hover:bg-green-500 hover:text-white"
-                                            href="{{ route('posts.publish', $post->id) }}">PUBLISH ▽</a>
-                                        <!-- Link to edit post -->
-                                        <a class="rounded-md border border-yellow-500 px-4 py-2 hover:bg-yellow-500 hover:text-white"
-                                            href="{{ route('posts.edit', $post->id) }}">EDIT ✎</a>
-                                        <!-- Form to delete post -->
-                                        <form class="inline" method="post"
-                                            action="{{ route('posts.destroy', $post->id) }}">
-                                            @csrf
-                                            @method('delete')
-                                            <button
-                                                class="relative top-[1px] h-[35px] rounded-md border border-red-500 px-4 py-2 hover:bg-red-500 hover:text-white"
-                                                type="submit"
-                                                onclick="return confirm('Are you sure you want to delete this post?')">
-                                                DELETE ✕</button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            @empty
-                                <!-- Display message if no draft posts -->
-                                <tr>
-                                    <td class="dark:400 border-b border-slate-100 p-4 pl-8 dark:border-slate-700"
-                                        colspan="2">
-                                        No draft posts found.
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
+        <div class="mb-4 overflow-hidden bg-c-primary/20 p-6 shadow-sm sm:rounded-lg">
+
+            <!-- Title for draft posts -->
+            <h3 class="mb-4 text-lg font-semibold leading-tight">Not yet published</h3>
+
+            <!-- Box with Infos -->
+            <div class="mb-4 flex rounded-lg bg-gray-800 p-4 text-sm text-blue-400" role="alert">
+                <svg class="me-3 mt-[2px] inline h-4 w-4 flex-shrink-0" aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                    <path
+                        d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
+                </svg>
+                <span class="sr-only">Danger</span>
+                <div>
+                    <span class="font-medium">Please note:</span>
+                    <ul class="mt-1.5 list-inside list-disc">
+                        <li>Once a post is published, it cannot be edited. If you urgently need to make changes,
+                            please contact an admin.</li>
+                        <li>You have the option to delete your post at any time.</li>
+                        <li>All comments on a deleted post will also be removed.</li>
+                    </ul>
                 </div>
             </div>
-        </div>
-        <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
-            <div class="overflow-hidden bg-c-primary/20 shadow-sm sm:rounded-lg">
-                <div class="p-6">
-                    <!-- Title for published posts -->
-                    <h3 class="mb-4 text-lg font-semibold leading-tight">Published</h3>
-                    <!-- Pagination links -->
-                    <div class="mt-4">
-                        <!-- Pagination links -->
-                        {{ $publishedPosts->links() }}
+
+            <!-- Pagination links -->
+            <div class="mt-4">
+                {{ $draftPosts->links() }}
+            </div>
+
+            <!-- Section to display draft posts as flex-->
+            @forelse ($draftPosts->sortByDesc('created_at') as $post)
+                <div class="flex flex-col items-start border-b py-4 md:flex-row md:items-center">
+                    <!-- draft Image -->
+
+                    <div class="flex flex-grow">
+                        <div class="flex-shrink-0">
+                            <a href="{{ Storage::url($post->image->variants->firstWhere('size_type', 'xl')->path) }}">
+                                <x-image_or_placeholder alt_title="Open" style="h-24 w-24 rounded-full object-cover"
+                                    :image="$post->image" size_type="l" />
+                            </a>
+                        </div>
+                        <!-- Display draft details -->
+                        <div class="ml-4">
+                            <span class="block text-lg font-medium">
+                                {{ $post->title }}</span>
+                            <small class="block text-gray-300">Created
+                                {{ $post->created_at->diffForHumans() }}</small>
+                            <small class="block text-gray-300">Update
+                                {{ $post->updated_at->diffForHumans() }}</small>
+                            <small class="block text-gray-300">Comments:
+                                {{ $post->comments->count() }}</small>
+                        </div>
                     </div>
-                    <!-- Table to display published posts -->
-                    <table class="w-full table-auto border-collapse text-sm">
-                        <thead>
-                            <tr>
-                                <th class="border-b p-4 pb-3 pl-8 pt-0 text-left font-medium">Image</th>
-                                <th class="border-b p-4 pb-3 pl-8 pt-0 text-left font-medium">Details
-                                </th>
-                                <th class="border-b p-4 pb-3 pl-8 pt-0 text-left font-medium">Actions:</th>
-                            </tr>
-                        </thead>
-                        <tbody class="text-gray-100">
-                            {{-- populate our published post data --}}
-                            @forelse ($publishedPosts->sortByDesc('created_at') as $post)
-                                <tr>
-                                    <td class="py-4">
-                                        <!-- Post Image -->
-                                        <a class="hover:underline"
-                                            href="{{ Storage::url($post->image->variants->firstWhere('size_type', 'xl')->path) }}">
-                                            <x-image_or_placeholder alt_title="Open"
-                                                style="h-24 w-24 rounded-full object-cover" :image="$post->image"
-                                                size_type="l" />
-                                        </a>
-                                    </td>
-                                    <td
-                                        class="dark:400 items-center justify-center border-b border-slate-100 p-4 pl-8 dark:border-slate-700">
-                                        <!-- Post content -->
-                                        <span>
-                                            {{ $post->title }}
-                                        </span>
-                                        <!-- Display create time -->
-                                        <span>
-                                            <small> | Created {{ $post->created_at->diffForHumans() }}</small>
-                                        </span>
-                                        <!-- Display last update time -->
-                                        <span>
-                                            <small> | Update {{ $post->updated_at->diffForHumans() }}</small>
-                                        </span>
-                                        <!-- Number of comments  -->
-                                        <span>
-                                            <small> | Comments: {{ $post->comments->count() }}</small>
-                                        </span>
-                                    </td>
-                                    <td
-                                        class="dark:400 items-center justify-center border-b border-slate-100 p-4 pl-8 dark:border-slate-700">
-                                        <!-- Link to publish post -->
-                                        <a class="rounded-md border border-yellow-500 px-4 py-2 hover:bg-yellow-500 hover:text-white"
-                                            href="{{ route('posts.make-draft', $post->id) }}"
-                                            title="Pull back the image to not yet published.">HIDE ◐</a>
-                                        <!-- Form to delete post -->
-                                        <form class="inline" method="post"
-                                            action="{{ route('posts.destroy', $post->id) }}">
-                                            @csrf
-                                            @method('delete')
-                                            <button
-                                                class="relative top-[1px] h-[35px] rounded-md border border-red-500 px-4 py-2 hover:bg-red-500 hover:text-white"
-                                                type="submit"
-                                                onclick="return confirm('Are you sure you want to delete this post?')">
-                                                DELETE ✕</button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            @empty
-                                <!-- Display message if no published posts -->
-                                <tr>
-                                    <td class="dark:400 border-b border-slate-100 p-4 pl-8 dark:border-slate-700"
-                                        colspan="2">
-                                        No published posts found.
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
+
+                    <!-- Actions for the draft -->
+                    <div class="mt-4 flex flex-row gap-3">
+                        <!-- Link to publish post -->
+                        <a class="flex items-center gap-1 rounded-md border border-l-4 border-green-500 px-4 py-2 hover:bg-green-500 hover:text-white"
+                            href="{{ route('posts.publish', $post->id) }}">
+                            PUBLISH <span>▽</span>
+                        </a>
+                        <!-- Link to edit post -->
+                        <a class="flex items-center gap-1 rounded-md border border-l-4 border-yellow-500 px-4 py-2 hover:bg-yellow-500 hover:text-white"
+                            href="{{ route('posts.edit', $post->id) }}">EDIT <span>✎</span></a>
+
+                        <!-- Form to delete draft post -->
+                        <form method="post" action="{{ route('posts.destroy', $post->id) }}">
+                            @csrf
+                            @method('delete')
+                            <button
+                                class="flex items-center gap-1 rounded-md border border-l-4 border-red-500 px-4 py-2 hover:bg-red-500 hover:text-white"
+                                type="submit" onclick="return confirm('Are you sure you want to delete this post?')">
+                                DELETE <span>✕</span>
+                            </button>
+                        </form>
+                    </div>
                 </div>
+            @empty
+                <div class="border-b border-slate-100 p-4">
+                    No draft posts found.
+                </div>
+            @endforelse
+        </div>
+
+        <!-- Published -->
+        <div class="overflow-hidden bg-c-primary/20 p-6 shadow-sm sm:rounded-lg">
+            <!-- Title for published posts -->
+            <h3 class="mb-4 text-lg font-semibold leading-tight">Published</h3>
+
+            <!-- Pagination links -->
+            <div class="mt-4">
+                {{ $publishedPosts->links() }}
             </div>
+
+            <!-- Section to display published posts as flex-->
+            @forelse ($publishedPosts->sortByDesc('created_at') as $post)
+                <div class="flex flex-col items-start border-b py-4 md:flex-row md:items-center">
+                    <!-- Published Image -->
+                    <div class="flex flex-grow">
+                        <div class="@if (!$post->is_published) opacity-25 @endif flex-shrink-0">
+                            <a href="{{ Storage::url($post->image->variants->firstWhere('size_type', 'xl')->path) }}">
+                                <x-image_or_placeholder alt_title="Open" style="h-24 w-24 rounded-full object-cover"
+                                    :image="$post->image" size_type="s" />
+                            </a>
+                        </div>
+                        <!-- Display Published details -->
+                        <div class="ml-4">
+                            <span class="text-lg font-medium">{{ $post->title }}</span>
+                            @if (!$post->is_published)
+                                <span class="font-semibold text-red-500">(HIDDEN)</span>
+                            @endif
+                            <small class="block text-gray-300">Created
+                                {{ $post->created_at->diffForHumans() }}</small>
+                            <small class="block text-gray-300">Update
+                                {{ $post->updated_at->diffForHumans() }}</small>
+                            <small class="block text-gray-300">Comments:
+                                {{ $post->comments->count() }}</small>
+
+                        </div>
+                    </div>
+
+                    <!-- Actions for the published post -->
+                    <div class="mt-4 flex flex-row gap-3">
+                        <!-- Admin can edit the post -->
+                        @if ($isAdmin)
+                            <a class="flex items-center gap-1 rounded-md border border-l-4 border-yellow-500 px-4 py-2 shadow hover:bg-yellow-500 hover:text-white"
+                                href="{{ route('posts.edit', $post->id) }}">EDIT <span>✎</span></a>
+                        @endif
+
+                        @if ($post->is_published)
+                            <!-- Link to hide post -->
+                            <a class="flex items-center gap-1 rounded-md border border-l-4 border-yellow-500 px-4 py-2 hover:bg-yellow-500 hover:text-white"
+                                href="{{ route('posts.hide', $post->id) }}"
+                                title="The image can't be seen in the gallery anymore.">
+                                <span class="px-2.5">HIDE</span> ◐
+                            </a>
+                        @else
+                            <!-- Link to unhide post -->
+                            <a class="flex items-center gap-1 rounded-md border border-l-4 border-green-500 px-4 py-2 hover:bg-green-500 hover:text-white"
+                                href="{{ route('posts.publish', $post->id) }}"
+                                title="Put the image back into the gallery.">
+                                UNHIDE <span>◑</span>
+                            </a>
+                        @endif
+
+                        <!-- Form to delete post -->
+                        <form method="post" action="{{ route('posts.destroy', $post->id) }}">
+                            @csrf
+                            @method('delete')
+                            <button
+                                class="flex items-center gap-1 rounded-md border border-l-4 border-red-500 px-4 py-2 hover:bg-red-500 hover:text-white"
+                                type="submit" onclick="return confirm('Are you sure you want to delete this post?')">
+                                DELETE <span>✕</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            @empty
+                <div class="border-b border-slate-100 p-4">
+                    No published posts found.
+                </div>
+            @endforelse
         </div>
     </div>
 </x-app-layout>

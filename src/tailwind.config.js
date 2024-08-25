@@ -22,6 +22,9 @@ export default {
                 'c-secondary': 'rgb(var(--secondary) / <alpha-value>)',
                 'c-accent': 'rgb(var(--accent) / <alpha-value>)',
             },
+                borderWidth: {
+                  DEFAULT: 'thin', // use 'thin' instead 1px since chrome likes this more
+                },
 
         },
     },

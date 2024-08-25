@@ -23,7 +23,7 @@ class UpdateRequest extends FormRequest
     {
         // make all of the fields required, set info file to accept only images
         return [
-            'title' => 'required|string|min:3|max:255', // minimum and maximum length of characters
+            'title' => 'required|string|min:3|max:120', // minimum and maximum length of characters
             'image_file' => 'image|max:10000|mimes:jpeg,png,jpg,gif,svg',
         ];
     }
