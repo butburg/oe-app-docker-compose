@@ -32,7 +32,7 @@ class RegisteredUserController extends Controller
         $request->validate([
             'name' => ['required', 'string', 'max:120', 'unique:' . User::class],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'password' => ['required', Rules\Password::defaults()], // Removed 'confirmed' rule
             'privacy_policy' => 'accepted',
         ]);
 
@@ -41,6 +41,13 @@ class RegisteredUserController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
+
+        // Automatically mark the email as verified in development environments
+        if (app()->environment('local', 'development')) {
+            $user->markEmailAsVerified();
+            // Flash a session message to notify the user
+            session()->flash('notif.success', 'Your email has been automatically verified for development purposes.');
+        }
 
         event(new Registered($user));
 

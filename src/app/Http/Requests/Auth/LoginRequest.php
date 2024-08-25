@@ -51,14 +51,6 @@ class LoginRequest extends FormRequest
 
         $user = Auth::user();
 
-        // Artificially mark the user as verified in development environments
-        if (app()->environment('local', 'development')) {
-            if (is_null($user->email_verified_at)) {
-
-                $user->markEmailAsVerified();  // Mark the user's email as verified
-            }
-        }
-
         RateLimiter::clear($this->throttleKey());
     }
 
