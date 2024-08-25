@@ -10,7 +10,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 
-class User extends Authenticatable #implements MustVerifyEmail
+class User extends Authenticatable implements MustVerifyEmail
 {
     use HasFactory, Notifiable;
 
@@ -20,6 +20,13 @@ class User extends Authenticatable #implements MustVerifyEmail
      * @var array<int, string>
      */
     protected $fillable = ['name', 'email', 'password', 'profile_image', 'usertype'];
+
+    // Method to check if email verification should be bypassed
+    public function shouldBypassEmailVerification()
+    {
+        // Bypass email verification if the app is running in a development environment
+        return app()->environment('local', 'development');
+    }
 
     public function posts()
     {

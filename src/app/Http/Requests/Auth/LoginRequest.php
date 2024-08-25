@@ -49,6 +49,16 @@ class LoginRequest extends FormRequest
             ]);
         }
 
+        $user = Auth::user();
+
+        // Artificially mark the user as verified in development environments
+        if (app()->environment('local', 'development')) {
+            if (is_null($user->email_verified_at)) {
+
+                $user->markEmailAsVerified();  // Mark the user's email as verified
+            }
+        }
+
         RateLimiter::clear($this->throttleKey());
     }
 
@@ -80,6 +90,6 @@ class LoginRequest extends FormRequest
      */
     public function throttleKey(): string
     {
-        return Str::transliterate(Str::lower($this->string('email')).'|'.$this->ip());
+        return Str::transliterate(Str::lower($this->string('email')) . '|' . $this->ip());
     }
 }
