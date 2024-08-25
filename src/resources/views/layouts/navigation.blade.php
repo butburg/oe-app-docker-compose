@@ -24,7 +24,7 @@
                     <!-- Logo -->
                     <div class="flex shrink-0 items-center">
                         <a href="{{ route('welcome') }}">
-                            <x-application-logo class="h-14 " />
+                            <x-application-logo class="h-14" />
                         </a>
                     </div>
                     {{-- left nav links logged out --}}
@@ -62,7 +62,7 @@
                         <x-slot name="content">
                             <div class="space-y-1">
                                 <div class="block w-full border-b-2 py-2 pe-4 ps-3 text-start text-base font-medium">
-                                    <div class="text-base font-medium">{{ Auth::user()->name }}</div>
+                                    <div class="text-base font-medium">{{ Str::limit(Auth::user()->name, 30, '...') }}</div>
                                 </div>
                                 @if (Auth::user()->usertype == 'admin')
                                     <x-responsive-nav-link :href="route('admin.dashboard')">
@@ -93,7 +93,7 @@
                         <x-slot name="trigger">
                             <button
                                 class="inline-flex items-center rounded-md border border-transparent px-3 py-2 text-sm font-medium leading-4 text-c-text transition duration-150 ease-in-out hover:bg-c-primary/20 focus:outline-none">
-                                <div>{{ Auth::user()->name }}</div>
+                                <div>{{ Str::limit(Auth::user()->name, 30, '...') }}</div>
 
                                 <div class="ms-1">
                                     <svg class="h-4 w-4 fill-current" xmlns="http://www.w3.org/2000/svg"

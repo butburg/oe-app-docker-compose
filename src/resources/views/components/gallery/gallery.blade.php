@@ -14,7 +14,11 @@
                         <div class="relative col-span-3 flex flex-col pt-3 md:col-span-1 md:pt-0">
                             <!-- Title and Author -->
                             <div class="flex flex-col-reverse rounded-lg bg-none">
-                                <p class="text-nav-bg mt-1 text-sm font-medium">{{ $post->username }}</p>
+                                <p class="text-nav-bg mt-1 text-sm font-medium"
+                                    title="{{ $post->user->name ?? $post->username }}">
+                                    {{ Str::limit($post->user->name ?? $post->username, 40, '...') }}
+
+                                </p>
                                 <h1 class="text-content-bg mt-1 text-lg font-semibold md:text-2xl">
                                     {{ $post->title }}
                                 </h1>
