@@ -13,8 +13,11 @@
                         <!-- Text and Comments -->
                         <div class="relative col-span-3 flex flex-col pt-3 md:col-span-1 md:pt-0">
                             <!-- Title and Author -->
-                            <div class="flex flex-col-reverse rounded-lg bg-none">
-                                <p class="text-nav-bg mt-1 text-sm font-medium"
+                            <div class="flex flex-col rounded-lg bg-none" @click="showComments = !showComments">
+                                <h1 class="text-content-bg break-words text-lg font-semibold md:text-2xl">
+                                    {{ $post->title }}
+                                </h1>
+                                <p class="text-nav-bg text-sm font-medium"
                                     title="{{ $post->user->name ?? $post->username }}">
                                     {{ Str::limit($post->user->name ?? $post->username, 40, '...') }}
                                     {{-- Display former name if applicable --}}
@@ -29,12 +32,15 @@
                                         @endif
                                     @endif
                                 </p>
-                                <h1 class="text-content-bg mt-1 text-lg font-semibold md:text-2xl">
-                                    {{ $post->title }}
-                                </h1>
-                                <p class="text-xs font-medium leading-4"
+
+                                <p class="mt-2 text-xs font-medium leading-4 opacity-60"
                                     title="Last update {{ $post->updated_at->diffForHumans() }}">
-                                    {{ $post->created_at->diffForHumans() }}</p>
+                                    {{ $post->created_at->diffForHumans() }}
+                                    @if ($post->comments()->count() > 0)
+                                        <span> ♥ {{ $post->comments()->count() }}
+                                            comment{{ $post->comments()->count() > 1 ? 's' : '' }}</span>
+                                    @endif
+                                </p>
                             </div>
                             <div class="text-title-bg mt-4 max-h-64 space-y-4 overflow-auto px-3 text-sm leading-6 sm:px-0 md:max-h-[420px] md:flex-grow"
                                 x-show="showComments || window.innerWidth >= 768" @click.away="showComments = false">

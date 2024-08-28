@@ -58,8 +58,7 @@
                             @endif {{-- Display validation errors for info file --}}
                         </div>
 
-                        <div class="mb-4 flex rounded-lg bg-blue-50 p-4 text-sm text-blue-800 dark:bg-gray-800 dark:text-blue-400"
-                            role="alert">
+                        <div class="text-md mb-4 flex rounded-lg bg-c-background p-4 text-blue-300" role="alert">
                             <svg class="me-3 mt-[2px] inline h-4 w-4 flex-shrink-0" aria-hidden="true"
                                 xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
                                 <path
@@ -72,6 +71,8 @@
                                     <li>Your title must be at least 3 characters long.</li>
                                     <li>After saving, you can still change the title and image.</li>
                                     <li>Don’t forget to publish your post so others can see it! 😉</li>
+                                    <li>Only images with no copyright restrictions are allowed. It’s best if you own the
+                                        image.</li>
                                 </ul>
                             </div>
                         </div>
