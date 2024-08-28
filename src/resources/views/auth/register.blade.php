@@ -74,9 +74,10 @@
                     with the <a class="text-c-accent hover:underline" href="{{ route('impressum') }}">privacy
                         policy</a>.</label>
             </div>
+            
             <x-input-error class="mt-2" :messages="$errors->get('privacy_policy')" />
+            
             <div class="mt-4 flex items-center justify-end">
-
                 <x-primary-button class="ms-4">
                     {{ __('Register') }}
                 </x-primary-button>

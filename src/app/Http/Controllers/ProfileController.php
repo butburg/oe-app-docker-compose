@@ -16,28 +16,26 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
-class ProfileController extends Controller
-{
+class ProfileController extends Controller {
     /**
      * Update the user's profile information.
      */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
-    {
+    public function update(ProfileUpdateRequest $request): RedirectResponse {
         $user = $request->user();
         $validatedData = $request->validated();
 
         // Check if the name has changed
         if ($user->name !== $validatedData['name']) {
 
-           // Validate the name change interval
-           $statusMessage = LastNameChange::getNameChangeStatus($user->last_name_change, 30);
-           if ($statusMessage) {
-               return Redirect::back()->withErrors(['name' => $statusMessage]);
-           }
+            // Validate the name change interval
+            $statusMessage = LastNameChange::getNameChangeStatus($user->last_name_change, 30);
+            if ($statusMessage) {
+                return Redirect::back()->withErrors(['name' => $statusMessage]);
+            }
 
-           // Update previous_name and last_name_change
-           $user->previous_name = $user->name;
-           $user->last_name_change = now();
+            // Update previous_name and last_name_change
+            $user->previous_name = $user->name;
+            $user->last_name_change = now();
         }
 
         // Update user profile information
@@ -55,8 +53,7 @@ class ProfileController extends Controller
     /**
      * Display the user's profile form.
      */
-    public function edit(Request $request): View
-    {
+    public function edit(Request $request): View {
         return view('profile.edit', [
             'user' => $request->user(),
         ]);
@@ -66,8 +63,7 @@ class ProfileController extends Controller
     /**
      * Update the user's profile image.
      */
-    public function updateImage(FormRequest $request, CreateImageVariants $createImageVariants): RedirectResponse
-    {
+    public function updateImage(FormRequest $request, CreateImageVariants $createImageVariants): RedirectResponse {
         $validated = $request->validate([
             'profile_image' => 'required|image|mimes:jpeg,png,jpg,gif|max:4096',
         ]);
@@ -99,33 +95,71 @@ class ProfileController extends Controller
     /**
      * Delete the user's account.
      */
-    public function destroy(Request $request): RedirectResponse
-    {
+    public function destroy(Request $request): RedirectResponse {
         $request->validateWithBag('userDeletion', [
             'password' => ['required', 'current_password'],
+            'delete_comments' => 'nullable|boolean',
+            'delete_posts' => 'nullable|boolean',
         ]);
 
         $user = $request->user();
+        \DB::beginTransaction();
+        try {
+            if ($user->image) {
+                $image = $user->image;
 
-        if ($user->image) {
-            $image = $user->image;
+                // Delete the image variants from storage
+                foreach ($image->variants as $variant) {
+                    Storage::disk('public')->delete($variant->path);
+                }
 
-            // Delete the image variants from storage
-            foreach ($image->variants as $variant) {
-                Storage::disk('public')->delete($variant->path);
+                // Delete the image record (this will cascade and delete associated variants)
+                $image->delete();
             }
 
-            // Delete the image record (this will cascade and delete associated variants)
-            $image->delete();
+            // Handle deletion options
+            if ($request->boolean('delete_comments')) {
+                // Delete comments associated with the user
+                $user->comments()->delete();
+            }
+
+            if ($request->boolean('delete_posts')) {
+                // Delete posts associated with the user and their images
+                foreach ($user->posts as $post) {
+                    // Delete the post images
+                    if ($post->image) {
+                        // Delete the image variants from storage
+                        foreach ($post->image->variants as $variant) {
+                            Storage::disk('public')->delete($variant->path);
+                        }
+
+                        // Delete the image record
+                        $post->image->delete();
+                    }
+
+                    // Delete the post itself
+                    $post->delete();
+                }
+            }
+
+            Auth::logout();
+
+            $user->delete();
+
+
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+            \DB::commit();
+            return Redirect::to('/');
+        } catch (\Exception $e) {
+            // Rollback the transaction in case of an error
+            \DB::rollBack();
+
+            // Log the error
+            Log::error('User deletion failed: ' . $e->getMessage());
+
+            // Optionally, redirect back with an error message
+            return back()->withErrors(['error' => 'There was an issue deleting your account.']);
         }
-
-        Auth::logout();
-
-        $user->delete();
-
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return Redirect::to('/');
     }
 }
