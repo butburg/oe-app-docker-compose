@@ -38,7 +38,7 @@ jobs:
         SFTP_USERNAME: ${{ secrets.LIMA_SFTP_USERNAME }}
       run: |
         rsync -r --delete-after --quiet \
-          --exclude 'vendor/' \
+          --exclude '/src/vendor/' \
           --exclude 'node_modules/' \
           --exclude 'storage/' \
           --exclude '.env' \
