@@ -17,60 +17,63 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class ProfileController extends Controller {
-    /**
-     * Update the user's profile information.
-     */
-    public function update(ProfileUpdateRequest $request): RedirectResponse {
-        $user = $request->user();
-        $validatedData = $request->validated();
 
+    public function updateName(ProfileUpdateRequest $request): RedirectResponse {
+
+        $user = Auth::user();
+        $name = $request->validated()['name'];
         // Check if the name has changed
-        if ($user->name !== $validatedData['name']) {
-
-            // Validate the name change interval
-            $statusMessage = LastNameChange::getNameChangeStatus($user->last_name_change, 30);
-            if ($statusMessage) {
-                return Redirect::back()->withErrors(['name' => $statusMessage]);
-            }
-
-            // Update previous_name and last_name_change
-            $user->previous_name = $user->name;
-            $user->last_name_change = now();
+        if ($user->name === $name) {
+            // No change detected, return to the same route with a message
+            return Redirect::back()->withErrors(['name' => 'That\'s your name already :P']);
         }
 
-        // Update user profile information
-        $user->fill($validatedData);
-
-        // Handle email verification reset if email has changed
-        if ($user->isDirty('email')) {
-            $user->email_verified_at = null;
+        // Validate the name change interval
+        $statusMessage = LastNameChange::getNameChangeStatus($user->last_name_change, 30);
+        if ($statusMessage) {
+            session()->flash('notif.success', 'Failed!');
+            return Redirect::back()->withErrors(['name' => $statusMessage]);
         }
 
+        // Update previous_name and last_name_change
+        $user->previous_name = $user->name;
+        $user->last_name_change = now();
+
+        // Update the username
+        $user->name = $name;
         $user->save();
 
-        return Redirect::route('profile.edit')->with('status', 'profile-updated');
-    }
-    /**
-     * Display the user's profile form.
-     */
-    public function edit(Request $request): View {
-        return view('profile.edit', [
-            'user' => $request->user(),
-        ]);
+
+        session()->flash('notif.success', 'Your username updated successfully!');
+        return Redirect::route('profile.edit');
     }
 
+    public function updateEmail(ProfileUpdateRequest $request): RedirectResponse {
+
+        $user = Auth::user();
+        $email = $request->validated()['email'];
+
+        if ($user->email === $email) {
+            // No change detected, return to the same route with a message
+            return Redirect::back()->withErrors(['email' => 'That\'s your email already :P']);
+        }
+
+        // Handle email verification reset 
+        $user->email_verified_at = null;
+        $user->email = $email;
+        $user->save();
+
+        session()->flash('notif.success', 'Your mail updated successfully!');
+        return Redirect::route('profile.edit');
+    }
 
     /**
      * Update the user's profile image.
      */
-    public function updateImage(FormRequest $request, CreateImageVariants $createImageVariants): RedirectResponse {
-        $validated = $request->validate([
-            'profile_image' => 'required|image|mimes:jpeg,png,jpg,gif|max:4096',
-        ]);
-
-        $imageFile =  $validated['profile_image'];
+    public function updateImage(ProfileUpdateRequest $request, CreateImageVariants $createImageVariants): RedirectResponse {
 
         $user = Auth::user();
+        $imageFile = $request->validated()['profile_image'];
 
         // Check if the user already has a profile image
         $image = $user->image ?: new Image(['user_id' => $user->id]);
@@ -90,6 +93,21 @@ class ProfileController extends Controller {
         $createImageVariants->handleVariant($image, $imageFile, $desiredSizes, 'profiles/');
 
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
+    }
+
+    /**
+     * Display the user's profile form.
+     */
+    public function edit(Request $request): View {
+        return view('profile.edit', [
+            'user' => $request->user(),
+        ]);
+    }
+
+    public function show(Request $request): View {
+        return view('profile.show', [
+            'user' => $request->user(),
+        ]);
     }
 
     /**

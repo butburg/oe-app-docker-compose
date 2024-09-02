@@ -43,11 +43,12 @@
                                 </p>
                             </div>
                             <div class="text-title-bg mt-4 max-h-64 space-y-4 overflow-auto px-3 text-sm leading-6 sm:px-0 md:max-h-[420px] md:flex-grow"
+                                x-data="{ scrollToBottom() { this.$el.scrollTop = this.$el.scrollHeight } }" x-init="scrollToBottom"
                                 x-show="showComments || window.innerWidth >= 768" @click.away="showComments = false">
-                                <!-- Add Comment Form (always visible) -->
-                                <x-gallery.comment.add-comment-form :post="$post" />
                                 <!-- Comments Section (conditionally visible) -->
                                 <x-gallery.comment.show-comments :post="$post" />
+                                <!-- Add Comment Form (always visible) -->
+                                <x-gallery.comment.add-comment-form :post="$post" />
                             </div>
                         </div>
                     </div>

@@ -10,6 +10,6 @@ class AdminController extends Controller
     public function dashboard()
     {
         $users = User::withCount('posts', 'comments')->get();
-        return view('admin.dashboard', compact('users'));
+        return view('admin.index', compact('users'));
     }
 }

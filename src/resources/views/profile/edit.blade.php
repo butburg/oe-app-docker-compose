@@ -1,7 +1,15 @@
 <x-app-layout>
     <x-slot name="header">
-        <x-header2>Profile</x-header2>
-        </h2>
+        <div class="flex items-center justify-between">
+            <x-header2>Profile</x-header2>
+            {{-- check if there is a notif.success flash session --}}
+            @if (Session::has('notif.success'))
+            <div class="-my-3 rounded-lg bg-blue-300 px-4 py-2">
+                <span class="italic text-white">{{ Session::get('notif.success') }}</span>
+            </div>
+            @endif
+            <span></span>
+        </div>
     </x-slot>
 
     <div class="py-6">

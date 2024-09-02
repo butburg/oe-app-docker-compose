@@ -65,7 +65,7 @@
                                     <div class="text-base font-medium">{{ Str::limit(Auth::user()->name, 30, '...') }}</div>
                                 </div>
                                 @if (Auth::user()->usertype == 'admin')
-                                    <x-responsive-nav-link :href="route('admin.dashboard')">
+                                    <x-responsive-nav-link :href="route('admin.index')">
                                         {{ __('Admin Dashboard') }}
                                     </x-responsive-nav-link>
                                 @endif
@@ -107,7 +107,7 @@
                         </x-slot>
                         <x-slot name="content">
                             @if (Auth::user()->usertype == 'admin')
-                                <x-dropdown-link :href="route('admin.dashboard')">
+                                <x-dropdown-link :href="route('admin.index')">
                                     {{ __('Admin Dashboard') }}
                                 </x-dropdown-link>
                             @endif

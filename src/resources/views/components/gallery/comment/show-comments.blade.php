@@ -1,5 +1,5 @@
 {{-- list comments --}}
-@forelse ($post->comments->reverse() as $comment)
+@forelse ($post->comments as $comment) {{-- ->reverse() --}}
     <div class="text-comment-text rounded-lg bg-c-primary/40 p-3">
         @if (!(Auth::id() === $comment->user_id))
             <div class="mb-2 flex items-start justify-between space-x-3">

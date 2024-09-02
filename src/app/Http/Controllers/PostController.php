@@ -14,16 +14,14 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
-class PostController extends Controller
-{
+class PostController extends Controller {
     /**
      * Display a listing of the resource.
      */
-    public function index(): View
-    {
+    public function index(): View {
         $userId = Auth::id();
         $userType = Auth::user()->usertype;
-        
+
         // Retrieve published and draft posts from the database
         $draftPosts = Post::whereNotNull('user_id')
             ->where('user_id', $userId)
@@ -46,26 +44,24 @@ class PostController extends Controller
     /**
      * Display a special listing of the resources with all only for admin.
      */
-    public function all(): View
-    {
+    public function all(): View {
         // Retrieve published and draft posts from the database and pass them to the view
         return view('posts.index', [
             'draftPosts' => Post::where('is_published', false)
                 ->orderBy('updated_at', 'desc')
-                ->paginate(10),
+                ->paginate(15),
             'publishedPosts' => Post::where('is_published', true)
                 ->orderBy('updated_at', 'desc')
-                ->paginate(10),
+                ->paginate(15),
         ]);
     }
     /**
      * Display the gallery with pagination.
      */
-    public function gallery(Request $request): View
-    {
+    public function gallery(Request $request): View {
         $posts = Post::where('is_published', true)
             ->orderBy('created_at', 'desc')
-            ->paginate(10);
+            ->paginate(15);
 
         return view('welcome', compact('posts'));
     }
@@ -73,8 +69,7 @@ class PostController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(): View
-    {
+    public function create(): View {
         // Return the view for creating a new post
         return view('posts.edit');
     }
@@ -82,8 +77,7 @@ class PostController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreRequest $request, CreateImageVariants $createImageVariants): RedirectResponse
-    {
+    public function store(StoreRequest $request, CreateImageVariants $createImageVariants): RedirectResponse {
         // Validate the incoming request
         $validated = $request->validated();
 
@@ -128,8 +122,7 @@ class PostController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id): View
-    {
+    public function show(string $id): View {
         $post = Post::findOrFail($id);
         return view('posts.show', compact('post'));
     }
@@ -137,8 +130,7 @@ class PostController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id): View
-    {
+    public function edit(string $id): View {
         // Retrieve the post with the specified ID
         $post = Post::findOrFail($id);
 
@@ -158,8 +150,7 @@ class PostController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateRequest $request, string $id, CreateImageVariants $createImageVariants): RedirectResponse
-    {
+    public function update(UpdateRequest $request, string $id, CreateImageVariants $createImageVariants): RedirectResponse {
         // Find the post with the specified ID
         $post = Post::findOrFail($id);
 
@@ -208,8 +199,7 @@ class PostController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id): RedirectResponse
-    {
+    public function destroy(string $id): RedirectResponse {
         $post = Post::findOrFail($id);
 
         $this->userIsOwner($post->user_id);
@@ -240,8 +230,7 @@ class PostController extends Controller
     /**
      * Mark the specified post as published.
      */
-    public function publish(string $id): RedirectResponse
-    {
+    public function publish(string $id): RedirectResponse {
         // Find the post with the specified ID and update its publication status
         $post = Post::findOrFail($id);
 
@@ -260,8 +249,7 @@ class PostController extends Controller
     /**
      * Mark the specified post as a draft.
      */
-    public function makedraft(string $id): RedirectResponse
-    {
+    public function makedraft(string $id): RedirectResponse {
         // Find the post with the specified ID and update its publication status
         $post = Post::findOrFail($id);
         // Check if the authenticated user owns the post
@@ -286,8 +274,7 @@ class PostController extends Controller
     /*
     * Hide the specified post (unpublish it without making it a draft).
     */
-    public function hide(string $id): RedirectResponse
-    {
+    public function hide(string $id): RedirectResponse {
         $post = Post::findOrFail($id);
 
         // Check if the authenticated user owns the post
@@ -309,8 +296,7 @@ class PostController extends Controller
         return redirect()->route('posts.index');
     }
 
-    private function userIsOwner($user_id_from_post): void
-    {
+    private function userIsOwner($user_id_from_post): void {
         if ($user_id_from_post !== Auth::id() and Auth::user()->usertype !== 'admin') {
             abort(403, 'Unauthorized action.');
         }

@@ -26,12 +26,23 @@ Route::get('/send-test-email', function () {
 Route::middleware('auth', 'verified')->group(function () {
     // Routes here are accessible to authenticated users only!!
 
-    Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard')->middleware(Admin::class);
+    Route::get('/admin', [AdminController::class, 'dashboard'])->name('admin.index')->middleware(Admin::class);
     Route::get('/admin/posts', [PostController::class, 'all'])->name('posts.index')->middleware(Admin::class);
 
     // Profiles
+    Route::get('/profile/{user}', [ProfileController::class, 'show'])->name('profile.show');
+
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+
+    Route::patch('/profile/update-name', [ProfileController::class, 'updateName'])
+        ->name('profile.updateName');
+
+    Route::patch('/profile/update-email', [ProfileController::class, 'updateEmail'])
+        ->name('profile.updateEmail');
+
+    Route::patch('/profile/update-image', [ProfileController::class, 'updateImage'])
+        ->name('profile.updateImage');
+
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::put('/profile/update-image', [ProfileController::class, 'updateImage'])->name('profile.updateImage');
 

@@ -41,8 +41,6 @@
             <!-- Additional Deletion Options -->
 
             <div class="mt-6">
-                <!-- Hidden inputs to ensure unchecked checkboxes are sent as false -->
-
                 <div class="mt-4 flex items-center">
                     <input id="delete_comments" name="delete_comments" type="checkbox" value="1"
                         class="h-4 w-4 rounded border-gray-300 bg-gray-100 text-blue-600 focus:ring-2 focus:ring-blue-500" />
