@@ -7,6 +7,7 @@ use App\Actions\LastNameChange;
 use App\Enums\ImageSizeType;
 use App\Http\Requests\ProfileUpdateRequest;
 use App\Models\Image;
+use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -15,6 +16,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
+
 
 class ProfileController extends Controller {
 
@@ -104,10 +106,18 @@ class ProfileController extends Controller {
         ]);
     }
 
-    public function show(Request $request): View {
-        return view('profile.show', [
-            'user' => $request->user(),
-        ]);
+
+    public function show(User $user): View {
+        // Fetch the user information
+        $user = User::withCount('posts', 'comments')->findOrFail($user->id);
+
+        // Get the user's posts with pagination
+        $posts = $user->posts()
+            ->orderBy('created_at', 'desc')
+            ->paginate(config('app.posts_per_page')); // Change this to the desired number of posts per page
+
+        // Return the view with user data and posts
+        return view('profile.show', compact('user', 'posts'));
     }
 
     /**
