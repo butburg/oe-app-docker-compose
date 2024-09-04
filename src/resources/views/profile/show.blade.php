@@ -57,11 +57,12 @@
 
                         <div class="text-sm text-gray-400">
                             <p>
+                                <strong>Seen:</strong>
                                 Last time seen:
                                 @if ($user->session)
-                                    Online
+                                    {{ \Carbon\Carbon::parse($user->session->last_activity)->diffInMinutes() }}
                                 @else
-                                    {{ $mostRecentUpdatedAt->diffForHumans() }}
+                                    {{ $mostRecentUpdatedAt->format('d.m.y') }}
                                 @endif
                             </p>
                         </div>
@@ -72,7 +73,8 @@
             <!-- User Posts Section -->
             <div
                 class="posts-container overflow-hidden bg-c-primary/10 p-6 text-c-text shadow-sm sm:rounded-lg">
-                <h3 class="mb-4 text-lg truncate font-bold">Posts by {{ $user->name }}
+                <h3 class="mb-4 truncate text-lg font-bold">Posts by
+                    {{ $user->name }}
                 </h3>
                 <ul class="flex flex-wrap gap-x-8">
                     @forelse ($posts as $post)
