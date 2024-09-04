@@ -4,8 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Actions\CreateImageVariants;
 use App\Enums\ImageSizeType;
-use App\Http\Requests\Post\StoreRequest; // Importing the StoreRequest form request
-use App\Http\Requests\Post\UpdateRequest; // Importing the UpdateRequest form request
+use App\Http\Requests\Post\StoreUpdateRequest;
 use App\Models\Image;
 use App\Models\Post; // Importing the Post model
 use Illuminate\Contracts\View\View;
@@ -77,7 +76,7 @@ class PostController extends Controller {
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreRequest $request, CreateImageVariants $createImageVariants): RedirectResponse {
+    public function store(StoreUpdateRequest $request, CreateImageVariants $createImageVariants): RedirectResponse {
         // Validate the incoming request
         $validated = $request->validated();
 
@@ -150,7 +149,7 @@ class PostController extends Controller {
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateRequest $request, string $id, CreateImageVariants $createImageVariants): RedirectResponse {
+    public function update(StoreUpdateRequest $request, string $id, CreateImageVariants $createImageVariants): RedirectResponse {
         // Find the post with the specified ID
         $post = Post::findOrFail($id);
 
