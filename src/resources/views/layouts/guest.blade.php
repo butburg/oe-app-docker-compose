@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
-<head>
-    <meta charset="utf-8">
+  <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
@@ -40,6 +39,18 @@
         <x-login-link
             class="m-3 inline-flex items-center rounded-md border border-transparent bg-gray-800 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white transition duration-150 ease-in-out hover:bg-gray-700 focus:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 active:bg-gray-900" />
         @endenv
+        <div class="bg-gray-800 text-white p-6 rounded-lg shadow-lg max-w-lg mx-auto">
+  <h2 class="text-2xl font-bold mb-4">The Ultimate Art Platform</h2>
+  <p class="mb-4">Share your masterpieces and create a collaborative image gallery.</p>
+  
+  <ul class="list-disc pl-5 space-y-2">
+    <li><span class="font-semibold">Upload</span> your images and add them to the gallery.</li>
+    <li><span class="font-semibold">Give</span> your piece a name, turning it into a true work of art.</li>
+    <li><span class="font-semibold">Praise</span> other pictures to make someone’s day... or not.</li>
+    <li><span class="font-semibold">Comment</span> to share your profound insights (or witty remarks) with the artist.</li>
+  </ul>
+</div>
+
     </div>
 
     <footer class="text-content-text py-16 text-center text-sm">
