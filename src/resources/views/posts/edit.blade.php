@@ -49,13 +49,7 @@
                                     accept="image/jpeg,image/png,image/gif,image/svg+xml,image/webp" />
                             </label>
                             {{-- replace the error msg from image file to image. can be implemented as blade template --}}
-                            @if ($errors->has('image_file'))
-                                @foreach ($errors->get('image_file') as $error)
-                                    <div class="space-y-1 text-sm text-red-600">
-                                        {{ str_replace('image file', 'image', $error) }}
-                                    </div>
-                                @endforeach
-                            @endif {{-- Display validation errors for info file --}}
+                            <x-input-error class="mt-2" :messages="$errors->get('image_file')" /> {{-- Display validation errors for post title --}}
                         </div>
 
                         <div class="text-md mb-4 flex rounded-lg bg-c-background p-4 text-blue-300" role="alert">

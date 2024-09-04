@@ -1,5 +1,6 @@
 {{-- list comments --}}
-@forelse ($post->comments as $comment) {{-- ->reverse() --}}
+@forelse ($post->comments as $comment)
+    {{-- ->reverse() --}}
     <div class="text-comment-text rounded-lg bg-c-primary/40 p-3">
         @if (!(Auth::id() === $comment->user_id))
             <div class="mb-2 flex items-start justify-between space-x-3">
@@ -23,17 +24,20 @@
                 </div>
 
                 <div x-show="isEditing">
-                    <x-gallery.form.form action="{{ route('comments.update', $comment->id) }}" method="PUT"
-                        :formId="'commentUpdate_' . $comment->id">
+                    <x-gallery.form.form
+                        action="{{ route('comments.update', $comment->id) }}"
+                        method="PUT" :formId="'commentUpdate_' . $comment->id">
                         <x-gallery.form.textarea name="comment"
                             placeholder="Edit comment...">{{ $comment->comment }}</x-gallery.form.textarea>
                         {{-- error msg here with named error bags --}}
                         @error('comment', 'commentUpdate_' . $comment->id)
-                            <div class="alert alert-danger">{{ $message }}</div>
+                            <div class="alert alert-danger">{{ $message }}
+                            </div>
                         @enderror
                     </x-gallery.form.form>
-                    <x-gallery.form.form action="{{ route('comments.destroy', $comment->id) }}" method="DELETE"
-                        :formId="'commentDelete_' . $comment->id">
+                    <x-gallery.form.form
+                        action="{{ route('comments.destroy', $comment->id) }}"
+                        method="DELETE" :formId="'commentDelete_' . $comment->id">
                     </x-gallery.form.form>
                     <div class="mt-1 flex items-center space-x-3">
                         <x-text-button
