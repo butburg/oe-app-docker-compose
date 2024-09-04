@@ -48,10 +48,10 @@ class PostController extends Controller {
         return view('posts.index', [
             'draftPosts' => Post::where('is_published', false)
                 ->orderBy('updated_at', 'desc')
-                ->paginate(15),
+                ->paginate(config('app.posts_per_page')),
             'publishedPosts' => Post::where('is_published', true)
                 ->orderBy('updated_at', 'desc')
-                ->paginate(15),
+                ->paginate(config('app.posts_per_page')),
         ]);
     }
     /**
@@ -60,7 +60,7 @@ class PostController extends Controller {
     public function gallery(Request $request): View {
         $posts = Post::where('is_published', true)
             ->orderBy('created_at', 'desc')
-            ->paginate(15);
+            ->paginate(config('app.posts_per_page'));
 
         return view('welcome', compact('posts'));
     }
