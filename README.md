@@ -130,3 +130,11 @@ docker-compose run --rm --entrypoint npm npm list vite
 
 docker-compose run --rm --entrypoint php artisan -r 'echo "SQLite version: " . SQLite3::version()["versionString"] . PHP_EOL;'
 ```
+
+
+# Usefull for development and first run
+
+Add all the exisiting images from legacy-image directory as new posts. Also generate from them posts and image versions. Use the old exported databse for inserting the details like user and upload date:
+```
+docker-compose run --rm artisan app:migrate-legacy-images
+```
