@@ -14,7 +14,7 @@
     
         <div class="flex flex-wrap justify-centersm:gap-4">
             @foreach ($users as $user)
-                @include('admin.partials.user-tile', ['user' => $user])
+                @include('components.profile.user-tile', ['user' => $user])
             @endforeach
         </div>
     
