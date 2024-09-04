@@ -113,6 +113,7 @@ class ProfileController extends Controller {
 
         // Get the user's posts with pagination
         $posts = $user->posts()
+            ->withCount('comments') // Eager load comments count for each post
             ->orderBy('created_at', 'desc')
             ->paginate(config('app.posts_per_page')); // Change this to the desired number of posts per page
 

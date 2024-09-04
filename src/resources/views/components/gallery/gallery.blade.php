@@ -7,14 +7,15 @@
                     <div
                         class="mx-auto grid grid-cols-1 md:grid-cols-3 md:gap-x-10">
                         <!-- Image -->
-                        <div class="col-span-3 flex items-center justify-center md:col-span-2"
+                        <div class="col-span-3 flex cursor-pointer items-center justify-center md:col-span-2"
                             @click="showComments = !showComments">
                             @include(
                                 'components.image_or_placeholder',
                                 [
                                     'image' => $post->image,
                                     'size_type' => 'l', // Beispiel für einen Bildtyp
-                                    'alt_title' => $post->title,
+                                    'alt_title' =>
+                                        'Show comments for '.$post->title,
                                     'style' => '',
                                 ]
                             )
@@ -23,15 +24,17 @@
                         <div
                             class="relative col-span-3 flex flex-col pt-3 md:col-span-1 md:pt-0">
                             <!-- Title and Author -->
-                            <div class="flex flex-col rounded-lg bg-none"
-                                @click="showComments = !showComments">
+                            <div class="flex flex-col rounded-lg bg-none">
                                 <h1
                                     class="text-content-bg break-words text-lg font-semibold md:text-2xl">
                                     {{ $post->title }}
                                 </h1>
                                 <p class="text-nav-bg text-sm font-medium"
                                     title="{{ $post->user->name ?? $post->username }}">
-                                    {{ Str::limit($post->user->name ?? $post->username, 40, '...') }}
+                                    <a class="cursor-pointer hover:underline"
+                                        href="{{ route('profile.show', $post->user) }}">
+                                        {{ Str::limit($post->user->name, 40, '...') }}
+                                    </a>
                                     {{-- Display former name if applicable --}}
                                     @if ($post->user)
                                         @php
@@ -52,9 +55,11 @@
                                     title="Last update {{ $post->updated_at->diffForHumans() }}">
                                     {{ $post->created_at->diffForHumans() }}
                                     @if ($post->comments()->count() > 0)
-                                        <span> ♥
+                                        <span class="cursor-pointer"
+                                            @click="showComments = !showComments">|
                                             {{ $post->comments()->count() }}
-                                            comment{{ $post->comments()->count() > 1 ? 's' : '' }}</span>
+                                            comment{{ $post->comments()->count() > 1 ? 's' : '' }}
+                                            ♥</span>
                                     @endif
                                 </p>
                             </div>

@@ -12,11 +12,19 @@
                 <!-- Image and Stats Side by Side -->
                 <div class="flex items-center gap-6">
                     <!-- Profile Image -->
-                    @include('components.profile.profile-image', [
-                        'user' => $user,
-                        'height' => '64',
-                        'width' => '64',
-                        'size' => 'l',
+                    @php
+                        $isOnline = $user->session
+                            ? 'border-4 border-green-500'
+                            : '';
+                    @endphp
+
+                    @include('components.image_or_placeholder', [
+                        'image' => $user->image,
+                        'size_type' => 'l',
+                        'alt_title' => 'Your Profile Image',
+                        'style' => "{$isOnline} h-80 w-80 my-2 rounded-full box-border bg-gray-200",
+                        'placeholder' =>
+                            'storage/files/images/starfish.svg',
                     ])
                     <!-- User Stats -->
                     @include('components.profile.user-stats', [

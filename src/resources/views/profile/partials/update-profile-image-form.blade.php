@@ -10,23 +10,22 @@
             @endif
         </p>
     </header>
-
+    {{-- Display existing image if it exists --}}
+    <div class="my-2">
+        @include('components.image_or_placeholder', [
+            'image' => $user->image,
+            'size_type' => 'l',
+            'alt_title' => 'Your Profile Image',
+            'style' =>
+                'h-80 w-80 border-4 border-green-500 rounded-full bg-gray-200 object-cover',
+            'placeholder' => 'storage/files/images/starfish.svg',
+        ])
+    </div>
     <form method="POST" action="{{ route('profile.updateImage') }}"
         enctype="multipart/form-data">
         @csrf
         @method('PUT')
 
-        {{-- Display existing image if it exists --}}
-        <div class="my-2">
-            @include('components.image_or_placeholder', [
-                'image' => $user->image,
-                'size_type' => 'l',
-                'alt_title' => 'Your Profile Image',
-                'style' =>
-                    'h-60 w-60 rounded-full bg-gray-200 object-cover',
-                'placeholder' => 'storage/files/images/starfish.svg',
-            ])
-        </div>
         {{-- Image input field --}}
         <label class="object- my-4 block">
             <span class="sr-only">Choose profile image to upload</span>
