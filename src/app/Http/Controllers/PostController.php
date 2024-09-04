@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller {
+
+
     /**
      * Display a listing of the resource.
      */
@@ -124,6 +126,24 @@ class PostController extends Controller {
     public function show(string $id): View {
         $post = Post::findOrFail($id);
         return view('posts.show', compact('post'));
+    }
+
+    /**
+     * Calculate the gallery page number for a specific post.
+     */
+    public function getPageForPost(Post $post, $perPage = null) {
+        // Use the configuration value if $perPage is null
+        $perPage = $perPage ?? config('app.posts_per_page');
+
+        // Get the total number of posts before the current post in descending order
+        $postPosition = Post::where('is_published', true)
+            ->where('created_at', '>', $post->created_at)
+            ->count();
+
+        // Calculate the page number
+        $page = ceil(($postPosition + 1) / $perPage);
+
+        return $page;
     }
 
     /**

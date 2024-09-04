@@ -38,6 +38,9 @@ class User extends Authenticatable implements MustVerifyEmail {
         return $this->hasOne(Session::class, 'user_id', 'id');
     }
 
+    public function getPostsCountAttribute(): int {
+        return $this->posts()->count();
+    }
 
     /**
      * Get the former name if it is within the given days limit.
