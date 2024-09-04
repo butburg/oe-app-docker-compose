@@ -15,7 +15,7 @@
     <tbody>
         @foreach ($users->sortByDesc('created_at') as $user)
             <tr>
-                <td class="border px-4 py-2" title="{{ $user->name }}">{{ Str::limit($user->name, 30, '...') }}</td>
+                <td class="border px-4 py-2" title="{{ $user->name }}">{{ Str::limit($user->name, config('app.truncate_name'), '...') }}</td>
                 <td class="border px-4 py-2">{{ $user->email }}</td>
                 <td class="border px-4 py-2">{{ $user->usertype }}</td>
                 <td class="border px-4 py-2">{{ $user->posts_count }}</td>

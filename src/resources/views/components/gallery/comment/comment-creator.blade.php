@@ -13,7 +13,7 @@
     @if ($comment->user)
         <a class="text-title-text flex-grow cursor-pointer text-sm font-semibold hover:underline"
             href="{{ route('profile.show', $comment->user) }}">
-            {{ Auth::id() === $comment->user_id ? 'You' : Str::limit($comment->user?->name ?? 'Unknown', 30, '...') }}
+            {{ Auth::id() === $comment->user_id ? 'You' : Str::limit($comment->user?->name, config('app.truncate_name'), '...') }}
         </a>
     @else
         <a class="text-title-text flex-grow cursor-pointer text-sm font-semibold text-gray-800 hover:underline"

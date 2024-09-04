@@ -10,5 +10,5 @@
     </p>
 @endif
 <h4 class="text-xl font-bold text-c-text" title="{{ $user->name }}">
-    {{ Str::limit($user->getFormerNameIfApplicable(), 30, '...') }}
+    {{ Str::limit($user->name, config('app.truncate_name'), '...') }}
 </h4>

@@ -36,7 +36,7 @@
                                         title="{{ $post->user->name }}">
                                         <a class="cursor-pointer hover:underline"
                                             href="{{ route('profile.show', $post->user) }}">
-                                            {{ Str::limit($post->user->name, 40, '...') }}
+                                            {{ Str::limit($post->user->name, config('app.truncate_name'), '...') }}
                                         </a>
                                         {{-- Display former name if applicable --}}
                                         @php
@@ -48,14 +48,14 @@
                                         @if ($formerName)
                                             <span
                                                 class="text-xs text-gray-500">(Formerly:
-                                                {{ Str::limit($formerName, 40, '...') }})</span>
+                                                {{ Str::limit($formerName, config('app.truncate_name'), '...') }})</span>
                                         @endif
                                     </p>
                                 @else
                                 {{-- no user found --}}
                                     <p class="text-nav-bg text-sm text-gray-500 font-medium"
                                         title="{{ $post->username }}">
-                                        {{ Str::limit($post->username, 40, '...') }}
+                                        {{ Str::limit($post->username, config('app.truncate_name'), '...') }}
                                     </p>
                                 @endif
 
