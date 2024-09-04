@@ -2,14 +2,7 @@
 @forelse ($post->comments as $comment)
     {{-- ->reverse() --}}
     <div class="text-comment-text rounded-lg bg-c-primary/40 p-3">
-        @if (!(Auth::id() === $comment->user_id))
-            <div class="mb-2 flex items-start justify-between space-x-3">
-                <x-gallery.comment.comment-creator :comment="$comment" />
-            </div>
-            <x-truncated-comment>
-                {{ $comment->comment }}
-            </x-truncated-comment>
-        @else
+        @if (auth()->check() && auth()->user()->id === $comment->user_id)
             {{-- edit users own Comments --}}
             <div x-data="{ isEditing: false }">
                 <div class="mb-2 flex items-start justify-between space-x-3">
@@ -22,7 +15,6 @@
                         {{ $comment->comment }}
                     </x-truncated-comment>
                 </div>
-
                 <div x-show="isEditing">
                     <x-gallery.form.form
                         action="{{ route('comments.update', $comment->id) }}"
@@ -48,8 +40,14 @@
                             :formId="'commentUpdate_' . $comment->id">Update</x-text-button>
                     </div>
                 </div>
-
             </div>
+        @else
+            <div class="mb-2 flex items-start justify-between space-x-3">
+                <x-gallery.comment.comment-creator :comment="$comment" />
+            </div>
+            <x-truncated-comment>
+                {{ $comment->comment }}
+            </x-truncated-comment>
         @endif
     </div>
 @empty

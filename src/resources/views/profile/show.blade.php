@@ -8,16 +8,14 @@
             <!-- User Info Section -->
             <div
                 class="mb-6 overflow-hidden bg-c-primary/10 p-6 shadow-sm sm:rounded-lg">
+                <div class="flex flex-wrap justify-center gap-6">
 
-                <!-- Image and Stats Side by Side -->
-                <div class="flex items-center gap-6">
                     <!-- Profile Image -->
                     @php
                         $isOnline = $user->session
                             ? 'border-4 border-green-500'
                             : '';
                     @endphp
-
                     @include('components.image_or_placeholder', [
                         'image' => $user->image,
                         'size_type' => 'l',
@@ -26,33 +24,55 @@
                         'placeholder' =>
                             'storage/files/images/starfish.svg',
                     ])
-                    <!-- User Stats -->
-                    @include('components.profile.user-stats', [
-                        'user' => $user,
-                    ])
-                </div>
 
-                <!-- User Name and Former Name Below Image and Stats -->
-                @include('components.profile.user-name', [
-                    'user' => $user,
-                ])
+                    <div class="max-w-80 flex flex-col justify-center gap-2">
+                        <!-- User Name and Former Name Below Image and Stats -->
+                        @include('components.profile.user-name', [
+                            'user' => $user,
+                        ])
 
-                <!-- Display "Seen" information only -->
-                <div class="text-sm text-gray-400">
-                    <p>
-                        <strong>Seen:</strong>
-                        @if ($user->session)
-                            {{ \Carbon\Carbon::parse($user->session->last_activity)->diffForHumans() }}
-                        @else
-                            Offline
-                        @endif
-                    </p>
+                        <!-- User Stats -->
+                        @include('components.profile.user-stats', [
+                            'user' => $user,
+                        ])
+
+                        <!-- Display "Last seen" information only -->
+                        @php
+                            // max needs timestamps, so get these compare and than decide which time object to choose
+                            $userUpdatedAt = $user->updated_at;
+
+                            $lastUpdatedPost = $user
+                                ->posts()
+                                ->latest('updated_at')
+                                ->first();
+                            $postUpdatedAt = $lastUpdatedPost
+                                ? $lastUpdatedPost->updated_at
+                                : null;
+
+                            // Determine the most recent updated_at timestamp
+                            $mostRecentUpdatedAt = $postUpdatedAt
+                                ? max($userUpdatedAt, $postUpdatedAt)
+                                : $userUpdatedAt;
+                        @endphp
+
+                        <div class="text-sm text-gray-400">
+                            <p>
+                                Last time seen:
+                                @if ($user->session)
+                                    Online
+                                @else
+                                    {{ $mostRecentUpdatedAt->diffForHumans() }}
+                                @endif
+                            </p>
+                        </div>
+                    </div>
                 </div>
             </div>
+
             <!-- User Posts Section -->
             <div
                 class="posts-container overflow-hidden bg-c-primary/10 p-6 text-c-text shadow-sm sm:rounded-lg">
-                <h3 class="mb-4 text-lg font-bold">Posts by {{ $user->name }}
+                <h3 class="mb-4 text-lg truncate font-bold">Posts by {{ $user->name }}
                 </h3>
                 <ul class="flex flex-wrap gap-x-8">
                     @forelse ($posts as $post)

@@ -15,7 +15,8 @@
                                     'image' => $post->image,
                                     'size_type' => 'l', // Beispiel für einen Bildtyp
                                     'alt_title' =>
-                                        'Show comments for '.$post->title,
+                                        'Show comments for ' .
+                                        $post->title,
                                     'style' => '',
                                 ]
                             )
@@ -29,14 +30,15 @@
                                     class="text-content-bg break-words text-lg font-semibold md:text-2xl">
                                     {{ $post->title }}
                                 </h1>
-                                <p class="text-nav-bg text-sm font-medium"
-                                    title="{{ $post->user->name ?? $post->username }}">
-                                    <a class="cursor-pointer hover:underline"
-                                        href="{{ route('profile.show', $post->user) }}">
-                                        {{ Str::limit($post->user->name, 40, '...') }}
-                                    </a>
-                                    {{-- Display former name if applicable --}}
-                                    @if ($post->user)
+
+                                @if ($post->user)
+                                    <p class="text-nav-bg text-sm font-medium"
+                                        title="{{ $post->user->name }}">
+                                        <a class="cursor-pointer hover:underline"
+                                            href="{{ route('profile.show', $post->user) }}">
+                                            {{ Str::limit($post->user->name, 40, '...') }}
+                                        </a>
+                                        {{-- Display former name if applicable --}}
                                         @php
                                             $formerName = $post->user->getFormerNameIfApplicable(
                                                 90,
@@ -48,8 +50,15 @@
                                                 class="text-xs text-gray-500">(Formerly:
                                                 {{ Str::limit($formerName, 40, '...') }})</span>
                                         @endif
-                                    @endif
-                                </p>
+                                    </p>
+                                @else
+                                {{-- no user found --}}
+                                    <p class="text-nav-bg text-sm text-gray-500 font-medium"
+                                        title="{{ $post->username }}">
+                                        {{ Str::limit($post->username, 40, '...') }}
+                                    </p>
+                                @endif
+
 
                                 <p class="mt-2 text-xs font-medium leading-4 opacity-60"
                                     title="Last update {{ $post->updated_at->diffForHumans() }}">

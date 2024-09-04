@@ -1,3 +1,3 @@
-<h2 class="font-serif text-xl font-semibold leading-tight">
+<h2 class="font-serif truncate text-xl font-semibold leading-tight">
     {{ $slot }}
 </h2>
