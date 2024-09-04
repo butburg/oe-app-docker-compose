@@ -58,7 +58,6 @@
                         <div class="text-sm text-gray-400">
                             <p>
                                 <strong>Seen:</strong>
-                                Last time seen:
                                 @if ($user->session)
                                     {{ \Carbon\Carbon::parse($user->session->last_activity)->diffInMinutes() }}
                                 @else
