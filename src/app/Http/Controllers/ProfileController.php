@@ -49,7 +49,18 @@ class ProfileController extends Controller {
         session()->flash('notif.success', 'Your username updated successfully!');
         return Redirect::route('profile.edit');
     }
+    
+    public function updateDescription(ProfileUpdateRequest $request): RedirectResponse {
+        $user = Auth::user();
+        $description = $request->validated()['description'];
 
+        $user->description = $description;
+        $user->save();
+
+        session()->flash('notif.success', 'Your description updated successfully!');
+        return Redirect::route('profile.edit');
+    }
+    
     public function updateEmail(ProfileUpdateRequest $request): RedirectResponse {
 
         $user = Auth::user();

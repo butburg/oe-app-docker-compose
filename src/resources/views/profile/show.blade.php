@@ -36,6 +36,11 @@
                             'user' => $user,
                         ])
 
+                        @include(
+                            'profile.partials.display-description',
+                            ['user' => $user]
+                        )
+
                         <!-- Display "Last seen" information only -->
                         @php
                             // max needs timestamps, so get these compare and than decide which time object to choose
@@ -53,13 +58,22 @@
                             $mostRecentUpdatedAt = $postUpdatedAt
                                 ? max($userUpdatedAt, $postUpdatedAt)
                                 : $userUpdatedAt;
+
+                            // for showing time if seesion active
+                            $lastActivity = \Carbon\Carbon::parse(
+                                $user->session->last_activity,
+                            );
                         @endphp
 
                         <div class="text-sm text-gray-400">
                             <p>
                                 <strong>Seen:</strong>
                                 @if ($user->session)
-                                    {{ \Carbon\Carbon::parse($user->session->last_activity)->diffInMinutes() }}
+                                    @if ($lastActivity->diffInMinutes() < 3)
+                                        Active
+                                    @else
+                                        {{ $lastActivity->diffForHumans() }}
+                                    @endif
                                 @else
                                     {{ $mostRecentUpdatedAt->format('d.m.y') }}
                                 @endif

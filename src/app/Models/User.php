@@ -19,7 +19,7 @@ class User extends Authenticatable implements MustVerifyEmail {
      *
      * @var array<int, string>
      */
-    protected $fillable = ['name', 'email', 'password', 'profile_image', 'usertype'];
+    protected $fillable = ['name', 'email', 'password', 'profile_image', 'usertype', 'description'];
 
     public function posts() {
         return $this->hasMany(Post::class);

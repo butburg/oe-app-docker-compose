@@ -19,6 +19,10 @@ class ProfileUpdateRequest extends FormRequest {
             $rules['name'] = ['required', 'string', 'max:255', Rule::unique(User::class)->ignore($this->user()->id)];
         }
 
+        if ($this->routeIs('profile.updateDescription')) {
+            $rules['description'] = ['nullable', 'string', 'max:500'];
+        }
+
         if ($this->routeIs('profile.updateEmail')) {
             $rules['email'] = ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique(User::class)->ignore($this->user()->id)];
         }

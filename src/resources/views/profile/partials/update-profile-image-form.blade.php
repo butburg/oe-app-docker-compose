@@ -1,7 +1,7 @@
 <section>
     <header>
         <h2 class="text-content-text text-lg font-medium">
-            {{ __('Update profile image') }}
+            {{ __('Update Profile Image') }}
         </h2>
         <p class="mt-1 text-sm text-gray-300">
             {{ __('Make yourself better reconizable to others.') }}
