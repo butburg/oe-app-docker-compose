@@ -20,7 +20,7 @@
                         'image' => $user->image,
                         'size_type' => 'l',
                         'alt_title' => 'Your Profile Image',
-                        'style' => "{$isOnline} h-80 w-80 my-2 rounded-full box-border bg-gray-200",
+                        'style' => "{$isOnline} h-80 w-80 my-2 rounded-full box-border object-cover bg-gray-200",
                         'placeholder' =>
                             'storage/files/images/starfish.svg',
                     ])
