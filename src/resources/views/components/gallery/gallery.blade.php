@@ -7,7 +7,7 @@
                     <div
                         class="mx-auto grid grid-cols-1 md:grid-cols-3 md:gap-x-10">
                         <!-- Image -->
-                        <div class="col-span-3 flex cursor-pointer items-center justify-center md:col-span-2"
+                        <div class="col-span-3 flex cursor-pointer items-center justify-center md:col-span-2 md:cursor-auto"
                             @click="showComments = !showComments">
                             @include(
                                 'components.image_or_placeholder',
@@ -52,19 +52,19 @@
                                         @endif
                                     </p>
                                 @else
-                                {{-- no user found --}}
-                                    <p class="text-nav-bg text-sm text-gray-500 font-medium"
+                                    {{-- no user found --}}
+                                    <p class="text-nav-bg text-sm font-medium text-gray-500"
                                         title="{{ $post->username }}">
                                         {{ Str::limit($post->username, config('app.truncate_name'), '...') }}
                                     </p>
                                 @endif
 
-
                                 <p class="mt-2 text-xs font-medium leading-4 opacity-60"
                                     title="Last update {{ $post->updated_at->diffForHumans() }}">
                                     {{ $post->created_at->diffForHumans() }}
                                     @if ($post->comments()->count() > 0)
-                                        <span class="cursor-pointer"
+                                        <span
+                                            class="cursor-pointer md:cursor-auto"
                                             @click="showComments = !showComments">|
                                             {{ $post->comments()->count() }}
                                             comment{{ $post->comments()->count() > 1 ? 's' : '' }}

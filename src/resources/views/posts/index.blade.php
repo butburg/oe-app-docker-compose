@@ -44,7 +44,7 @@ resources\views\layouts\app.blade.php view --}}
                         Publish:</span>
                     <ul class="mt-1.5 list-inside list-disc">
                         <li>Once published, your post <span
-                                class="font-semibold">cannot be edited</span> .
+                                class="font-semibold">cannot be edited</span>.
                         </li>
                         <li>You have the option to <span
                                 class="font-semibold">hide</span> or <span

@@ -2,7 +2,7 @@
     <x-slot name="header">
         <!-- Flex container with space between elements -->
         <div class="flex items-center justify-between">
-            <x-header2>Gallery</x-header2>
+            <x-header2>Weedy Gallery</x-header2>
 
             {{-- check if there is a notif.success flash session --}}
             @if (Session::has('notif.success'))
