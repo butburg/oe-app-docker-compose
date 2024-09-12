@@ -58,17 +58,18 @@
                             $mostRecentUpdatedAt = $postUpdatedAt
                                 ? max($userUpdatedAt, $postUpdatedAt)
                                 : $userUpdatedAt;
-
-                            // for showing time if seesion active
-                            $lastActivity = \Carbon\Carbon::parse(
-                                $user->session->last_activity,
-                            );
                         @endphp
 
                         <div class="text-sm text-gray-400">
                             <p>
                                 <strong>Seen:</strong>
                                 @if ($user->session)
+                                    @php
+                                        // for showing time if seesion active
+                                        $lastActivity = \Carbon\Carbon::parse(
+                                            $user->session->last_activity,
+                                        );
+                                    @endphp
                                     @if ($lastActivity->diffInMinutes() < 3)
                                         Active
                                     @else
