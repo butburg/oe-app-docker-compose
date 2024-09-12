@@ -7,13 +7,16 @@
         @php
             $isOnline = $user->session ? 'border-4 border-green-500' : '';
         @endphp
-        @include('components.image_or_placeholder', [
-            'image' => $user->image,
-            'size_type' => 'xs',
-            'alt_title' => 'Your Profile Image',
-            'style' => "{$isOnline} h-24 w-24 my-2 rounded-full box-border bg-gray-200",
-            'placeholder' => 'storage/files/images/starfish.svg',
-        ])
+        <a class="transform transition-transform hover:scale-105"
+            href="{{ $user ? route('profile.show', $user) : '' }}">
+            @include('components.image_or_placeholder', [
+                'image' => $user->image,
+                'size_type' => 'xs',
+                'alt_title' => 'Your Profile Image',
+                'style' => "{$isOnline} h-24 w-24 my-2 rounded-full box-border bg-gray-200",
+                'placeholder' => 'storage/files/images/starfish.svg',
+            ])
+        </a>
 
         <!-- User Stats -->
         @include('components.profile.user-stats', [
