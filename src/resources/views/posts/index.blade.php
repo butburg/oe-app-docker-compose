@@ -153,20 +153,32 @@ resources\views\layouts\app.blade.php view --}}
                     class="flex flex-col items-start border-b py-4 md:flex-row md:items-center">
                     <!-- Published Image -->
                     <div class="flex flex-grow">
+
+                        @php
+                            $page = app(
+                                'App\Http\Controllers\PostController',
+                            )->getPageForPost(
+                                $post,
+                                config('app.posts_per_page'),
+                            );
+                        @endphp
+
                         <div
                             class="@if (!$post->is_published) opacity-25 @endif flex-shrink-0">
-                            <a
-                                href="{{ Storage::url($post->image->variants->firstWhere('size_type', 'xl')->path) }}">
+
+                            <a class="block transform transition-transform hover:scale-105"
+                                href="{{ route('dashboard') }}?page={{ $page }}#post-{{ $post->id }}">
                                 <x-image_or_placeholder
                                     alt_title="Open large image"
-                                    style="h-24 w-24 rounded-full object-cover"
+                                    style="h-25 w-25 rounded-full object-cover"
                                     :image="$post->image" size_type="s" />
                             </a>
                         </div>
                         <!-- Display Published details -->
                         <div class="ml-4">
-                            <span
-                                class="text-lg font-medium">{{ $post->title }}</span>
+                            <a class="text-lg font-medium hover:underline"
+                                href="{{ route('dashboard') }}?page={{ $page }}#post-{{ $post->id }}">
+                                {{ $post->title }}</a>
 
                             @if (!$post->is_published)
                                 <span
@@ -183,6 +195,11 @@ resources\views\layouts\app.blade.php view --}}
 
                             <small class="block text-gray-300">Comments:
                                 {{ $post->comments->count() }}</small>
+
+                            <small><a
+                                    href="{{ Storage::url($post->image->variants->firstWhere('size_type', 'xl')->path) }}">Open
+                                    full screen</a></small>
+
                         </div>
                     </div>
 
