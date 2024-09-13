@@ -27,13 +27,13 @@ class PostController extends Controller {
         $draftPosts = Post::whereNotNull('user_id')
             ->where('user_id', $userId)
             ->where('once_published', false)
-            ->orderBy('updated_at', 'desc')
+            ->orderBy('created_at', 'desc')
             ->paginate(10);
 
         $publishedPosts = Post::whereNotNull('user_id')
             ->where('user_id', $userId)
             ->where('once_published', true)
-            ->orderBy('updated_at', 'desc')
+            ->orderBy('created_at', 'desc')
             ->paginate(10);
 
         return view('posts.index', [
@@ -49,10 +49,10 @@ class PostController extends Controller {
         // Retrieve published and draft posts from the database and pass them to the view
         return view('posts.index', [
             'draftPosts' => Post::where('is_published', false)
-                ->orderBy('updated_at', 'desc')
+                ->orderBy('created_at', 'desc')
                 ->paginate(config('app.posts_per_page')),
             'publishedPosts' => Post::where('is_published', true)
-                ->orderBy('updated_at', 'desc')
+                ->orderBy('created_at', 'desc')
                 ->paginate(config('app.posts_per_page')),
         ]);
     }

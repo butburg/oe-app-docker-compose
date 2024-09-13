@@ -71,7 +71,7 @@ resources\views\layouts\app.blade.php view --}}
             </div>
 
             <!-- Section to display draft posts as flex-->
-            @forelse ($draftPosts->sortByDesc('created_at') as $post)
+            @forelse ($draftPosts as $post)
                 <div
                     class="flex flex-col items-start border-b py-4 md:flex-row md:items-center">
                     <!-- draft Image -->
@@ -142,13 +142,13 @@ resources\views\layouts\app.blade.php view --}}
             <!-- Title for published posts -->
             <h3 class="mb-4 text-lg font-semibold leading-tight">Published</h3>
 
-            <!-- Pagination links -->
-            <div class="mt-4">
-                {{ $publishedPosts->links() }}
-            </div>
+                <!-- Pagination links -->
+                <div class="mt-4">
+                    {{ $publishedPosts->links() }}
+                </div>
 
-            <!-- Section to display published posts as flex-->
-            @forelse ($publishedPosts->sortByDesc('created_at') as $post)
+                <!-- Section to display published posts as flex-->
+                @forelse ($publishedPosts as $post)
                 <div
                     class="flex flex-col items-start border-b py-4 md:flex-row md:items-center">
                     <!-- Published Image -->

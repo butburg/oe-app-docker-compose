@@ -1,6 +1,6 @@
 <div class="mx-auto py-6">
     <div class="{{-- grid grid-cols-1 lg:grid-cols-2 gap-4 --}}">
-        @foreach ($posts->sortByDesc('created_at') as $post)
+        @foreach ($posts as $post)
             <div id="post-{{ $post->id }}" x-data="{ showComments: false }">
                 <main
                     class="md:x-8 mx-1 mb-4 rounded-lg bg-c-primary/10 px-2 py-6 sm:mb-6 sm:px-6 md:mb-10">
