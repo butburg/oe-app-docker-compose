@@ -3,26 +3,25 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use Intervention\Image\Laravel\Facades\Image;
-use League\Csv\Reader;
 
-class ConvertImages extends Command
-{
+/**
+ * Not needed anymore! Since images are from blob now files.
+ */
+class ConvertBlobImages extends Command {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'app:convert-images';
+    protected $signature = 'app:convert-blob-images';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Convert BLOB data to images and store in storage';
+    protected $description = 'Convert BLOB data to images and store them in storage as files.';
 
     /**
      * Convert MIME type to file extension
@@ -30,8 +29,7 @@ class ConvertImages extends Command
      * @param string $mimeType
      * @return string
      */
-    protected function getExtensionFromMimeType($mimeType)
-    {
+    protected function getExtensionFromMimeType($mimeType) {
         $mimeTypes = [
             'image/jpeg' => 'jpg',
             'image/png' => 'png',
@@ -43,8 +41,7 @@ class ConvertImages extends Command
 
         return isset($mimeTypes[$mimeType]) ? $mimeTypes[$mimeType] : '';
     }
-    public function handle()
-    {
+    public function handle() {
 
         $csvFile = 'old_image_posts/images.csv';
         // Open the CSV file for reading
@@ -83,42 +80,4 @@ class ConvertImages extends Command
 
         $this->info('Import process completed.');
     }
-
-
-    /* public function handle()
-    {
-        // Fetch data from the old SQLite table
-        $oldPosts = DB::connection('old_sqlite')
-            ->table('images')
-            ->select('filename', 'mime_type', 'file_data')
-            ->get();
-
-        foreach ($oldPosts as $oldPost) {
-            // Get the correct file extension
-            $extension = $this->getExtensionFromMimeType($oldPost->mime_type);
-
-            // Construct the new filename with extension
-            $baseFilename = pathinfo($oldPost->filename, PATHINFO_FILENAME);
-            $newFilename = $baseFilename . '.' . $extension;
-            $imagePath = 'files/posts/images/' . $newFilename; // Adjust path as needed
-
-            // Convert hexadecimal string to binary
-            $imageData = base64_decode($oldPost->file_data);
-
-            try {
-                
-
-                // Save the image to storage (public disk)
-                Storage::disk('public')->put($imagePath, $imageData);
-
-                // Insert into new 'posts' table (if needed)
-                // DB::table('posts')->insert([...]);
-
-                $this->info('Converted and saved: ' . $imagePath);
-            } catch (\Exception $e) {
-                $this->error('Error processing image: ' . $e->getMessage());
-            }
-            break;
-        }
-    } */
 }

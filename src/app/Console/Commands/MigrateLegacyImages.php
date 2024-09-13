@@ -5,13 +5,13 @@ namespace App\Console\Commands;
 use App\Actions\CreateImageVariants;
 use App\Enums\ImageSizeType;
 use App\Models\Image;
+use App\Models\ImageVariant;
 use App\Models\Post;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
 
 
-class MigrateLegacyImages extends Command
-{
+class MigrateLegacyImages extends Command {
     /**
      * The name and signature of the console command.
      *
@@ -29,8 +29,7 @@ class MigrateLegacyImages extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
-    {
+    public function handle() {
         $legacyImagePath = storage_path('app/public/files/posts/images_legacy');
 
         // Check if the directory exists
@@ -52,17 +51,38 @@ class MigrateLegacyImages extends Command
             // Find the post by title
             $post = Post::where('title', $filename)->first();
 
+
+            $this->info("Processing file: $fullFileName");
+            $this->info("Post found: " . json_encode($post));
+
+
             if (!$post) {
                 $this->error("Post not found for image: $fullFileName");
                 continue; // Skip to the next file if no matching post is found
             }
 
-            // Create a new image record
-            $image = Image::create([
-                'post_id' => $post->id,
-                'upload_size' => filesize($file),
-            ]);
+            // Check if the image already exists for the post
+            $image = Image::where('post_id', $post->id)->first();
 
+            $this->info("Existing image: " . json_encode($image));
+
+
+            // if ($post->id == 35) {
+            //     dd($post, $image);
+            // }
+
+            if ($image) {
+                // If the image exists, log it
+                $this->info("Image for post '{$post->title}' already exists.");
+            } else {
+                // If the image doesn't exist, create it
+                $image = Image::create([
+                    'post_id' => $post->id,
+                    'upload_size' => filesize($file),
+                ]);
+
+                $this->warn("Image for post '{$post->title}' has been created.");
+            }
 
             // Define the desired (wanted) image sizes
             $desiredSizes = [
@@ -72,8 +92,18 @@ class MigrateLegacyImages extends Command
                 'xl' => ImageSizeType::EXTRA_LARGE->value,
             ];
 
-            // Save models and files in storage
-            app(CreateImageVariants::class)->handleVariant($image, $file, $desiredSizes, 'posts/images/');
+            // Check for missing variants and create them if necessary
+            foreach ($desiredSizes as $sizeKey => $sizeTypeValue) {
+                $variant = ImageVariant::where('image_id', $image->id)
+                    ->where('size_type', $sizeTypeValue)
+                    ->first();
+
+                if (!$variant) {
+                    // If the variant does not exist, create it
+                    app(CreateImageVariants::class)->handleVariant($image, $file, [$sizeKey => $sizeTypeValue], 'posts/images/');
+                    $this->warn("Created missing variant: $sizeKey for image: $fullFileName");
+                }
+            }
         }
 
         $this->info('Legacy images migrated successfully.');
