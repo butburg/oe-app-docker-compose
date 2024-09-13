@@ -65,7 +65,7 @@ resources\views\layouts\app.blade.php view --}}
                 </div>
             </div>
 
-            <!-- Pagination links -->
+            <!-- Pagination links top -->
             <div class="mt-4">
                 {{ $draftPosts->links() }}
             </div>
@@ -145,6 +145,10 @@ resources\views\layouts\app.blade.php view --}}
                     <small>No draft posts found.</small>
                 </div>
             @endforelse
+            <!-- Pagination links bottom -->
+            <div class="mt-4">
+                {{ $draftPosts->links() }}
+            </div>
         </div>
 
         <!-- Published -->
@@ -153,7 +157,7 @@ resources\views\layouts\app.blade.php view --}}
             <!-- Title for published posts -->
             <h3 class="mb-4 text-lg font-semibold leading-tight">Published</h3>
 
-            <!-- Pagination links -->
+            <!-- Pagination links top -->
             <div class="mt-4">
                 {{ $publishedPosts->links() }}
             </div>
@@ -266,6 +270,10 @@ resources\views\layouts\app.blade.php view --}}
                         it!</small>
                 </div>
             @endforelse
+            <!-- Pagination links bottom -->
+            <div class="mt-4">
+                {{ $publishedPosts->links() }}
+            </div>
         </div>
     </div>
 </x-app-layout>
