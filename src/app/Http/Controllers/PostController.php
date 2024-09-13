@@ -33,7 +33,7 @@ class PostController extends Controller {
         $publishedPosts = Post::whereNotNull('user_id')
             ->where('user_id', $userId)
             ->where('once_published', true)
-            ->orderBy('created_at', 'desc')
+            ->orderBy('published_at', 'desc')
             ->paginate(config('app.posts_per_page'), pageName: 'published');
 
         return view('posts.index', [
@@ -42,26 +42,33 @@ class PostController extends Controller {
             'isAdmin' => $userType === 'admin',
         ]);
     }
+
     /**
      * Display a special listing of the resources with all only for admin.
      */
     public function all(): View {
-        // Retrieve published and draft posts from the database and pass them to the view
+        // Retrieve draft posts sorted by created_at
+        $draftPosts = Post::where('is_published', false)
+            ->orderBy('created_at', 'desc')
+            ->paginate(config('app.posts_per_page'));
+
+        // Retrieve published posts sorted by published_at
+        $publishedPosts = Post::where('is_published', true)
+            ->orderBy('published_at', 'desc')
+            ->paginate(config('app.posts_per_page'));
+
         return view('posts.index', [
-            'draftPosts' => Post::where('is_published', false)
-                ->orderBy('created_at', 'desc')
-                ->paginate(config('app.posts_per_page')),
-            'publishedPosts' => Post::where('is_published', true)
-                ->orderBy('created_at', 'desc')
-                ->paginate(config('app.posts_per_page')),
+            'draftPosts' => $draftPosts,
+            'publishedPosts' => $publishedPosts,
         ]);
     }
+
     /**
      * Display the gallery with pagination.
      */
     public function gallery(Request $request): View {
         $posts = Post::where('is_published', true)
-            ->orderBy('created_at', 'desc')
+            ->orderBy('published_at', 'desc')
             ->paginate(config('app.posts_per_page'));
 
         return view('welcome', compact('posts'));
