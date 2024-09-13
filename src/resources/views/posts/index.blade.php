@@ -78,13 +78,19 @@ resources\views\layouts\app.blade.php view --}}
 
                     <div class="flex flex-grow">
                         <div class="flex-shrink-0">
-                            <a
-                                href="{{ Storage::url($post->image->variants->firstWhere('size_type', 'xl')->path) }}">
-                                <x-image_or_placeholder
-                                    alt_title="Open large image"
-                                    style="h-24 w-24 rounded-full object-cover"
-                                    :image="$post->image" size_type="l" />
-                            </a>
+                            @if ($post->image)
+                                <a
+                                    href="{{ Storage::url($post->image->variants->firstWhere('size_type', 'xl')->path) }}">
+                                    <x-image_or_placeholder
+                                        alt_title="Open large image"
+                                        style="h-24 w-24 rounded-full object-cover"
+                                        :image="$post->image" size_type="l" />
+                                </a>
+                            @else
+                                <p>No image available for post ID:
+                                    {{ $post->id }}</p>
+                            @endif
+
                         </div>
                         <!-- Display draft details -->
                         <div class="ml-4">
@@ -142,13 +148,13 @@ resources\views\layouts\app.blade.php view --}}
             <!-- Title for published posts -->
             <h3 class="mb-4 text-lg font-semibold leading-tight">Published</h3>
 
-                <!-- Pagination links -->
-                <div class="mt-4">
-                    {{ $publishedPosts->links() }}
-                </div>
+            <!-- Pagination links -->
+            <div class="mt-4">
+                {{ $publishedPosts->links() }}
+            </div>
 
-                <!-- Section to display published posts as flex-->
-                @forelse ($publishedPosts as $post)
+            <!-- Section to display published posts as flex-->
+            @forelse ($publishedPosts as $post)
                 <div
                     class="flex flex-col items-start border-b py-4 md:flex-row md:items-center">
                     <!-- Published Image -->
@@ -196,9 +202,16 @@ resources\views\layouts\app.blade.php view --}}
                             <small class="block text-gray-300">Comments:
                                 {{ $post->comments->count() }}</small>
 
-                            <small><a
-                                    href="{{ Storage::url($post->image->variants->firstWhere('size_type', 'xl')->path) }}">Open
-                                    full screen</a></small>
+                            <small>
+                                @if ($post->image)
+                                    <a
+                                        href="{{ Storage::url($post->image->variants->firstWhere('size_type', 'xl')->path) }}">Open
+                                        full screen</a>
+                                @else
+                                    No image available for post ID:
+                                    {{ $post->id }}
+                                @endif
+                            </small>
 
                         </div>
                     </div>
