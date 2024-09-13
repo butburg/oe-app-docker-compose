@@ -28,13 +28,13 @@ class PostController extends Controller {
             ->where('user_id', $userId)
             ->where('once_published', false)
             ->orderBy('created_at', 'desc')
-            ->paginate(10);
+            ->paginate(config('app.posts_per_page'), pageName: 'draft');
 
         $publishedPosts = Post::whereNotNull('user_id')
             ->where('user_id', $userId)
             ->where('once_published', true)
             ->orderBy('created_at', 'desc')
-            ->paginate(10);
+            ->paginate(config('app.posts_per_page'), pageName: 'published');
 
         return view('posts.index', [
             'draftPosts' => $draftPosts,
