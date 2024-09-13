@@ -3,7 +3,7 @@
         $post,
         config('app.posts_per_page'),
     );
-    $shareUrl = route('welcome') . "?page={$page}#post-{$post->id}";
+    $shareUrl = route('dashboard') . "?page={$page}#post-{$post->id}";
 @endphp
 
 <!-- SVG Button for Sharing -->

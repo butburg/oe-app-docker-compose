@@ -24,7 +24,7 @@
                 @else
                     <!-- Logo -->
                     <div class="flex shrink-0 items-center">
-                        <a href="{{ route('welcome') }}">
+                        <a href="{{ route('dashboard') }}">
                             <x-application-logo class="h-14" />
                         </a>
                     </div>

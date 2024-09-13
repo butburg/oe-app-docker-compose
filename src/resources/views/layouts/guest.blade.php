@@ -33,7 +33,7 @@
     <div
         class="flex min-h-screen flex-col items-center pt-6 sm:justify-center sm:pt-0">
         <div>
-            <a href="{{ route('welcome') }}">
+            <a href="{{ route('dashboard') }}">
                 <x-application-logo class="h-32" />
             </a>
         </div>

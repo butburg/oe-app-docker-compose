@@ -1,54 +1,44 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\PostController;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\TestMailController;
-use App\Http\Controllers\CommentController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\CommentController;
+use App\Http\Controllers\PostController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Middleware\Admin;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Route;
 
 
-Route::get('/', [PostController::class, 'gallery'])->name('welcome');
+Route::get('/', [PostController::class, 'gallery'])
+    ->name('dashboard');
 
-Route::get('/dashboard', [PostController::class, 'gallery'])->middleware(['auth', 'verified'])->name('dashboard');
 Route::view('/impressum', 'impressum')->name('impressum');
-#Route::get('/send-test-email', [TestMailController::class, 'sendTestEmail']);
 
-Route::get('/send-test-email', function () {
-    Mail::raw('This is a test email', function ($message) {
-        $message->to('recipient@example.com')->subject('Test Email');
-    });
-    return 'Test email sent!';
-});
 
 Route::middleware('auth', 'verified')->group(function () {
-    // Routes here are accessible to authenticated users only!!
 
-    Route::get('/admin', [AdminController::class, 'dashboard'])->name('admin.index')->middleware(Admin::class);
-    Route::get('/admin/posts', [PostController::class, 'all'])->name('posts.index')->middleware(Admin::class);
+    // Admin
+    Route::middleware(Admin::class)->group(function () {
+        Route::get('/admin', [AdminController::class, 'dashboard'])->name('admin.index');
+        Route::get('/admin/posts', [PostController::class, 'all'])->name('posts.index');
+    });
 
     // Profiles
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::get('/profile/{user}', [ProfileController::class, 'show'])->name('profile.show');
 
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
 
     Route::patch('/profile/update-name', [ProfileController::class, 'updateName'])
         ->name('profile.updateName');
-
     Route::patch('/profile/update-description', [ProfileController::class, 'updateDescription'])
         ->name('profile.updateDescription');
-
     Route::patch('/profile/update-email', [ProfileController::class, 'updateEmail'])
         ->name('profile.updateEmail');
-
     Route::patch('/profile/update-image', [ProfileController::class, 'updateImage'])
         ->name('profile.updateImage');
 
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::put('/profile/update-image', [ProfileController::class, 'updateImage'])->name('profile.updateImage');
-
 
 
     // Posts
@@ -62,6 +52,15 @@ Route::middleware('auth', 'verified')->group(function () {
         'posts' => PostController::class,
         'comments' => CommentController::class,
     ]);
+
+    // Mail
+    #Route::get('/send-test-email', [TestMailController::class, 'sendTestEmail']);
+    Route::get('/send-test-email', function () {
+        Mail::raw('This is a test email', function ($message) {
+            $message->to('recipient@example.com')->subject('Test Email');
+        });
+        return 'Test email sent!';
+    });
 });
 
 require __DIR__ . '/auth.php';
