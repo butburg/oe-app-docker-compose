@@ -59,9 +59,12 @@
                                     </p>
                                 @endif
 
-                                <p class="mt-2 text-xs font-medium leading-4 opacity-60"
-                                    title="Last update {{ $post->updated_at->diffForHumans() }}">
-                                    {{ $post->created_at->diffForHumans() }}
+                                <p
+                                    class="mt-2 text-xs font-medium leading-4 opacity-60">
+                                    <span
+                                        title="Last update {{ $post->updated_at->diffForHumans() }}">
+                                        {{ $post->created_at->diffForHumans() }}
+                                    </span>
                                     @if ($post->comments()->count() > 0)
                                         <span
                                             class="cursor-pointer md:cursor-auto"
@@ -70,6 +73,10 @@
                                             comment{{ $post->comments()->count() > 1 ? 's' : '' }}
                                             ♥</span>
                                     @endif
+                                    | @include(
+                                        'components.gallery.share',
+                                        ['post' => $post]
+                                    )
                                 </p>
                             </div>
                             <div class="text-title-bg mt-4 max-h-64 space-y-4 overflow-auto px-3 text-sm leading-6 sm:px-0 md:max-h-[420px] md:flex-grow"
