@@ -78,19 +78,13 @@ resources\views\layouts\app.blade.php view --}}
 
                     <div class="flex flex-grow">
                         <div class="flex-shrink-0">
-                            @if ($post->image)
-                                <a
-                                    href="{{ Storage::url($post->image->variants->firstWhere('size_type', 'xl')->path) }}">
-                                    <x-image_or_placeholder
-                                        alt_title="Open large image"
-                                        style="h-24 w-24 rounded-full object-cover"
-                                        :image="$post->image" size_type="l" />
-                                </a>
-                            @else
-                                <p>No image available for post ID:
-                                    {{ $post->id }}</p>
-                            @endif
-
+                            <a
+                                href="{{ $post->image ? Storage::url($post->image->variants->firstWhere('size_type', 'xl')->path) : '#' }}">
+                                <x-image_or_placeholder
+                                    alt_title="Open large image"
+                                    style="h-24 w-24 rounded-full object-cover"
+                                    :image="$post->image" size_type="l" />
+                            </a>
                         </div>
                         <!-- Display draft details -->
                         <div class="ml-4">
@@ -100,10 +94,21 @@ resources\views\layouts\app.blade.php view --}}
                             <small class="block text-gray-300">Created:
                                 {{ $post->created_at->diffForHumans() }}</small>
 
-                            @if ($post->created_at !== $post->updated_at)
-                                <small>Last update:
+                            @if ($post->created_at->diffForHumans() !== $post->updated_at->diffForHumans())
+                                <small class="block">Last update:
                                     {{ $post->updated_at->diffForHumans() }}</small>
                             @endif
+
+                            <small class="block">
+                                @if ($post->image)
+                                    <a
+                                        href="{{ Storage::url($post->image->variants->firstWhere('size_type', 'xl')->path) }}">Open
+                                        full screen</a>
+                                @else
+                                    No image found (ID:{{ $post->id }})
+                                @endif
+                            </small>
+
                         </div>
                     </div>
 
@@ -176,7 +181,7 @@ resources\views\layouts\app.blade.php view --}}
                                 href="{{ route('dashboard') }}?page={{ $page }}#post-{{ $post->id }}">
                                 <x-image_or_placeholder
                                     alt_title="Open large image"
-                                    style="h-25 w-25 rounded-full object-cover"
+                                    style="h-24 w-24 rounded-full object-cover"
                                     :image="$post->image" size_type="s" />
                             </a>
                         </div>
@@ -194,7 +199,7 @@ resources\views\layouts\app.blade.php view --}}
                             <small class="block text-gray-300">Created:
                                 {{ $post->created_at->diffForHumans() }}</small>
 
-                            @if ($post->created_at !== $post->updated_at)
+                            @if ($post->created_at->diffForHumans() !== $post->updated_at->diffForHumans())
                                 <small>Last update:
                                     {{ $post->updated_at->diffForHumans() }}</small>
                             @endif
@@ -202,14 +207,13 @@ resources\views\layouts\app.blade.php view --}}
                             <small class="block text-gray-300">Comments:
                                 {{ $post->comments->count() }}</small>
 
-                            <small>
+                            <small class="block">
                                 @if ($post->image)
                                     <a
                                         href="{{ Storage::url($post->image->variants->firstWhere('size_type', 'xl')->path) }}">Open
                                         full screen</a>
                                 @else
-                                    No image available for post ID:
-                                    {{ $post->id }}
+                                    No image found (ID:{{ $post->id }})
                                 @endif
                             </small>
 
