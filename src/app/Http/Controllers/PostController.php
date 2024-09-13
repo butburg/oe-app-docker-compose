@@ -263,7 +263,11 @@ class PostController extends Controller {
         $this->userIsOwner($post->user_id);
 
         // Update both is_published and once_published
-        $isPublished = $post->update(['is_published' => true, 'once_published' => true]);
+        $isPublished = $post->update([
+            'is_published' => true,
+            'once_published' => true,
+            'published_at' => now()
+        ]);
 
         if ($isPublished) {
             session()->flash('notif.success', 'Post published successfully!');
