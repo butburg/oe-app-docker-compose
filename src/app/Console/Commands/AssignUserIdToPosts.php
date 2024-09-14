@@ -45,7 +45,6 @@ class AssignUserIdToPosts extends Command {
         foreach ($posts as $post) {
             // Assign the found user's ID to the post
             $post->user_id = $user->id;
-            $post->once_published = 1;
             $post->save();
 
             $this->info("Assigned user {$user->name} (ID {$user->id}) to post {$post->title} (ID {$post->id})");

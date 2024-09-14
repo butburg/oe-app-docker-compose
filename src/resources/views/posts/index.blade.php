@@ -200,12 +200,14 @@ resources\views\layouts\app.blade.php view --}}
                                     class="font-semibold text-red-500">(HIDDEN)</span>
                             @endif
 
-                            <small class="block text-gray-300">Created:
-                                {{ $post->created_at->diffForHumans() }}</small>
+                            <small class="block text-gray-300">Published:
+                                {{ $post->published_at->diffForHumans() }}
+                            </small>
 
-                            @if ($post->created_at->diffForHumans() !== $post->updated_at->diffForHumans())
+                            @if ($post->published_at->diffForHumans() !== $post->updated_at->diffForHumans())
                                 <small>Last update:
-                                    {{ $post->updated_at->diffForHumans() }}</small>
+                                    {{ $post->updated_at->diffForHumans() }}
+                                </small>
                             @endif
 
                             <small class="block text-gray-300">Comments:

@@ -28,8 +28,7 @@ class StoreUpdateRequest extends FormRequest {
                 'string',
                 'min:3',
                 'max:120',
-                Rule::unique('posts', 'title')
-                    ->where('user_id', $this->user()->id),
+                Rule::unique('posts')->where('user_id', $this->user()->id)->ignore($this->post),
             ],
         ];
 

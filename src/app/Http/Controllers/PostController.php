@@ -15,7 +15,6 @@ use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller {
 
-
     /**
      * Display a listing of the resource.
      */
@@ -26,13 +25,13 @@ class PostController extends Controller {
         // Retrieve published and draft posts from the database
         $draftPosts = Post::whereNotNull('user_id')
             ->where('user_id', $userId)
-            ->where('once_published', false)
+            ->where('is_published', false)
             ->orderBy('created_at', 'desc')
             ->paginate(config('app.posts_per_page'), pageName: 'draft');
 
         $publishedPosts = Post::whereNotNull('user_id')
             ->where('user_id', $userId)
-            ->where('once_published', true)
+            ->where('is_published', true)
             ->orderBy('published_at', 'desc')
             ->paginate(config('app.posts_per_page'), pageName: 'published');
 
@@ -144,7 +143,7 @@ class PostController extends Controller {
 
         // Get the total number of posts before the current post in descending order
         $postPosition = Post::where('is_published', true)
-            ->where('created_at', '>', $post->created_at)
+            ->where('published_at', '>', $post->published_at)
             ->count();
 
         // Calculate the page number
@@ -161,10 +160,10 @@ class PostController extends Controller {
         $post = Post::findOrFail($id);
 
         // Check if the authenticated user owns the post
-        $this->userIsOwner($post->user_id);
+        $this->userIsOwnerOrAdmin($post->user_id);
 
-        // Restrict edit access based on the once_published flag and user role
-        if ($post->once_published && Auth::user()->usertype !== 'admin') {
+        // Restrict edit access based on the is_published flag and user role
+        if ($post->is_published && Auth::user()->usertype !== 'admin') {
             session()->flash('notif.error', 'You cannot edit this post since it has been published.');
             return redirect()->route('posts.index');
         }
@@ -181,10 +180,10 @@ class PostController extends Controller {
         $post = Post::findOrFail($id);
 
         // Check if the authenticated user owns the post
-        $this->userIsOwner($post->user_id);
+        $this->userIsOwnerOrAdmin($post->user_id);
 
         // Prevent editing title and image if the post was once published and the user is not an admin
-        if ($post->once_published && Auth::user()->usertype !== 'admin') {
+        if ($post->is_published && Auth::user()->usertype !== 'admin') {
             $request->except(['title', 'image_file']);
         }
 
@@ -212,7 +211,7 @@ class PostController extends Controller {
 
             // Save models in the database and files in storage
             $createImageVariants->handleVariant($imageRecord, $imageFile, $desiredSizes);
-        }
+        } // end if image file is uploaded
 
         if ($post->update($validated)) {
             session()->flash('notif.success', 'Your Post updated successfully!');
@@ -228,7 +227,7 @@ class PostController extends Controller {
     public function destroy(string $id): RedirectResponse {
         $post = Post::findOrFail($id);
 
-        $this->userIsOwner($post->user_id);
+        $this->userIsOwnerOrAdmin($post->user_id);
 
         // Check if the post has an associated image
         if ($post->image) {
@@ -250,7 +249,6 @@ class PostController extends Controller {
         }
 
         return abort(500); // Return a server error if the post deletion fails
-
     }
 
     /**
@@ -260,13 +258,18 @@ class PostController extends Controller {
         // Find the post with the specified ID and update its publication status
         $post = Post::findOrFail($id);
 
-        $this->userIsOwner($post->user_id);
+        $this->userIsOwnerOrAdmin($post->user_id);
 
-        // Update both is_published and once_published
+        // Check if the post has already been published once
+        if (!$post->published_at) {
+            // First time publishing, set the published_at date
+            $post->published_at = now();
+        }
+
+        // Update post
         $isPublished = $post->update([
             'is_published' => true,
-            'once_published' => true,
-            'published_at' => now()
+            'published_at' => $post->published_at
         ]);
 
         if ($isPublished) {
@@ -277,58 +280,27 @@ class PostController extends Controller {
     }
 
     /**
-     * Mark the specified post as a draft.
+     * Mark the specified post as a draft. Only for admins.
      */
     public function makedraft(string $id): RedirectResponse {
         // Find the post with the specified ID and update its publication status
         $post = Post::findOrFail($id);
-        // Check if the authenticated user owns the post
-        $this->userIsOwner($post->user_id);
 
-        // Allow only admins to revert to draft if the post has been published
-        if ($post->once_published && Auth::user()->usertype !== 'admin') {
-            session()->flash('notif.error', 'You cannot unpublish a post that has already been published.');
-            return redirect()->route('posts.index');
-        }
-
-
+        // Admins can always revert posts to draft
         $isDrafted = $post->update(['is_published' => false]);
 
         if ($isDrafted) {
-            session()->flash('notif.success', 'Post saved as draft!');
+            session()->flash('notif.success', 'Post reverted to draft successfully!');
             return redirect()->route('posts.index');
         }
+
         return abort(500); // Return a server error if updating the post fails
     }
 
-    /*
-    * Hide the specified post (unpublish it without making it a draft).
-    */
-    public function hide(string $id): RedirectResponse {
-        $post = Post::findOrFail($id);
 
-        // Check if the authenticated user owns the post
-        $this->userIsOwner($post->user_id);
-
-        // Allow hiding only if the post was once published
-        if ($post->once_published) {
-            $isHidden = $post->update(['is_published' => false]);
-
-            if ($isHidden) {
-                session()->flash('notif.success', 'Post hidden successfully!');
-                return redirect()->route('posts.index');
-            }
-
-            return abort(500); // Return a server error if updating the post fails
-        }
-
-        session()->flash('notif.error', 'Only published posts can be hidden.');
-        return redirect()->route('posts.index');
-    }
-
-    private function userIsOwner($user_id_from_post): void {
+    private function userIsOwnerOrAdmin($user_id_from_post): void {
         if ($user_id_from_post !== Auth::id() and Auth::user()->usertype !== 'admin') {
-            abort(403, 'Unauthorized action.');
+            abort(403, 'Unauthorized action. You are not the owner of the post.');
         }
     }
 }

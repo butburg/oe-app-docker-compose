@@ -5,8 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Post extends Model
-{
+class Post extends Model {
     use HasFactory;
     // which fields can be mass-assigned
     protected $fillable = [
@@ -14,22 +13,25 @@ class Post extends Model
         'title',
         'username',
         'is_published',
-        'once_published',
         'is_sensitive',
+        'published_at',
     ];
+
+    // using $casts for date casting
+    protected $casts = [
+        'published_at' => 'datetime',
+    ];
+
     // Define the relationship with User
-    public function user()
-    {
+    public function user() {
         return $this->belongsTo(User::class);
     }
     // Define the relationship with Image
-    public function image()
-    {
+    public function image() {
         return $this->hasOne(Image::class);
     }
 
-    public function comments()
-    {
+    public function comments() {
         return $this->hasMany(Comment::class);
     }
 
