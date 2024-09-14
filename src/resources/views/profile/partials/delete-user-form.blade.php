@@ -41,20 +41,20 @@
             <!-- Additional Deletion Options -->
 
             <div class="mt-6">
-                <div class="mt-4 flex items-center">
-                    <input id="delete_comments" name="delete_comments" type="checkbox" value="1"
-                        class="h-4 w-4 rounded border-gray-300 bg-gray-100 text-blue-600 focus:ring-2 focus:ring-blue-500" />
-                    <label for="delete_comments" class="ms-2 text-sm font-medium ">
-                        {{ __('Delete all my Comments') }}
-                    </label>
+                <div class="mt-4">
+                    @include('components.checkbox', [
+                        'id' => 'delete_comments',
+                        'name' => 'delete_comments',
+                        'label' => 'Delete all my Comments'
+                    ])
                 </div>
-
-                <div class="mt-4 flex items-center">
-                    <input id="delete_posts" name="delete_posts" type="checkbox" value="1"
-                        class="h-4 w-4 rounded border-gray-300 bg-gray-100 text-blue-600 focus:ring-2 focus:ring-blue-500" />
-                    <label for="delete_posts" class="ms-2 text-sm font-medium ">
-                        {{ __('Delete all my Posts') }}
-                    </label>
+            
+                <div class="mt-4">
+                    @include('components.checkbox', [
+                        'id' => 'delete_posts',
+                        'name' => 'delete_posts',
+                        'label' => 'Delete all my Posts'
+                    ])
                 </div>
             </div>
 

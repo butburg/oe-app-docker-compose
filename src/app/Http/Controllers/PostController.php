@@ -66,9 +66,16 @@ class PostController extends Controller {
      * Display the gallery with pagination.
      */
     public function gallery(Request $request): View {
-        $posts = Post::where('is_published', true)
-            ->orderBy('published_at', 'desc')
-            ->paginate(config('app.posts_per_page'));
+        if (Auth::check()) {
+            $posts = Post::where('is_published', true)
+                ->orderBy('published_at', 'desc')
+                ->paginate(config('app.posts_per_page'));
+        } else {
+            $posts = Post::where('is_published', true)
+                ->where('is_sensitive', false)
+                ->orderBy('published_at', 'desc')
+                ->paginate(config('app.posts_per_page'));
+        }
 
         return view('welcome', compact('posts'));
     }
@@ -95,6 +102,9 @@ class PostController extends Controller {
         // Add the user who uploads the image to validated data
         $validated['user_id'] = Auth::id();
         $validated['username'] = Auth::user()->name;
+
+        // Ensure that is_sensitive is set to 0 if not checked
+        $validated['is_sensitive'] = $request->has('is_sensitive') ? 1 : 0;
 
         // Create the post
         $post = Post::create($validated);
@@ -189,6 +199,9 @@ class PostController extends Controller {
 
         // Validate the incoming request
         $validated = $request->validated();
+
+        // Ensure that is_sensitive is set to 0 if not checked
+        $validated['is_sensitive'] = $request->has('is_sensitive') ? 1 : 0;
 
         // Check if an image file is uploaded
         if ($request->hasFile('image_file')) {
@@ -295,6 +308,25 @@ class PostController extends Controller {
         }
 
         return abort(500); // Return a server error if updating the post fails
+    }
+
+    /**
+     * Toggle the sensitivity of the specified post.
+     */
+    public function toggleSensitive(string $id): RedirectResponse {
+        // Find the post with the specified ID
+        $post = Post::findOrFail($id);
+
+        // Check if the authenticated user owns the post
+        $this->userIsOwnerOrAdmin($post->user_id);
+
+        // Toggle the sensitivity status
+        $post->is_sensitive = !$post->is_sensitive;
+        $post->save();
+
+        // Flash a success notification and redirect to the post index page
+        session()->flash('notif.success', 'Post sensitivity toggled successfully!');
+        return redirect()->route('posts.index');
     }
 
 

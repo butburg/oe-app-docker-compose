@@ -30,6 +30,10 @@ class StoreUpdateRequest extends FormRequest {
                 'max:120',
                 Rule::unique('posts')->where('user_id', $this->user()->id)->ignore($this->post),
             ],
+            'is_sensitive' => [
+                'boolean',
+                'in:0,1',
+            ],
         ];
 
         // Check if the request is a POST request (store operation)

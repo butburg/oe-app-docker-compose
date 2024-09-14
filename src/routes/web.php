@@ -44,7 +44,7 @@ Route::middleware('auth', 'verified')->group(function () {
 
     // Posts
     Route::get('/posts/{post}/publish', [PostController::class, 'publish'])->name('posts.publish');
-    Route::post('/posts/{post}/toggle-sensitive', [PostController::class, 'toggleSensitive'])->name('posts.toggleSensitive');
+    Route::get('/posts/{post}/toggle-sensitive', [PostController::class, 'toggleSensitive'])->name('posts.toggleSensitive');
 
 
     // Resources route because it contains exact routes we need for a typical CRUD.
