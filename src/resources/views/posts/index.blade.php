@@ -238,11 +238,11 @@ resources\views\layouts\app.blade.php view --}}
                         <!-- Button Group 2 -->
                         <div class="mt-2 flex flex-wrap justify-center gap-3">
                             <!-- Actions for the published post -->
-                            <a class="{{ $post->is_sensitive ? 'border-blue-500 hover:bg-blue-500 ' : 'border-blue-500 hover:bg-blue-500 ' }} flex min-w-[130px] items-center justify-center gap-2 rounded-md border border-l-4 px-2 py-2 text-center hover:text-white"
+                            <a class="{{ $post->is_sensitive ? 'border-blue-500 hover:bg-blue-500 ' : 'border-blue-500 hover:bg-blue-500 ' }} flex min-w-[130px] items-center justify-center gap-2 rounded-md border border-l-4 px-1 py-2 text-center hover:text-white"
                                 href="{{ route('posts.toggleSensitive', $post->id) }}"
                                 title="Toggle post sensitivity.">
                                 {{ $post->is_sensitive ? 'PROTECTED' : 'PUBLIC' }}
-                                <span class="ml-0.5">
+                                <span class="ml-0">
                                     @if ($post->is_sensitive)
                                         <svg class="bi bi-shield-check"
                                             xmlns="http://www.w3.org/2000/svg"
