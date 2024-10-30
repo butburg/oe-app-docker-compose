@@ -63,7 +63,7 @@
                                     class="mt-2 text-xs font-medium leading-4 opacity-60">
                                     <span
                                         title="Last update {{ $post->updated_at->diffForHumans() }}">
-                                        {{ $post->created_at->diffForHumans() }}
+                                        {{ $post->published_at->diffForHumans() }}
                                     </span>
                                     @if ($post->comments()->count() > 0)
                                         <span

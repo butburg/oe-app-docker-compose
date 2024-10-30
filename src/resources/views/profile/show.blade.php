@@ -87,7 +87,7 @@
             <!-- User Posts Section -->
             <div
                 class="posts-container overflow-hidden bg-c-primary/10 p-6 text-c-text shadow-sm sm:rounded-lg">
-                <h3 class="mb-4 truncate text-lg font-bold">Posts by
+                <h3 class="mb-4 truncate text-lg font-bold">Posts released by
                     {{ $user->name }}
                 </h3>
                 <ul class="flex flex-wrap gap-x-8">
@@ -112,7 +112,7 @@
                                     href="{{ route('dashboard') }}?page={{ $page }}#post-{{ $post->id }}">
                                     {{ $post->title }}
                                 </a>
-                                <p>{{ $post->created_at->format('d.m.y, H:i') }}
+                                <p>{{ $post->published_at->format('d.m.y, H:i') }}
                                 </p>
                                 <!-- Comments Count -->
                                 <p class="text-sm text-gray-500">Comments:
