@@ -112,7 +112,7 @@
                                     href="{{ route('dashboard') }}?page={{ $page }}#post-{{ $post->id }}">
                                     {{ $post->title }}
                                 </a>
-                                <p>{{ $post->published_at->format('d.m.y, H:i') }}
+                                <p>{{ $post->published_at->format('d.m.y') }} {{--, H:i--}}
                                 </p>
                                 <!-- Comments Count -->
                                 <p class="text-sm text-gray-500">Comments:
