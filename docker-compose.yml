@@ -76,7 +76,7 @@ services:
       - laravel
 
   npm:
-    image: node:current-alpine
+    image: node:22-alpine
     volumes:
       - ./src:/var/www/html
     ports:
@@ -84,8 +84,8 @@ services:
       - "3001:3001"
       - "5173:5173"
     working_dir: /var/www/html
-    #entrypoint: [ 'npm' ]
-    command: ["npm", "run", "dev"]  # Specify the default command to run
+    entrypoint: [ 'npm' ]
+    #command: ["npm", "run", "dev"]  # Specify the default command to run
     networks:
       - laravel
 

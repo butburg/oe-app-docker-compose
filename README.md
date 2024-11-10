@@ -41,8 +41,16 @@ Bringing up the Docker Compose network with `app` instead of just using `up`, en
 Three additional containers are included that handle Composer, NPM, and Artisan commands *without* having to have these platforms installed on your local computer. Use the following command examples from your project root, modifying them to fit your particular use case.
 
 - `docker-compose run --rm composer update`
-- `docker-compose run --rm npm run dev`
 - `docker-compose run --rm artisan migrate`
+- `docker-compose run --rm npm npm install` (important for first setup)
+- `docker-compose run --rm npm run dev`
+
+
+## Best Practice for development experience
+This project includes a list of recommended VS Code extensions. This list can be found in the .vscode/extensions.json file within the repository. It includes extensions that enhance Laravel support, such as code completion for PHP, Blade templating, and Tailwind CSS, among others.
+
+To ensure full compatibility with the recommended extensions, it is advised to have PHP 8.x installed in your  environment. This enables tools like Laravel Extra Intellisense to access PHP locally for providing advanced autocompletion and enhanced code suggestions, even when the app itself is containerized in Docker.
+
 
 ## Permissions Issues
 
@@ -108,27 +116,27 @@ To see the dashboard and view any emails coming through the system, visit [local
 
 ## Versions
 
-Last Update: 04.07.24
+Last Update: 10.11.24
 - Laravel Framework 11.7.0
-- php: 8.3.7
-- composer: 2.7.6
+- php: 8.3.13
+- composer: 2.8.2
 - npm: 22.1.0
-- vite: 5.2.10
-- SQLite: 3.44.2
+- vite: 5.4.10
+- SQLite: 10.9.0
 
 Check it with
 ```
 docker-compose run --rm artisan --version
 
-docker-compose run --rm php php -v
+docker-compose run --rm php -v
 
 docker-compose run --rm composer --version
 
-docker-compose run --rm --entrypoint npm npm -v
+docker-compose run --rm npm -v
 
-docker-compose run --rm --entrypoint npm npm list vite
+docker-compose run --rm npm show vite version
 
-docker-compose run --rm --entrypoint php artisan -r 'echo "SQLite version: " . SQLite3::version()["versionString"] . PHP_EOL;'
+docker-compose run --rm npm sqlite --version
 ```
 
 

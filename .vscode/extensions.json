@@ -1,0 +1,11 @@
+{
+    "recommendations": [
+        "amiralizadeh9480.laravel-extra-intellisense",
+        "bmewburn.vscode-intelephense-client",
+        "onecentlin.laravel-blade",
+        "shufo.vscode-blade-formatter",
+        "sabitovvt.favorites-panel",
+        "bradlc.vscode-tailwindcss",
+        "blade.timetracker"
+    ]
+}

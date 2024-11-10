@@ -1,0 +1,100 @@
+{
+    //"php.validate.executablePath": "/usr/bin/php", // Path to PHP in WSL
+    "editor.formatOnSave": true,
+    "files.autoSave": "afterDelay",
+    "editor.tabSize": 4,
+    "editor.insertSpaces": true,
+    "files.exclude": {
+        "**/node_modules": true,
+        "**/vendor": true
+    },
+    "search.exclude": {
+        "**/node_modules": true,
+        "**/vendor": true
+    },
+    "emmet.includeLanguages": {
+        "blade": "html"
+    },
+    "LaravelExtraIntellisense.basePath": "${workspaceFolder}",
+    "LaravelExtraIntellisense.basePathForCode": "/var/www/html",
+    "LaravelExtraIntellisense.phpCommand": "docker exec -w /var/www/html -u laravel oe-app-docker-compose-php-1 php -r \"{code}\"",
+    "favoritesPanel.commands": [ // usefull only for the extension sabitovvt.favorites-panel
+        {
+            "label": "Start Docker 'app'",
+            "description": " - Make sure Docker is running",
+            "command": "runCommand",
+            "arguments": [
+                "workbench.action.terminal.sendSequence",
+                {
+                    "text": "docker-compose up app -d\n"
+                }
+            ]
+        },
+        {
+            "label": "Enables hmr with vite",
+            "description": "Enables Hot Module Reloading",
+            "command": "runCommand",
+            "arguments": [
+                "workbench.action.terminal.sendSequence",
+                {
+                    "text": "docker-compose run --rm --service-ports npm run dev\n"
+                }
+            ]
+        },
+        {
+            "label": "Migrate DB with Seed",
+            "description": " - artisan migrate:refresh --seed",
+            "command": "runCommand",
+            "arguments": [
+                "workbench.action.terminal.sendSequence",
+                {
+                    "text": "docker-compose run --rm artisan migrate:refresh --seed\n"
+                }
+            ]
+        },
+        {
+            "label": "Run all Tests",
+            "description": " - use --filter ForSpecificTest",
+            "command": "runCommand",
+            "arguments": [
+                "workbench.action.terminal.sendSequence",
+                {
+                    "text": "docker-compose run --rm artisan test\n"
+                }
+            ]
+        },
+        {
+            "label": "Run build for vite",
+            "description": " - syntax is npm npm (service command)",
+            "command": "runCommand",
+            "arguments": [
+                "workbench.action.terminal.sendSequence",
+                {
+                    "text": "docker-compose run --rm npm npm run build\n"
+                }
+            ]
+        },
+        {
+            "label": "Connect to lima ssh",
+            "description": " - Using ssh config",
+            "command": "runCommand",
+            "arguments": [
+                "workbench.action.terminal.sendSequence",
+                {
+                    "text": "ssh lima-city\n"
+                }
+            ]
+        },
+        {
+            "label": "Default docker command run",
+            "description": " - Using ssh config",
+            "command": "runCommand",
+            "arguments": [
+                "workbench.action.terminal.sendSequence",
+                {
+                    "text": "docker-compose run --rm "
+                }
+            ]
+        }
+    ],
+}
