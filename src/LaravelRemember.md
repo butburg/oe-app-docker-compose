@@ -1,6 +1,10 @@
 # Laravel Remember
 > My personal learnings (Library of Knowledge or Good to Know's)
 
+## Setup
+
+For storage for images etc. you need to link them once with
+- `docker-compose run --rm `**`artisan storage:link`**
 
 ## Laravel new CRUD
 

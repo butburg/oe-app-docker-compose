@@ -48,7 +48,7 @@
             "arguments": [
                 "workbench.action.terminal.sendSequence",
                 {
-                    "text": "docker-compose run --rm artisan migrate:refresh --seed\n"
+                    "text": "docker-compose run --rm artisan migrate:refresh --seed"
                 }
             ]
         },
@@ -59,18 +59,18 @@
             "arguments": [
                 "workbench.action.terminal.sendSequence",
                 {
-                    "text": "docker-compose run --rm artisan test\n"
+                    "text": "docker-compose run --rm artisan test"
                 }
             ]
         },
         {
             "label": "Run build for vite",
-            "description": " - syntax is npm npm (service command)",
+            "description": " - syntax is npm (service command)",
             "command": "runCommand",
             "arguments": [
                 "workbench.action.terminal.sendSequence",
                 {
-                    "text": "docker-compose run --rm npm npm run build\n"
+                    "text": "docker-compose run --rm npm run build"
                 }
             ]
         },
