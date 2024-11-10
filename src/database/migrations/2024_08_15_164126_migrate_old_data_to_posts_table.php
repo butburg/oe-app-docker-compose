@@ -1,3 +1,4 @@
+
 <?php
 
 use Illuminate\Database\Migrations\Migration;
@@ -28,6 +29,17 @@ return new class extends Migration
 
     public function up()
     {
+        // check if old database exists
+        // Define the path to the old SQLite database
+        $oldDatabasePath = database_path('old_database.sqlite');
+
+        // Exit early if the old database file does not exist
+        if (!File::exists(database_path('old_database.sqlite'))) {
+            \Log::warning("The old database file at path {$oldDatabasePath} does not exist. Skipping related data migration.");
+            return;
+        }
+
+
         // Fetch data from the old SQLite table
         $oldPosts = DB::connection('old_sqlite')
             ->table('images')
