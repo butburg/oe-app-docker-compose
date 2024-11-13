@@ -1,23 +1,39 @@
 {
-    //"php.validate.executablePath": "/usr/bin/php", // Path to PHP in WSL
     "editor.formatOnSave": true,
     "files.autoSave": "afterDelay",
     "editor.tabSize": 4,
     "editor.insertSpaces": true,
-    "files.exclude": {
-        "**/node_modules": true,
-        "**/vendor": true
-    },
     "search.exclude": {
         "**/node_modules": true,
-        "**/vendor": true
+        "**/vendor": true,
+        "**/.timetracker": true,
+        "**/composer.lock": true,
+        "**/package-lock.json": true,
+        "**/*.svg": true,
     },
     "emmet.includeLanguages": {
         "blade": "html"
     },
-    "LaravelExtraIntellisense.basePath": "${workspaceFolder}",
+    "namespaceResolver.sortNatural": true,
+    "namespaceResolver.sortOnSave": false,
+    "namespaceResolver.sortAlphabetically": false,
+    "namespaceResolver.showMessageOnStatusBar": true,
+    // The base path for Laravel files that the Laravel Extra Intellisense extension uses.
+    // This should point to the local directory where your Laravel source code is located.
+    "LaravelExtraIntellisense.basePath": "./src",
+    // The base path used for executing PHP code. This needs to point to the path inside the Docker container.
+    // The Docker container's file system must be accessible from VS Code for the extension to read Laravel files.
     "LaravelExtraIntellisense.basePathForCode": "/var/www/html",
+    // The PHP command that executes in the Docker container for evaluating code snippets.
+    // Here, the 'docker exec' command is used to run PHP commands inside the container.
+    // Replace `oe-app-docker-compose-php-1` with your actual PHP container name if different.
     "LaravelExtraIntellisense.phpCommand": "docker exec -w /var/www/html -u laravel oe-app-docker-compose-php-1 php -r \"{code}\"",
+    // Exclude files / classes from IntelliSense (no suggestion in autocomplete) to improve performance.
+    // This prevents irrelevant files from being indexed and cluttering the code suggestions.
+    "intelephense.files.exclude": [
+        "**/vendor/**/tests/**", // Exclude test files
+        "**/vendor/symfony/**", // Exclude all Symfony components, since we use highlevel classes e.g. Illuminati\Support
+    ],
     "favoritesPanel.commands": [ // usefull only for the extension sabitovvt.favorites-panel
         {
             "label": "Start Docker 'app'",
@@ -96,5 +112,5 @@
                 }
             ]
         }
-    ],
+    ]
 }

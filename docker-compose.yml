@@ -13,6 +13,7 @@ services:
       - "80:80"
     volumes:
       - ./src:/var/www/html:delegated
+      - ./src/vendor:/var/www/html/vendor:delegated  # This mounts vendor locally
     depends_on:
       - php
       - npm

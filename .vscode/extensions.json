@@ -6,6 +6,7 @@
         "shufo.vscode-blade-formatter",
         "sabitovvt.favorites-panel",
         "bradlc.vscode-tailwindcss",
-        "blade.timetracker"
+        "blade.timetracker",
+        "MehediDracula.php-namespace-resolver"
     ]
 }
