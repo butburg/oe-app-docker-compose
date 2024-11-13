@@ -6,23 +6,19 @@
     <div class="py-12">
         <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
             <!-- User Info Section -->
-            <div
-                class="mb-6 overflow-hidden bg-c-primary/10 p-6 shadow-sm sm:rounded-lg">
+            <div class="mb-6 overflow-hidden bg-c-primary/10 p-6 shadow-sm sm:rounded-lg">
                 <div class="flex flex-wrap justify-center gap-6">
 
                     <!-- Profile Image -->
                     @php
-                        $isOnline = $user->session
-                            ? 'border-4 border-green-500'
-                            : '';
+                        $isOnline = $user->session ? 'border-4 border-green-500' : '';
                     @endphp
                     @include('components.image_or_placeholder', [
                         'image' => $user->image,
                         'size_type' => 'l',
                         'alt_title' => 'Your Profile Image',
                         'style' => "{$isOnline} h-80 w-80 my-2 rounded-full box-border object-cover bg-gray-200",
-                        'placeholder' =>
-                            'storage/files/images/starfish.svg',
+                        'placeholder' => 'storage/files/images/starfish.svg',
                     ])
 
                     <div class="max-w-80 flex flex-col justify-center gap-2">
@@ -36,23 +32,15 @@
                             'user' => $user,
                         ])
 
-                        @include(
-                            'profile.partials.display-description',
-                            ['user' => $user]
-                        )
+                        @include('profile.partials.display-description', ['user' => $user])
 
                         <!-- Display "Last seen" information only -->
                         @php
                             // max needs timestamps, so get these compare and than decide which time object to choose
                             $userUpdatedAt = $user->updated_at;
 
-                            $lastUpdatedPost = $user
-                                ->posts()
-                                ->latest('updated_at')
-                                ->first();
-                            $postUpdatedAt = $lastUpdatedPost
-                                ? $lastUpdatedPost->updated_at
-                                : null;
+                            $lastUpdatedPost = $user->posts()->latest('updated_at')->first();
+                            $postUpdatedAt = $lastUpdatedPost ? $lastUpdatedPost->updated_at : null;
 
                             // Determine the most recent updated_at timestamp
                             $mostRecentUpdatedAt = $postUpdatedAt
@@ -66,9 +54,7 @@
                                 @if ($user->session)
                                     @php
                                         // for showing time if seesion active
-                                        $lastActivity = \Carbon\Carbon::parse(
-                                            $user->session->last_activity,
-                                        );
+                                        $lastActivity = \Carbon\Carbon::parse($user->session->last_activity);
                                     @endphp
                                     @if ($lastActivity->diffInMinutes() < 3)
                                         Active
@@ -85,34 +71,26 @@
             </div>
 
             <!-- User Posts Section -->
-            <div
-                class="posts-container overflow-hidden bg-c-primary/10 p-6 text-c-text shadow-sm sm:rounded-lg">
+            <div class="posts-container overflow-hidden bg-c-primary/10 p-6 text-c-text shadow-sm sm:rounded-lg">
                 <h3 class="mb-4 truncate text-lg font-bold">Posts released by
                     {{ $user->name }}
                 </h3>
                 <ul class="flex flex-wrap gap-x-8">
                     @forelse ($posts as $post)
                         @php
-                            $page = app(
-                                'App\Http\Controllers\PostController',
-                            )->getPageForPost(
-                                $post,
-                                config('app.posts_per_page'),
-                            );
+                            $page = app('App\Http\Controllers\PostController')->getPageForPost($post);
                         @endphp
                         <li class="mb-6 flex gap-4">
                             <!-- Post Image -->
-                            <x-image_or_placeholder
-                                style="h-16 w-16 rounded-md object-cover"
-                                :image="$post->image" :alt_title="$post->title"
-                                size_type="s" />
+                            <x-image_or_placeholder style="h-16 w-16 rounded-md object-cover" :image="$post->image"
+                                :alt_title="$post->title" size_type="s" />
                             <div>
                                 <!-- Construct the URL with the page query parameter and the post anchor -->
                                 <a class="text-blue-500"
                                     href="{{ route('dashboard') }}?page={{ $page }}#post-{{ $post->id }}">
                                     {{ $post->title }}
                                 </a>
-                                <p>{{ $post->published_at->format('d.m.y') }} {{--, H:i--}}
+                                <p>{{ $post->published_at->format('d.m.y') }} {{-- , H:i --}}
                                 </p>
                                 <!-- Comments Count -->
                                 <p class="text-sm text-gray-500">Comments:

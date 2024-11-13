@@ -2,25 +2,25 @@
 
 namespace App\Http\Controllers;
 
-use App\Actions\CreateImageVariants;
-use App\Actions\LastNameChange;
-use App\Enums\ImageSizeType;
-use App\Http\Requests\ProfileUpdateRequest;
-use App\Models\Image;
-use App\Models\User;
-use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
+use App\Models\User;
+use App\Models\Image;
+use App\Http\Requests\ProfileUpdateRequest;
+use App\Enums\ImageSizeType;
+use App\Actions\LastNameChange;
+use App\Actions\CreateImageVariants;
 
 
-class ProfileController extends Controller {
+class ProfileController extends Controller
+{
 
-    public function updateName(ProfileUpdateRequest $request): RedirectResponse {
+    public function updateName(ProfileUpdateRequest $request): RedirectResponse
+    {
 
         $user = Auth::user();
         $name = $request->validated()['name'];
@@ -49,8 +49,9 @@ class ProfileController extends Controller {
         session()->flash('notif.success', 'Your username updated successfully!');
         return Redirect::route('profile.edit');
     }
-    
-    public function updateDescription(ProfileUpdateRequest $request): RedirectResponse {
+
+    public function updateDescription(ProfileUpdateRequest $request): RedirectResponse
+    {
         $user = Auth::user();
         $description = $request->validated()['description'];
 
@@ -60,8 +61,9 @@ class ProfileController extends Controller {
         session()->flash('notif.success', 'Your description updated successfully!');
         return Redirect::route('profile.edit');
     }
-    
-    public function updateEmail(ProfileUpdateRequest $request): RedirectResponse {
+
+    public function updateEmail(ProfileUpdateRequest $request): RedirectResponse
+    {
 
         $user = Auth::user();
         $email = $request->validated()['email'];
@@ -83,7 +85,8 @@ class ProfileController extends Controller {
     /**
      * Update the user's profile image.
      */
-    public function updateImage(ProfileUpdateRequest $request, CreateImageVariants $createImageVariants): RedirectResponse {
+    public function updateImage(ProfileUpdateRequest $request, CreateImageVariants $createImageVariants): RedirectResponse
+    {
 
         $user = Auth::user();
         $imageFile = $request->validated()['profile_image'];
@@ -111,19 +114,22 @@ class ProfileController extends Controller {
     /**
      * Display the user's profile form.
      */
-    public function edit(Request $request): View {
+    public function edit(Request $request): View
+    {
         return view('profile.edit', [
             'user' => $request->user(),
         ]);
     }
 
 
-    public function show(User $user): View {
+    public function show(User $user): View
+    {
         // Fetch the user information
         $user = User::withCount('posts', 'comments')->findOrFail($user->id);
 
         // Get the user's posts with pagination
         $posts = $user->posts()
+            ->where('is_published', true)  // Only published posts
             ->withCount('comments') // Eager load comments count for each post
             ->orderBy('created_at', 'desc')
             ->paginate(config('app.posts_per_page')); // Change this to the desired number of posts per page
@@ -135,7 +141,8 @@ class ProfileController extends Controller {
     /**
      * Delete the user's account.
      */
-    public function destroy(Request $request): RedirectResponse {
+    public function destroy(Request $request): RedirectResponse
+    {
         $request->validateWithBag('userDeletion', [
             'password' => ['required', 'current_password'],
             'delete_comments' => 'nullable|boolean',
