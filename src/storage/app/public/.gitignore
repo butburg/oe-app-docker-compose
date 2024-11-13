@@ -11,4 +11,4 @@ files/*
 !files/images/
 
 # Do not ignore files within the images directory
-!files/images/*
+!files/images/**

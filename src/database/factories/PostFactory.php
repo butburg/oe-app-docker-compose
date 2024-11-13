@@ -2,12 +2,11 @@
 
 namespace Database\Factories;
 
-use App\Models\Post;
-use App\Models\User;
-use Intervention\Image\Laravel\Facades\Image;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Facades\Storage;
-use Intervention\Image\Encoders\JpegEncoder;
+use App\Models\User;
+use App\Models\Post;
+use App\Models\Image;
+
 
 class PostFactory extends Factory
 {
@@ -23,24 +22,26 @@ class PostFactory extends Factory
      *
      * @return array
      */
-    public function definition()
+    public function definition(): array
     {
 
-        //$user = User::factory()->create();
-
-        // URL path to the saved image
-        $imageUrl = 'files/images/placeholder.jpg';
+        $isPublished = fake()->boolean(75); // 75% chance of being published
 
         return [
-            'title' => $this->faker->sentence,
-            'image_file' => $imageUrl, // Set to null initially, as we're not providing any file data
-            'is_published' => $this->faker->boolean(75), // 75% chance of being published
-            'is_sensitive' => $this->faker->boolean(10), // 10% chance of being sensitive
-            //'user_id' => $user->id,
-            //'username' => $user->name, // Get the username from the user factory
+            'title' => fake()->sentence(),
+            'is_published' => $isPublished,
+            'is_sensitive' => fake()->boolean(10), // 10% chance of being sensitive
+            'published_at' => $isPublished ? fake()->dateTimeThisYear() : null, // Set 'published_at' only if published
+            'username' => 'no user set',  // will be overwritten from forUser
         ];
     }
 
+    public function withImage()
+    {
+        return $this->afterCreating(function (Post $post) {
+            Image::factory()->count(1)->for($post)->create();
+        });
+    }
 
     /**
      * Indicate that the post should be for a specific user.
@@ -49,11 +50,9 @@ class PostFactory extends Factory
      */
     public function forUser(User $user)
     {
-        return $this->state(function (array $attributes) use ($user) {
-            return [
-                'user_id' => $user->id,
-                'username' => $user->name,
-            ];
-        });
+        return $this->state([
+            'user_id' => $user->id,
+            'username' => $user->name,
+        ]);
     }
 }
