@@ -8,16 +8,13 @@
 
 @php
     // Ensure $image is not null and retrieve the correct variant if $image exists
-    $imagePath =
-        $image && $image->variants
-            ? $image->variants->firstWhere('size_type', $size_type)?->path
-            : null;
+    $imagePath = $image && $image->variants ? $image->variants->firstWhere('size_type', $size_type)?->path : null;
 @endphp
 
 @if ($imagePath && file_exists(public_path('storage/' . $imagePath)))
-    <img class="{{ $style }}" src="{{ asset('storage/' . $imagePath) }}"
-        title="{{ $alt_title }}" alt="{{ $alt_title }}" loading="lazy">
+    <img class="{{ $style }}" src="{{ asset('storage/' . $imagePath) }}" title="{{ $alt_title }}"
+        alt="{{ $alt_title }}" loading="lazy">
 @else
-    <img class="{{ $style }}" src="{{ asset($placeholder) }}"
-        title="{{ $alt_title }}" alt="Error. Image not found." loading="lazy">
+    <img class="{{ $style }}" src="{{ asset($placeholder) }}" title="{{ $alt_title }}"
+        alt="Error. Image not found in storage/{{ $imagePath }}" loading="lazy">
 @endif

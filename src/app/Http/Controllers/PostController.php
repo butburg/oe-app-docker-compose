@@ -13,12 +13,14 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
-class PostController extends Controller {
+class PostController extends Controller
+{
 
     /**
      * Display a listing of the resource.
      */
-    public function index(): View {
+    public function index(): View
+    {
         $userId = Auth::id();
         $userType = Auth::user()->usertype;
 
@@ -45,7 +47,8 @@ class PostController extends Controller {
     /**
      * Display a special listing of the resources with all only for admin.
      */
-    public function all(): View {
+    public function all(): View
+    {
         // Retrieve draft posts sorted by created_at
         $draftPosts = Post::where('is_published', false)
             ->orderBy('created_at', 'desc')
@@ -65,7 +68,8 @@ class PostController extends Controller {
     /**
      * Display the gallery with pagination.
      */
-    public function gallery(Request $request): View {
+    public function gallery(Request $request): View
+    {
         if (Auth::check()) {
             $posts = Post::where('is_published', true)
                 ->orderBy('published_at', 'desc')
@@ -83,7 +87,8 @@ class PostController extends Controller {
     /**
      * Show the form for creating a new resource.
      */
-    public function create(): View {
+    public function create(): View
+    {
         // Return the view for creating a new post
         return view('posts.edit');
     }
@@ -91,7 +96,8 @@ class PostController extends Controller {
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreUpdateRequest $request, CreateImageVariants $createImageVariants): RedirectResponse {
+    public function store(StoreUpdateRequest $request, CreateImageVariants $createImageVariants): RedirectResponse
+    {
         // Validate the incoming request
         $validated = $request->validated();
 
@@ -139,21 +145,28 @@ class PostController extends Controller {
     /**
      * Display the specified resource.
      */
-    public function show(string $id): View {
+    public function show(string $id): View
+    {
         $post = Post::findOrFail($id);
         return view('posts.show', compact('post'));
     }
 
     /**
-     * Calculate the gallery page number for a specific post.
+     * Calculate the gallery page number for a specific post that is PUBLISHED.
      */
-    public function getPageForPost(Post $post, $perPage = null) {
+    public function getPageForPost(Post $post, $perPage = null)
+    {
+        if (!$post->is_published) {
+            throw new \Exception("Cannot calculate page for unpublished post");
+        }
+
         // Use the configuration value if $perPage is null
         $perPage = $perPage ?? config('app.posts_per_page');
 
         // Get the total number of posts before the current post in descending order
         $postPosition = Post::where('is_published', true)
-            ->where('published_at', '>', $post->published_at)
+            ->where('published_at', '>=', $post->published_at)
+            ->orderBy('published_at', 'desc')
             ->count();
 
         // Calculate the page number
@@ -165,7 +178,8 @@ class PostController extends Controller {
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id): View {
+    public function edit(string $id): View
+    {
         // Retrieve the post with the specified ID
         $post = Post::findOrFail($id);
 
@@ -185,7 +199,8 @@ class PostController extends Controller {
     /**
      * Update the specified resource in storage.
      */
-    public function update(StoreUpdateRequest $request, string $id, CreateImageVariants $createImageVariants): RedirectResponse {
+    public function update(StoreUpdateRequest $request, string $id, CreateImageVariants $createImageVariants): RedirectResponse
+    {
         // Find the post with the specified ID
         $post = Post::findOrFail($id);
 
@@ -237,7 +252,8 @@ class PostController extends Controller {
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id): RedirectResponse {
+    public function destroy(string $id): RedirectResponse
+    {
         $post = Post::findOrFail($id);
 
         $this->userIsOwnerOrAdmin($post->user_id);
@@ -267,7 +283,8 @@ class PostController extends Controller {
     /**
      * Mark the specified post as published.
      */
-    public function publish(string $id): RedirectResponse {
+    public function publish(string $id): RedirectResponse
+    {
         // Find the post with the specified ID and update its publication status
         $post = Post::findOrFail($id);
 
@@ -295,7 +312,8 @@ class PostController extends Controller {
     /**
      * Mark the specified post as a draft. Only for admins.
      */
-    public function makedraft(string $id): RedirectResponse {
+    public function makedraft(string $id): RedirectResponse
+    {
         // Find the post with the specified ID and update its publication status
         $post = Post::findOrFail($id);
 
@@ -313,7 +331,8 @@ class PostController extends Controller {
     /**
      * Toggle the sensitivity of the specified post.
      */
-    public function toggleSensitive(string $id): RedirectResponse {
+    public function toggleSensitive(string $id): RedirectResponse
+    {
         // Find the post with the specified ID
         $post = Post::findOrFail($id);
 
@@ -330,7 +349,8 @@ class PostController extends Controller {
     }
 
 
-    private function userIsOwnerOrAdmin($user_id_from_post): void {
+    private function userIsOwnerOrAdmin($user_id_from_post): void
+    {
         if ($user_id_from_post !== Auth::id() and Auth::user()->usertype !== 'admin') {
             abort(403, 'Unauthorized action. You are not the owner of the post.');
         }

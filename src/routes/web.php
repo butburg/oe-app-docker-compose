@@ -1,19 +1,17 @@
 <?php
 
-use App\Http\Controllers\AdminController;
-use App\Http\Controllers\CommentController;
-use App\Http\Controllers\PostController;
-use App\Http\Controllers\ProfileController;
-use App\Http\Middleware\Admin;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
-
+use Illuminate\Support\Facades\Mail;
+use App\Http\Middleware\Admin;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PostController;
+use App\Http\Controllers\CommentController;
+use App\Http\Controllers\AdminController;
 
 Route::get('/', [PostController::class, 'gallery'])
     ->name('dashboard');
 
 Route::view('/impressum', 'impressum')->name('impressum');
-
 
 Route::middleware('auth', 'verified')->group(function () {
 

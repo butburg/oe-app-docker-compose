@@ -13,6 +13,7 @@ class StoreImage
 {
     public function handleStore($file, ImageSizeType $sizeType, string $filePath): array
     {
+        //TODO check if here SplFileInfo is still needed for likle SVG file or so, maybe UploadedFile can be enough
         // Check if the file is an instance of either UploadedFile or SplFileInfo
         if (!($file instanceof UploadedFile || $file instanceof SplFileInfo)) {
             throw new InvalidArgumentException('The $file parameter must be an instance of UploadedFile or SplFileInfo.');
