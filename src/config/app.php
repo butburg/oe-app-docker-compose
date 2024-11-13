@@ -2,7 +2,7 @@
 
 return [
 
-    'posts_per_page' => 15,
+    'posts_per_page' => 12,
     'truncate_name' => 40,
 
     /*
