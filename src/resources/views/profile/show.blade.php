@@ -80,22 +80,25 @@
                         @php
                             $page = app('App\Http\Controllers\PostController')->getPageForPost($post);
                         @endphp
-                        <li class="mb-6 flex gap-4">
-                            <!-- Post Image -->
-                            <x-image_or_placeholder style="h-16 w-16 rounded-md object-cover" :image="$post->image"
-                                :alt_title="$post->title" size_type="s" />
-                            <div>
-                                <!-- Construct the URL with the page query parameter and the post anchor -->
-                                <a class="text-blue-500"
-                                    href="{{ route('dashboard') }}?page={{ $page }}#post-{{ $post->id }}">
-                                    {{ $post->title }}
-                                </a>
-                                <p>{{ $post->published_at->format('d.m.y') }} {{-- , H:i --}}
-                                </p>
-                                <!-- Comments Count -->
-                                <p class="text-sm text-gray-500">Comments:
-                                    {{ $post->comments_count }}</p>
-                            </div>
+                        <li class="mb-6  bg-c-primary/40 p-1 rounded-lg w-72">
+                            <a class="text-c-primary"
+                                href="{{ route('dashboard') }}?page={{ $page }}#post-{{ $post->id }}">
+                                <div class="flex gap-4 items-center h-full">
+                                    <!-- Post Image -->
+                                    <x-image_or_placeholder style="h-16 w-16 rounded-md object-cover" :image="$post->image"
+                                        :alt_title="$post->title" size_type="s" />
+                                    <div>
+                                        <!-- Construct the URL with the page query parameter and the post anchor -->
+                                        {{ $post->title }}
+
+                                        <p>{{ $post->published_at->format('d.m.y') }} {{-- , H:i --}}
+                                        </p>
+                                        <!-- Comments Count -->
+                                        <p class="text-sm">Comments:
+                                            {{ $post->comments_count }}</p>
+                                    </div>
+                                </div>
+                            </a>
                         </li>
                     @empty
                         No posts. Just stalking.
