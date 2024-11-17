@@ -4,7 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
+use Illuminate\Http\RedirectResponse;
 
 class Admin
 {
@@ -13,7 +13,7 @@ class Admin
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Illuminate\Http\Response)  $next
      */
-    public function handle(Request $request, Closure $next): Response
+    public function handle(Request $request, Closure $next): RedirectResponse
     {
         if (auth()->user() && auth()->user()->usertype == 'admin') {
             return $next($request);
