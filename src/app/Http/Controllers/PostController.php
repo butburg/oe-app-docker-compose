@@ -291,7 +291,7 @@ class PostController extends Controller
         $this->userIsOwnerOrAdmin($post->user_id);
 
         // Check if the post has already been published once
-        if (!$post->published_at) {
+        if (!$post->once_published) {
             // First time publishing, set the published_at date
             $post->published_at = now();
         }
