@@ -1,19 +1,44 @@
+<script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.store('comments', {
+            visibility: {}, // Store visibility states by post ID
+            init(postId) {
+                // Initialize the visibility state for each post
+                if (!this.visibility[postId]) {
+                    this.visibility[postId] = window.innerWidth >= 768;
+                }
+            },
+            toggle(postId) {
+                // toggle the visibility state for a specific post, but only in mobile
+                this.visibility[postId] = !this.visibility[postId] || window.innerWidth >= 768;
+            },
+            updateOnResize(postId) {
+                // Update visibility based on screen size
+                this.visibility[postId] = window.innerWidth >= 768;
+            }
+        });
+    });
+</script>
+
 <div class="mx-auto py-6">
     <div class="{{-- grid grid-cols-1 lg:grid-cols-2 gap-4 --}}">
         @foreach ($posts as $post)
-            <div id="post-{{ $post->id }}" x-data="{ showComments: false }">
+            <div id="post-{{ $post->id }}" x-data x-init="$store.comments.init({{ $post->id }});
+            window.addEventListener('resize', () => $store.comments.updateOnResize({{ $post->id }}))">
+
                 <main class="md:x-8 mx-1 mb-4 rounded-lg bg-c-primary/10 px-2 py-0 sm:mb-6 sm:px-6 md:mb-10">
                     <div class="mx-auto grid grid-cols-1 md:grid-cols-3 md:gap-x-10">
                         <!-- Image -->
-                        <div class="col-span-3 flex cursor-pointer items-center justify-center md:col-span-2 md:cursor-auto"
-                            @click="showComments = !showComments">
+                        <div class="col-span-3 flex items-center justify-center md:col-span-2 relative">
                             @include('components.image_or_placeholder', [
                                 'image' => $post->image,
                                 'size_type' => 'l', // Beispiel für einen Bildtyp
-                                'alt_title' => 'Show comments for ' . $post->title,
-                                'style' => '',
+                                'alt_title' => $post->title,
+                                'style' => 'max-h-[66vh]',
+                                'zoomable' => true,
                             ])
                         </div>
+
                         <!-- Text and Comments -->
                         <div class="relative col-span-3 flex flex-col py-3 md:col-span-1">
                             <!-- Title and Author -->
@@ -51,8 +76,10 @@
                                         {{ $post->published_at->diffForHumans() }}
                                     </span>
                                     @if ($post->comments()->count() > 0)
+                                        |
                                         <span class="cursor-pointer md:cursor-auto"
-                                            @click="showComments = !showComments">|
+                                            :class="{ 'underline': !$store.comments.visibility[{{ $post->id }}] }"
+                                            @click="$store.comments.toggle({{ $post->id }})">
                                             {{ $post->comments()->count() }}
                                             comment{{ $post->comments()->count() > 1 ? 's' : '' }}
                                             ♥</span>
@@ -61,11 +88,10 @@
                                 </p>
                             </div>
                             <div class="text-title-bg mt-4 max-h-64 space-y-4 overflow-auto px-3 text-sm leading-6 sm:px-0 md:max-h-[420px] md:flex-grow"
-                                x-data="{ scrollToBottom() { this.$el.scrollTop = this.$el.scrollHeight } }" x-init="scrollToBottom"
-                                x-show="showComments || window.innerWidth >= 768" @click.away="showComments = false">
+                                x-init="scrollToBottom" x-show="$store.comments.visibility[{{ $post->id }}]">
                                 <!-- Comments Section (conditionally visible) -->
                                 <x-gallery.comment.show-comments :post="$post" />
-                                <!-- Add Comment Form (always visible) -->
+                                <!-- Add Comment Form (conditionally visible) -->
                                 <x-gallery.comment.add-comment-form :post="$post" />
                             </div>
                         </div>
