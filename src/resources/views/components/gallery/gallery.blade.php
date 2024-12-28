@@ -87,12 +87,23 @@
                                     | @include('components.gallery.share', ['post' => $post])
                                 </p>
                             </div>
+                            <!-- Add Comment Form (always visible) -->
+                            <x-gallery.comment.add-comment-form :post="$post" />
                             <div class="text-title-bg mt-4 max-h-64 space-y-4 overflow-auto px-3 text-sm leading-6 sm:px-0 md:max-h-[420px] md:flex-grow"
                                 x-init="scrollToBottom" x-show="$store.comments.visibility[{{ $post->id }}]">
                                 <!-- Comments Section (conditionally visible) -->
-                                <x-gallery.comment.show-comments :post="$post" />
-                                <!-- Add Comment Form (conditionally visible) -->
-                                <x-gallery.comment.add-comment-form :post="$post" />
+                                @auth
+                                    <x-gallery.comment.show-comments :post="$post" />
+                                @else
+                                    <div class="text-comment-text rounded-lg bg-c-primary/40 p-3">
+                                        <p>
+                                            <a class="hover:text-nav-text text-primary rounded-md text-sm underline focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                                                href="{{ route('login') }}">
+                                                Log in</a> to view and post comments.
+                                        </p>
+                                    </div>
+                                @endauth
+
                             </div>
                         </div>
                     </div>

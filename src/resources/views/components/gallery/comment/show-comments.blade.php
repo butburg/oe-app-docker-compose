@@ -1,5 +1,5 @@
 {{-- list comments --}}
-@forelse ($post->comments as $comment)
+@forelse ($post->comments->reverse() as $comment)
     {{-- ->reverse() --}}
     <div class="text-comment-text rounded-lg bg-c-primary/40 p-3">
         @if (auth()->check() && auth()->user()->id === $comment->user_id)
@@ -16,9 +16,8 @@
                     </x-truncated-comment>
                 </div>
                 <div x-show="isEditing">
-                    <x-gallery.form.form
-                        action="{{ route('comments.update', $comment->id) }}"
-                        method="PUT" :formId="'commentUpdate_' . $comment->id">
+                    <x-gallery.form.form action="{{ route('comments.update', $comment->id) }}" method="PUT"
+                        :formId="'commentUpdate_' . $comment->id">
                         <x-gallery.form.textarea name="comment"
                             placeholder="Edit comment...">{{ $comment->comment }}</x-gallery.form.textarea>
                         {{-- error msg here with named error bags --}}
@@ -27,9 +26,8 @@
                             </div>
                         @enderror
                     </x-gallery.form.form>
-                    <x-gallery.form.form
-                        action="{{ route('comments.destroy', $comment->id) }}"
-                        method="DELETE" :formId="'commentDelete_' . $comment->id">
+                    <x-gallery.form.form action="{{ route('comments.destroy', $comment->id) }}" method="DELETE"
+                        :formId="'commentDelete_' . $comment->id">
                     </x-gallery.form.form>
                     <div class="mt-1 flex items-center space-x-3">
                         <x-text-button
@@ -52,14 +50,6 @@
     </div>
 @empty
     <div class="text-comment-text rounded-lg bg-c-primary/40 p-3">
-        @auth
-            <p>Be the first one to comment.</p>
-        @else
-            <p>
-                <a class="hover:text-nav-text text-primary rounded-md text-sm underline focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                    href="{{ route('login') }}">
-                    Login</a> and be the first one to comment.
-            </p>
-        @endauth
+        <p>Be the first one to comment.</p>
     </div>
 @endforelse
