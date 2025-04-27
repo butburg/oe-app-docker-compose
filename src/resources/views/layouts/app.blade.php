@@ -50,7 +50,8 @@
                     Impressum & Datenschutz
                 </a>
             </p>
-            <p class="text-c-primary/30">Laravel v{{ Illuminate\Foundation\Application::VERSION }} (PHP v{{ PHP_VERSION }})
+            <p class="text-c-primary/30">
+                Laravel v{{ Illuminate\Foundation\Application::VERSION }} (PHP v{{ PHP_VERSION }})
                 @if (app()->environment('local'))
                     <br>
                     Laravel: {{ app()->version() }}<br>
@@ -61,6 +62,16 @@
                     SQLite: {{ shell_exec('sqlite3 --version | grep -o -E "[0-9]+\.[0-9]+\.[0-9]+"') }}
                 @endif
             <p>
+            <div class="mt-10 flex flex-col items-center space-y-2">
+                <p class="text-c-primary/60 text-xs leading-relaxed">
+                    This website is hosted by Lima-City.<br>
+                    If you get hosting through this link, you support my project &lt;3
+                </p>
+                <a href="https://www.lima-city.de/webhosting?cref=439120" target="_blank" rel="noopener">
+                    <img class="h-10" alt="lima-city: Webhosting, Domains und Cloud"
+                        src="https://www.lima-city.de/assets/banner/button3.jpg">
+                </a>
+            </div>
         </footer>
 
     </div>
