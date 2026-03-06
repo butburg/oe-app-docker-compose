@@ -70,7 +70,7 @@
                             <div class="space-y-1">
                                 <div
                                     class="block w-full border-b-2 py-2 pe-4 ps-3 text-start text-base font-medium">
-                                    <div class="text-base font-medium">
+                                    <div class="text-base font-medium text-c-background">
                                         {{ Str::limit(Auth::user()->name, config('app.truncate_name'), '...') }}
                                     </div>
                                 </div>

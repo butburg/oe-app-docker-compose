@@ -71,12 +71,14 @@
                                     </p>
                                 @endif
 
-                                <p class="mt-2 text-xs font-medium leading-4 opacity-60">
+                                <p class="mt-2 text-xs font-medium leading-4">
                                     @php
                                         $publishedAt = $post->published_at ?? $post->created_at;
                                     @endphp
-                                    <span class="relative inline-flex" x-data="{ open: false }" @keydown.escape.window="open = false">
-                                        <button type="button" class="cursor-pointer underline-offset-2 hover:underline"
+                                    <span class="relative inline-flex" x-data="{ open: false }"
+                                        @keydown.escape.window="open = false">
+                                        <button type="button"
+                                            class="cursor-pointer opacity-60 underline-offset-2 hover:underline"
                                             @click="open = !open" :aria-expanded="open.toString()"
                                             aria-label="Show publish date">
                                             {{ $publishedAt->diffForHumans() }}
@@ -89,14 +91,14 @@
                                     </span>
                                     @if ($post->comments()->count() > 0)
                                         |
-                                        <span class="cursor-pointer md:cursor-auto"
+                                        <span class="cursor-pointer opacity-60 md:cursor-auto"
                                             :class="{ 'underline': !$store.comments.visibility[{{ $post->id }}] }"
                                             @click="$store.comments.toggle({{ $post->id }})">
                                             {{ $post->comments()->count() }}
                                             comment{{ $post->comments()->count() > 1 ? 's' : '' }}
                                             ♥</span>
                                     @endif
-                                    | @include('components.gallery.share', ['post' => $post])
+                                    | <span class="opacity-60">@include('components.gallery.share', ['post' => $post])</span>
                                 </p>
                             </div>
                             <!-- Add Comment Form (always visible) -->
