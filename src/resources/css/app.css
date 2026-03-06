@@ -6,6 +6,9 @@
 
 
 @layer base {
+    html {
+        scrollbar-gutter: stable;
+    }
     :root {
         --text: 226 251 253;
         --background: 3 34 38;

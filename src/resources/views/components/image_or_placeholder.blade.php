@@ -43,7 +43,7 @@
 
             <div x-cloak x-show="isOpen" x-transition.opacity.duration.150ms @click="toggle()"
                 class="fixed inset-0 z-[70] bg-black/40 p-3 sm:p-6 flex items-center justify-center">
-                <img @click="toggle()" src="{{ asset('storage/' . $resolvedZoomPath) }}" alt="{{ $alt_title }}"
+                <img @click.stop="toggle()" src="{{ asset('storage/' . $resolvedZoomPath) }}" alt="{{ $alt_title }}"
                     class="max-h-full max-w-full object-contain cursor-zoom-out">
             </div>
         </div>
