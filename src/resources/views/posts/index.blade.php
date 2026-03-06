@@ -77,8 +77,14 @@ resources\views\layouts\app.blade.php view --}}
                         <div class="ml-4">
                             <span class="text-lg font-medium">{{ $post->title }}</span>
 
-                            <small class="block text-gray-300">Created:
-                                {{ $post->created_at->diffForHumans() }}</small>
+                            <small class="block text-gray-300">
+                                Created: {{ $post->created_at->diffForHumans() }}
+                                @if ($post->is_sensitive)
+                                    | <span class="inline-flex items-center gap-1" title="Protected image">
+                                        <x-icons.lock class="h-3.5 w-3.5" aria-hidden="true" />
+                                    </span>
+                                @endif
+                            </small>
 
                             @if ($post->created_at->diffForHumans() !== $post->updated_at->diffForHumans())
                                 <small class="block">Last update:
@@ -174,8 +180,13 @@ resources\views\layouts\app.blade.php view --}}
                             @if (!$post->is_published)
                                 <span class="font-semibold text-red-500">(HIDDEN)</span>
                             @endif
-                            <small class="block text-gray-300">Published:
-                                {{ $post->published_at->diffForHumans() }}
+                            <small class="block text-gray-300">
+                                Published: {{ $post->published_at->diffForHumans() }}
+                                @if ($post->is_sensitive)
+                                    | <span class="inline-flex items-center gap-1" title="Protected image">
+                                        <x-icons.lock class="h-3.5 w-3.5" aria-hidden="true" />
+                                    </span>
+                                @endif
                             </small>
                             @if ($post->published_at->diffForHumans() !== $post->updated_at->diffForHumans())
                                 <small>Last update: {{ $post->updated_at->diffForHumans() }}</small>

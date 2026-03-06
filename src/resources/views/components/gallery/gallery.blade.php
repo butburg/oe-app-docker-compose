@@ -99,6 +99,12 @@
                                             ♥</span>
                                     @endif
                                     | <span class="opacity-60">@include('components.gallery.share', ['post' => $post])</span>
+                                    @if ($post->is_sensitive)
+                                        | <span class="inline-flex items-center gap-1 opacity-60"
+                                            title="Protected image">
+                                            <x-icons.lock class="h-3.5 w-3.5" aria-hidden="true" />
+                                        </span>
+                                    @endif
                                 </p>
                             </div>
                             <!-- Add Comment Form (always visible) -->
