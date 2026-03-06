@@ -82,7 +82,7 @@ resources\views\layouts\app.blade.php view --}}
                                 Created: {{ $post->created_at->diffForHumans() }}
                                 @if ($post->is_sensitive)
                                     | <span class="inline-flex items-center gap-1" title="Protected image">
-                                        <x-icons.lock class="h-3.5 w-3.5 -mb-0.5" aria-hidden="true" />
+                                        <x-icons.lock class="h-3.5 w-3.5 mx-1 translate-y-0.5" aria-hidden="true" />
                                     </span>
                                 @endif
                             </small>
@@ -176,7 +176,7 @@ resources\views\layouts\app.blade.php view --}}
                                 Published: {{ $post->published_at->diffForHumans() }}
                                 @if ($post->is_sensitive)
                                     | <span class="inline-flex items-center gap-1" title="Protected image">
-                                        <x-icons.lock class="h-3.5 w-3.5 -mb-0.5" aria-hidden="true" />
+                                        <x-icons.lock class="h-3.5 w-3.5 mx-1 translate-y-0.5" aria-hidden="true" />
                                     </span>
                                 @endif
                             </small>
