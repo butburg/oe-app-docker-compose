@@ -25,28 +25,24 @@
         <div x-data="{
             isOpen: false,
             scrollY: 0,
-            open() {
-                this.scrollY = window.scrollY || window.pageYOffset;
-                document.body.style.overflow = 'hidden';
-                this.isOpen = true;
-            },
-            close() {
-                this.isOpen = false;
-                document.body.style.overflow = '';
-                window.scrollTo(0, this.scrollY);
+            toggle() {
+                if (this.isOpen) {
+                    this.isOpen = false;
+                    document.body.style.overflow = '';
+                    window.scrollTo(0, this.scrollY);
+                } else {
+                    this.scrollY = window.scrollY || window.pageYOffset;
+                    document.body.style.overflow = 'hidden';
+                    this.isOpen = true;
+                }
             }
         }" class="w-full">
-            <button type="button" @click="open()" class="block w-full" aria-label="Enlarge image">
-                <img class="{{ $style }} cursor-zoom-in" src="{{ asset('storage/' . $imagePath) }}" title="{{ $alt_title }}"
-                    alt="{{ $alt_title }}" loading="lazy">
-            </button>
+            <img @click="toggle()" class="{{ $style }} cursor-zoom-in" src="{{ asset('storage/' . $imagePath) }}"
+                title="{{ $alt_title }}" alt="{{ $alt_title }}" loading="lazy" role="button" tabindex="0"
+                aria-label="Enlarge image">
 
-            <div x-cloak x-show="isOpen" x-transition.opacity.duration.150ms @click.self="close()"
+            <div x-cloak x-show="isOpen" x-transition.opacity.duration.150ms @click="toggle()"
                 class="fixed inset-0 z-[70] bg-black/40 p-3 sm:p-6 flex items-center justify-center">
-                <button type="button" @click="close()"
-                    class="absolute right-3 top-3 rounded-md bg-black/60 px-3 py-1 text-sm text-white hover:bg-black/80"
-                    aria-label="Close">Close</button>
-
                 <img src="{{ asset('storage/' . $resolvedZoomPath) }}" alt="{{ $alt_title }}"
                     class="max-h-full max-w-full object-contain" @click.stop>
             </div>
