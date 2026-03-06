@@ -71,7 +71,8 @@ resources\views\layouts\app.blade.php view --}}
                     <div class="flex flex-grow">
                         <div class="flex-shrink-0">
                             <x-image_or_placeholder alt_title="Draft of {{ $post->title }}"
-                                style="h-24 w-24 rounded-full object-cover" :image="$post->image" size_type="l" />
+                                style="h-24 w-24 rounded-full object-cover" :image="$post->image" size_type="l"
+                                :zoomable="true" />
                         </div>
                         <!-- Display draft details -->
                         <div class="ml-4">
@@ -91,15 +92,6 @@ resources\views\layouts\app.blade.php view --}}
                                     {{ $post->updated_at->diffForHumans() }}</small>
                             @endif
 
-                            <small class="block">
-                                @if ($post->image)
-                                    <a
-                                        href="{{ Storage::url($post->image->variants->firstWhere('size_type', 'xl')->path) }}">Open
-                                        full screen</a>
-                                @else
-                                    No image found (ID:{{ $post->id }})
-                                @endif
-                            </small>
 
                         </div>
                     </div>
@@ -193,15 +185,6 @@ resources\views\layouts\app.blade.php view --}}
                             @endif
                             <small class="block text-gray-300">Comments:
                                 {{ $post->comments->count() }}</small>
-                            <small class="block">
-                                @if ($post->image)
-                                    <a
-                                        href="{{ Storage::url($post->image->variants->firstWhere('size_type', 'xl')->path) }}">Open
-                                        full screen</a>
-                                @else
-                                    No image found (ID:{{ $post->id }})
-                                @endif
-                            </small>
                         </div>
                     </div>
                     <!-- Actions -->
