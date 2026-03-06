@@ -72,8 +72,20 @@
                                 @endif
 
                                 <p class="mt-2 text-xs font-medium leading-4 opacity-60">
-                                    <span title="Last update {{ $post->updated_at->diffForHumans() }}">
-                                        {{ $post->published_at->diffForHumans() }}
+                                    @php
+                                        $publishedAt = $post->published_at ?? $post->created_at;
+                                    @endphp
+                                    <span class="relative inline-flex" x-data="{ open: false }" @keydown.escape.window="open = false">
+                                        <button type="button" class="cursor-pointer underline-offset-2 hover:underline"
+                                            @click="open = !open" :aria-expanded="open.toString()"
+                                            aria-label="Show publish date">
+                                            {{ $publishedAt->diffForHumans() }}
+                                        </button>
+                                        <span x-show="open" x-cloak @click.outside="open = false"
+                                            x-transition.opacity.duration.120ms
+                                            class="absolute left-0 top-full z-20 mt-1 w-max max-w-[80vw] rounded-md bg-c-primary px-2 py-1 text-[11px] text-c-primary-content shadow-lg">
+                                            {{ $publishedAt->format('M d, Y') }}
+                                        </span>
                                     </span>
                                     @if ($post->comments()->count() > 0)
                                         |
