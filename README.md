@@ -4,16 +4,13 @@ The ultimate art platform for sharing your masterpieces. Create a collaborative 
 
 This Laravel 11 app is here to retire my old plain PHP website.
 
-### Future Features
+### Features
 - Upload your images and add them to **THE** gallery.
 - Give your piece a name, turning it into a true work of art.
-- Like other pictures to make someone’s day... or not.
-- Comment to share your profound insights (or witty remarks) with the artist.
+- Comment other posts to share your profound insights (or witty remarks) with the artist.
 
-### Side Quests
-- Basic user accounts (because everyone needs a profile, right?).
-- Displaying the gallery in a stunning way.
-- Image rotation and deletion (for those oops moments).
+If you are a nerd (with love), or you just want the full history of this cool project, jump into the [CHANGELOG.md](src/CHANGELOG.md).
+You will find all the details there: zoom, pagination, and other gloriously boring stuff like that.
 
 \
 The [Laravel 11](https://laravel.com/docs/11.x/) app is [dockerbased](https://www.docker.com/) and based on [aschmelyun](https://github.com/aschmelyun/docker-compose-laravel)'s:
@@ -28,7 +25,7 @@ Next, navigate in your terminal to the directory you cloned this, and spin up th
 
 After that completes, follow the steps from the [src/README.md](src/README.md) file to get your Laravel project added in (or create a new blank one).
 
-**Note**: Your MySQL database host name should be `mysql`, **not** `localhost`. The username and database should both be `homestead` with a password of `secret`. 
+**Note**: Your MySQL database host name should be `mysql`, **not** `localhost`. The username and database should both be `homestead` with a password of `secret`.
 
 Bringing up the Docker Compose network with `app` instead of just using `up`, ensures that only our site's containers are brought up at the start, instead of all of the command containers as well. The following are built for our web server, with their exposed ports detailed:
 
@@ -36,7 +33,7 @@ Bringing up the Docker Compose network with `app` instead of just using `up`, en
 - **mysql** - `:3306`
 - **php** - `:9000`
 - **redis** - `:6379`
-- **mailhog** - `:8025` 
+- **mailhog** - `:8025`
 
 Three additional containers are included that handle Composer, NPM, and Artisan commands *without* having to have these platforms installed on your local computer. Use the following command examples from your project root, modifying them to fit your particular use case.
 
