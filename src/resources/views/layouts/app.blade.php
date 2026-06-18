@@ -46,26 +46,40 @@
 
         <footer class="py-16 text-center text-sm text-c-text">
             <div class="mx-auto flex w-full max-w-2xl flex-col items-center gap-8 px-4">
-                <div class="space-y-2">
-                    <p class="text-base font-semibold tracking-wide text-c-accent">
-                        <a class="underline decoration-c-accent/90 underline-offset-4 hover:text-c-primary"
-                            href="https://buymeacoffee.com/butburg" target="_blank" rel="noopener">
-                            Made with love by EW
-                        </a>
-                    </p>
-                    <a href="https://buymeacoffee.com/butburg" target="_blank" rel="noopener"
-                        aria-label="Support this project on Buy Me a Coffee">
-                        <img class="h-11" alt="Buy Me a Coffee"
-                            src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png">
+                <div>
+                    <a class="group inline-flex items-center justify-center gap-3 rounded-xl px-3 py-2"
+                        href="https://buymeacoffee.com/butburg" target="_blank" rel="noopener"
+                        aria-label="Made with love by EW">
+                        <span
+                            class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-c-primary/10 text-c-primary/35 transition-all duration-300 group-hover:bg-c-primary/20 group-hover:text-c-accent">
+                            <svg class="h-6 w-6 rotate-180 transform transition-transform duration-300 group-hover:rotate-[168deg] group-hover:-translate-y-0.5"
+                                viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
+                                aria-hidden="true">
+                                <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8" />
+                                <circle cx="8.5" cy="10" r="1" fill="currentColor" />
+                                <circle cx="15.5" cy="10" r="1" fill="currentColor" />
+                                <path d="M8 14.2C9 15.7 10.2 16.3 12 16.3C13.8 16.3 15 15.7 16 14.2"
+                                    stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                            </svg>
+                        </span>
+
+                        <span class="text-left">
+                            <span
+                                class="block text-base font-semibold tracking-wide text-c-accent underline decoration-c-accent/90 underline-offset-4 transition-colors duration-300 group-hover:text-c-primary">
+                                Made with Love
+                            </span>
+                            <span class="block text-xs leading-relaxed text-c-primary/70">by E. Wiese</span>
+                        </span>
                     </a>
                 </div>
 
-                <div class="space-y-2">
+                <div class="flex flex-col items-center space-y-2">
                     <p class="text-xs leading-relaxed text-c-primary/70">
                         If you want to host your own site, you can support this project by using my Lima-City link.
                     </p>
-                    <a href="https://www.lima-city.de/webhosting?cref=439120" target="_blank" rel="noopener">
-                        <img class="h-10" alt="lima-city: Webhosting, Domains und Cloud"
+                    <a class="inline-flex w-full justify-center" href="https://www.lima-city.de/webhosting?cref=439120"
+                        target="_blank" rel="noopener">
+                        <img class="mx-auto h-10" alt="lima-city: Webhosting, Domains und Cloud"
                             src="https://www.lima-city.de/assets/banner/button3.jpg">
                     </a>
                 </div>
