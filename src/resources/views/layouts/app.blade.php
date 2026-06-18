@@ -52,7 +52,7 @@
                         aria-label="Made with love by EW">
                         <span
                             class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-c-primary/10 text-c-primary/35 transition-all duration-300 group-hover:bg-c-primary/20 group-hover:text-c-accent">
-                            <svg class="h-6 w-6 rotate-180 transform transition-transform duration-300 group-hover:rotate-[168deg] group-hover:-translate-y-0.5"
+                            <svg class="h-8 w-8 rotate-180 transform transition-transform duration-300 group-hover:rotate-[225deg]"
                                 viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
                                 aria-hidden="true">
                                 <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8" />
@@ -65,10 +65,12 @@
 
                         <span class="text-left">
                             <span
-                                class="block text-base font-semibold tracking-wide text-c-accent underline decoration-c-accent/90 underline-offset-4 transition-colors duration-300 group-hover:text-c-primary">
+                                class="block text-base font-semibold tracking-wide text-c-primary/70 underline decoration-c-primary/50 underline-offset-4 transition-colors duration-300 group-hover:text-c-accent group-hover:decoration-c-accent/90">
                                 Made with Love
                             </span>
-                            <span class="block text-xs leading-relaxed text-c-primary/70">by E. Wiese</span>
+                            <span
+                                class="block text-base leading-relaxed text-c-primary/70 transition-colors duration-300 group-hover:text-c-accent">by
+                                EW</span>
                         </span>
                     </a>
                 </div>
