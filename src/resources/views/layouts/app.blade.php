@@ -44,33 +44,51 @@
             {{ $slot }}
         </main>
 
-        <footer class="text-content-text py-16 text-center text-sm">
-            <p>
-                <a class="font-medium text-c-primary underline hover:no-underline" href="{{ route('impressum') }}">
-                    Impressum & Datenschutz
-                </a>
-            </p>
-            <p class="text-c-primary/30">
-                Laravel v{{ Illuminate\Foundation\Application::VERSION }} (PHP v{{ PHP_VERSION }})
-                @if (app()->environment('local'))
-                    <br>
-                    Laravel: {{ app()->version() }}<br>
-                    PHP {{ PHP_VERSION }}<br>
-                    Composer: {{ shell_exec('composer --version | grep -o -E "[0-9]+\.[0-9]+\.[0-9]+"') }}<br>
-                    npm: {{ shell_exec('npm --version | grep -o -E "[0-9]+\.[0-9]+\.[0-9]+"') }}<br>
-                    Vite: {{ shell_exec('npm show vite version | grep -o -E "[0-9]+\.[0-9]+\.[0-9]+"') }}<br>
-                    SQLite: {{ shell_exec('sqlite3 --version | grep -o -E "[0-9]+\.[0-9]+\.[0-9]+"') }}
-                @endif
-            <p>
-            <div class="mt-10 flex flex-col items-center space-y-2">
-                <p class="text-c-primary/60 text-xs leading-relaxed">
-                    This website is hosted by Lima-City.<br>
-                    If you get hosting through this link, you support my project &lt;3
+        <footer class="py-16 text-center text-sm text-c-text">
+            <div class="mx-auto flex w-full max-w-2xl flex-col items-center gap-8 px-4">
+                <div class="space-y-2">
+                    <p class="text-base font-semibold tracking-wide text-c-accent">
+                        <a class="underline decoration-c-accent/90 underline-offset-4 hover:text-c-primary"
+                            href="https://buymeacoffee.com/butburg" target="_blank" rel="noopener">
+                            Made with love by EW
+                        </a>
+                    </p>
+                    <a href="https://buymeacoffee.com/butburg" target="_blank" rel="noopener"
+                        aria-label="Support this project on Buy Me a Coffee">
+                        <img class="h-11" alt="Buy Me a Coffee"
+                            src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png">
+                    </a>
+                </div>
+
+                <div class="space-y-2">
+                    <p class="text-xs leading-relaxed text-c-primary/70">
+                        If you want to host your own site, you can support this project by using my Lima-City link.
+                    </p>
+                    <a href="https://www.lima-city.de/webhosting?cref=439120" target="_blank" rel="noopener">
+                        <img class="h-10" alt="lima-city: Webhosting, Domains und Cloud"
+                            src="https://www.lima-city.de/assets/banner/button3.jpg">
+                    </a>
+                </div>
+
+                <p>
+                    <a class="font-medium text-c-primary underline underline-offset-4 hover:text-c-accent"
+                        href="{{ route('impressum') }}">
+                        Impressum & Datenschutz
+                    </a>
                 </p>
-                <a href="https://www.lima-city.de/webhosting?cref=439120" target="_blank" rel="noopener">
-                    <img class="h-10" alt="lima-city: Webhosting, Domains und Cloud"
-                        src="https://www.lima-city.de/assets/banner/button3.jpg">
-                </a>
+
+                <p class="text-c-primary/35">
+                    Laravel v{{ Illuminate\Foundation\Application::VERSION }} (PHP v{{ PHP_VERSION }})
+                    @if (app()->environment('local'))
+                        <br>
+                        Laravel: {{ app()->version() }}<br>
+                        PHP {{ PHP_VERSION }}<br>
+                        Composer: {{ shell_exec('composer --version | grep -o -E "[0-9]+\.[0-9]+\.[0-9]+"') }}<br>
+                        npm: {{ shell_exec('npm --version | grep -o -E "[0-9]+\.[0-9]+\.[0-9]+"') }}<br>
+                        Vite: {{ shell_exec('npm show vite version | grep -o -E "[0-9]+\.[0-9]+\.[0-9]+"') }}<br>
+                        SQLite: {{ shell_exec('sqlite3 --version | grep -o -E "[0-9]+\.[0-9]+\.[0-9]+"') }}
+                    @endif
+                </p>
             </div>
         </footer>
 

@@ -4,6 +4,12 @@ The ultimate art platform for sharing your masterpieces. Create a collaborative 
 
 This Laravel 11 app is here to retire my old plain PHP website.
 
+## Support This Project
+
+If this project helps you, you can support ongoing development here:
+
+[![Buy Me A Coffee](https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png)](https://buymeacoffee.com/butburg)
+
 ### Features
 - Upload your images and add them to **THE** gallery.
 - Give your piece a name, turning it into a true work of art.
