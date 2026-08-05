@@ -48,7 +48,7 @@
             <div class="mx-auto flex w-full max-w-2xl flex-col items-center gap-8 px-4">
                 <div>
                     <a class="group inline-flex items-center justify-center gap-3 rounded-xl px-3 py-2"
-                        href="https://buymeacoffee.com/butburg" target="_blank" rel="noopener"
+                        href="https://ko-fi.com/butburg" target="_blank" rel="noopener"
                         aria-label="Made with love by EW">
                         <span
                             class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-c-primary/10 text-c-primary/35 transition-all duration-300 group-hover:bg-c-primary/20 group-hover:text-c-accent">
