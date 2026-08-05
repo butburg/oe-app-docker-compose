@@ -8,7 +8,7 @@ This Laravel 11 app is here to retire my old plain PHP website.
 
 If this project helps you, you can support ongoing development here:
 
-[![Buy Me A Coffee](https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png)](https://buymeacoffee.com/butburg)
+[![Buy me an ice cream 🍦](https://storage.ko-fi.com/cdn/kofi6.png?v=6)]([https://buymeacoffee.com/butburg](https://ko-fi.com/butburg))
 
 ### Features
 - Upload your images and add them to **THE** gallery.
