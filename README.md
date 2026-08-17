@@ -1,5 +1,7 @@
 # Oh Eweedy
 
+![ko-fi](https://ko-fi.com/O4O111DFT3)
+
 The ultimate art platform for sharing your masterpieces. Create a collaborative image gallery.
 
 This Laravel 11 app is here to retire my old plain PHP website.
@@ -92,7 +94,7 @@ While I originally created this template for local development, it's robust enou
 
 ## Compiling Assets
 
-This configuration should be able to compile assets with both [laravel mix](https://laravel-mix.com/) and [vite](https://vitejs.dev/). In order to get started, you first need to add ` --host 0.0.0.0` after the end of your relevant dev command in `package.json`. So for example, with a Laravel project using Vite, you should see:
+This configuration should be able to compile its assets with both [laravel mix](https://laravel-mix.com/) and [vite](https://vitejs.dev/). In order to get started, you first need to add ` --host 0.0.0.0` after the end of your relevant dev command in `package.json`. So for example, with a Laravel project using Vite, you should see:
 
 ```json
 "scripts": {
