@@ -1,6 +1,6 @@
 # Oh Eweedy
 
-![ko-fi](https://ko-fi.com/O4O111DFT3)
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/O4O111DFT3)
 
 The ultimate art platform for sharing your masterpieces. Create a collaborative image gallery.
 
