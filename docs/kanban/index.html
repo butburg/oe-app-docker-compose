@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Features Kanban Board</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --card-hover: #283548;
+      --column-bg: #182234;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --border: #334155;
+      --accent: #38bdf8;
+      --accent-hover: #0ea5e9;
+      --priority-high: #ef4444;
+      --priority-med: #f59e0b;
+      --priority-low: #10b981;
+      --radius: 8px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 24px;
+      border-bottom: 1px solid var(--border);
+      background-color: #0b1120;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand h1 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .brand span {
+      background: #1e293b;
+      color: var(--accent);
+      font-size: 0.75rem;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+    }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .toolbar input, .toolbar select {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 6px 12px;
+      border-radius: var(--radius);
+      font-size: 0.875rem;
+      outline: none;
+    }
+
+    .toolbar input:focus {
+      border-color: var(--accent);
+    }
+
+    .btn {
+      background-color: var(--accent);
+      color: #0f172a;
+      font-weight: 600;
+      border: none;
+      padding: 6px 14px;
+      border-radius: var(--radius);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.875rem;
+      transition: background-color 0.15s ease;
+    }
+
+    .btn:hover {
+      background-color: var(--accent-hover);
+    }
+
+    .btn-secondary {
+      background: var(--card-bg);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: var(--card-hover);
+    }
+
+    .board-container {
+      flex: 1;
+      display: flex;
+      gap: 16px;
+      padding: 20px 24px;
+      overflow-x: auto;
+      overflow-y: hidden;
+    }
+
+    .column {
+      flex: 0 0 310px;
+      background: var(--column-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      display: flex;
+      flex-direction: column;
+      max-height: 100%;
+    }
+
+    .column-header {
+      padding: 12px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .column-header .count {
+      background: var(--card-bg);
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .card-list {
+      flex: 1;
+      padding: 10px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      min-height: 120px;
+    }
+
+    .card-list.drag-over {
+      background: rgba(56, 189, 248, 0.08);
+      border-radius: var(--radius);
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px;
+      cursor: grab;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      transition: transform 0.1s ease, border-color 0.1s ease;
+    }
+
+    .card:hover {
+      background: var(--card-hover);
+      border-color: #475569;
+    }
+
+    .card.dragging {
+      opacity: 0.4;
+    }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.75rem;
+    }
+
+    .card-id {
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: 0.03em;
+    }
+
+    .badge-priority {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .priority-high { background: rgba(239, 68, 68, 0.2); color: var(--priority-high); }
+    .priority-medium { background: rgba(245, 158, 11, 0.2); color: var(--priority-med); }
+    .priority-low { background: rgba(16, 185, 129, 0.2); color: var(--priority-low); }
+
+    .card-title {
+      font-size: 0.925rem;
+      font-weight: 600;
+      line-height: 1.3;
+    }
+
+    .card-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 4px;
+    }
+
+    .tag {
+      background: #0f172a;
+      border: 1px solid var(--border);
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    /* Modal */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(2px);
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      width: 90%;
+      max-width: 650px;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-header h2 {
+      font-size: 1.1rem;
+    }
+
+    .modal-body {
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .modal-body label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+      display: block;
+    }
+
+    .modal-body input, .modal-body select, .modal-body textarea {
+      width: 100%;
+      background: #0f172a;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 8px 10px;
+      border-radius: var(--radius);
+      font-size: 0.9rem;
+      outline: none;
+    }
+
+    .modal-body textarea {
+      font-family: monospace;
+      resize: vertical;
+      min-height: 140px;
+    }
+
+    .modal-footer {
+      padding: 12px 20px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.25rem;
+      cursor: pointer;
+    }
+
+    .close-btn:hover {
+      color: var(--text);
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand">
+      <h1>Features Kanban</h1>
+      <span>docs/features</span>
+    </div>
+
+    <div class="toolbar">
+      <input type="text" id="searchInput" placeholder="Search features..." oninput="renderBoard()">
+      <select id="priorityFilter" onchange="renderBoard()">
+        <option value="all">All Priorities</option>
+        <option value="high">High</option>
+        <option value="medium">Medium</option>
+        <option value="low">Low</option>
+      </select>
+      <button class="btn btn-secondary" onclick="document.getElementById('fileUpload').click()">
+        📁 Import .md
+      </button>
+      <input type="file" id="fileUpload" multiple accept=".md" style="display:none" onchange="handleFileImport(event)">
+      <button class="btn" onclick="openNewFeatureModal()">+ New Feature</button>
+    </div>
+  </header>
+
+  <div class="board-container" id="boardContainer"></div>
+
+  <!-- Detail / Edit Modal -->
+  <div class="modal-backdrop" id="featureModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="modalId">Feature Detail</h2>
+        <button class="close-btn" onclick="closeModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div>
+          <label>ID</label>
+          <input type="text" id="modalFieldId">
+        </div>
+        <div>
+          <label>Title</label>
+          <input type="text" id="modalFieldTitle">
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+          <div>
+            <label>Status</label>
+            <select id="modalFieldStatus">
+              <option value="backlog">Backlog</option>
+              <option value="todo">To Do</option>
+              <option value="in-progress">In Progress</option>
+              <option value="review">Review</option>
+              <option value="done">Done</option>
+            </select>
+          </div>
+          <div>
+            <label>Priority</label>
+            <select id="modalFieldPriority">
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label>Tags (comma separated)</label>
+          <input type="text" id="modalFieldTags">
+        </div>
+        <div>
+          <label>Markdown Content</label>
+          <textarea id="modalFieldBody"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="exportCurrentMarkdown()">💾 Download .md</button>
+        <div style="display: flex; gap: 8px;">
+          <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+          <button class="btn" onclick="saveFeatureFromModal()">Save Changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const COLUMNS = [
+      { id: 'backlog', title: 'Backlog', icon: '📥' },
+      { id: 'todo', title: 'To Do', icon: '📋' },
+      { id: 'in-progress', title: 'In Progress', icon: '🚀' },
+      { id: 'review', title: 'In Review', icon: '🔍' },
+      { id: 'done', title: 'Done', icon: '✅' }
+    ];
+
+    // Seeded data reflecting docs/features/*.md
+    let features = [
+      {
+        id: 'FEAT-001',
+        title: 'Client-Side Image Resizing and Compression',
+        status: 'todo',
+        priority: 'high',
+        category: 'enhancement',
+        tags: ['image-processing', 'upload', 'performance'],
+        body: '## Overview\nCompress and resize user images directly in the browser using HTML5 Canvas / Web APIs before uploading to the server.\n\n## Problem Statement\nThe host PHP environment has strict memory limits (`memory_limit` in PHP configuration). Processing high-resolution modern camera photos (10MB–20MB+) on the server often hits memory exhausted errors or causes slow upload times and high memory spikes in PHP-FPM.\n\n## Acceptance Criteria\n- [ ] Implement client-side image compression prior to form dispatch.\n- [ ] Large images are downscaled to max width/height while maintaining aspect ratio and visual fidelity.\n- [ ] Graceful fallback or error notification if browser compression fails.\n- [ ] Reduces upload payload size significantly and avoids PHP host memory exhaustion.'
+      },
+      {
+        id: 'FEAT-002',
+        title: 'Pre-Upload Image Management',
+        status: 'in-progress',
+        priority: 'medium',
+        category: 'ui',
+        tags: ['upload', 'ui', 'images'],
+        body: '## Overview\nProvide an interactive staging area in the creation flow where users can manage selected images before generating and uploading the post.\n\n## Problem Statement\nCurrently, users cannot easily preview, reorder, or choose which image serves as the title/cover thumbnail before uploading. If an unwanted image is selected, they would have to start over.\n\n## Acceptance Criteria\n- [ ] Show image thumbnails immediately after selection.\n- [ ] Allow reordering images via drag-and-drop or move buttons.\n- [ ] Allow removing individual images before submission.\n- [ ] Allow selecting a primary "title image" (featured thumbnail).\n- [ ] Integration with client-side compression pipeline.'
+      },
+      {
+        id: 'FEAT-003',
+        title: 'AI-Assisted Ad Creation Flow',
+        status: 'backlog',
+        priority: 'medium',
+        category: 'feature',
+        tags: ['ai', 'ads', 'automation'],
+        body: '## Overview\nStreamline ad creation to only require uploaded images and an optional user prompt; AI automatically populates title, description, category, and other ad fields.\n\n## Problem Statement\nManually filling out multi-field forms for ads is tedious and slows down user engagement. Users usually have photos and an idea or brief sentence, but writing polished ad copy manually is friction-heavy.\n\n## Acceptance Criteria\n- [ ] User inputs only: image file(s) and an optional short text prompt.\n- [ ] AI prompt generation service analyzes context/images and auto-completes title, description, and suggested tags.\n- [ ] User can preview and adjust AI-generated values before final submission.\n- [ ] Clean error handling if AI completion service is unreachable.'
+      },
+      {
+        id: 'FEAT-004',
+        title: 'Lightweight Local Kanban Board Viewer',
+        status: 'done',
+        priority: 'low',
+        category: 'feature',
+        tags: ['kanban', 'productivity', 'tooling'],
+        body: '## Overview\nA zero-dependency, fast, self-contained HTML/JS single-page Kanban application to visualize and manage markdown feature files without third-party SaaS overhead.\n\n## Problem Statement\nStandard project management tools introduce external overhead, account management, and disconnect task state from git repository files. Managing features directly in git-tracked markdown files keeps everything in sync with the codebase.\n\n## Acceptance Criteria\n- [x] Self-contained single-page HTML file viewable directly in browser.\n- [x] Renders columns: Backlog, Todo, In Progress, In Review, Done.\n- [x] Reads feature files with YAML frontmatter.\n- [x] Allows editing status and exporting/saving markdown.\n- [x] Fast, clean dark-mode UI.'
+      }
+    ];
+
+    let currentEditingId = null;
+
+    function renderBoard() {
+      const container = document.getElementById('boardContainer');
+      const searchQuery = (document.getElementById('searchInput').value || '').toLowerCase();
+      const priorityFilter = document.getElementById('priorityFilter').value;
+
+      container.innerHTML = '';
+
+      COLUMNS.forEach(col => {
+        const colEl = document.createElement('div');
+        colEl.className = 'column';
+
+        const filtered = features.filter(f => {
+          if (f.status !== col.id) return false;
+          if (priorityFilter !== 'all' && f.priority !== priorityFilter) return false;
+          if (searchQuery && !f.title.toLowerCase().includes(searchQuery) && !f.id.toLowerCase().includes(searchQuery)) return false;
+          return true;
+        });
+
+        colEl.innerHTML = `
+          <div class="column-header">
+            <span>${col.icon} ${col.title}</span>
+            <span class="count">${filtered.length}</span>
+          </div>
+          <div class="card-list" data-column-id="${col.id}" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event, '${col.id}')">
+          </div>
+        `;
+
+        const listEl = colEl.querySelector('.card-list');
+
+        filtered.forEach(feat => {
+          const card = document.createElement('div');
+          card.className = 'card';
+          card.draggable = true;
+          card.ondragstart = (e) => onDragStart(e, feat.id);
+          card.ondragend = (e) => onDragEnd(e);
+          card.onclick = () => openEditModal(feat.id);
+
+          const priorityClass = `priority-${feat.priority || 'medium'}`;
+          const tagsHtml = (feat.tags || []).map(t => `<span class="tag">${t}</span>`).join('');
+
+          card.innerHTML = `
+            <div class="card-top">
+              <span class="card-id">${feat.id}</span>
+              <span class="badge-priority ${priorityClass}">${feat.priority || 'med'}</span>
+            </div>
+            <div class="card-title">${feat.title}</div>
+            <div class="card-tags">${tagsHtml}</div>
+          `;
+          listEl.appendChild(card);
+        });
+
+        container.appendChild(colEl);
+      });
+    }
+
+    let draggedId = null;
+
+    function onDragStart(e, id) {
+      draggedId = id;
+      e.target.classList.add('dragging');
+      e.dataTransfer.setData('text/plain', id);
+    }
+
+    function onDragEnd(e) {
+      e.target.classList.remove('dragging');
+      document.querySelectorAll('.card-list').forEach(el => el.classList.remove('drag-over'));
+    }
+
+    function onDragOver(e) {
+      e.preventDefault();
+      e.currentTarget.classList.add('drag-over');
+    }
+
+    function onDragLeave(e) {
+      e.currentTarget.classList.remove('drag-over');
+    }
+
+    function onDrop(e, columnId) {
+      e.preventDefault();
+      e.currentTarget.classList.remove('drag-over');
+      if (!draggedId) return;
+
+      const feat = features.find(f => f.id === draggedId);
+      if (feat && feat.status !== columnId) {
+        feat.status = columnId;
+        renderBoard();
+      }
+      draggedId = null;
+    }
+
+    function openEditModal(id) {
+      currentEditingId = id;
+      const feat = features.find(f => f.id === id);
+      if (!feat) return;
+
+      document.getElementById('modalId').innerText = feat.id + ' — Details';
+      document.getElementById('modalFieldId').value = feat.id;
+      document.getElementById('modalFieldTitle').value = feat.title;
+      document.getElementById('modalFieldStatus').value = feat.status;
+      document.getElementById('modalFieldPriority').value = feat.priority || 'medium';
+      document.getElementById('modalFieldTags').value = (feat.tags || []).join(', ');
+      document.getElementById('modalFieldBody').value = feat.body || '';
+
+      document.getElementById('featureModal').classList.add('open');
+    }
+
+    function openNewFeatureModal() {
+      currentEditingId = 'NEW';
+      const nextNum = features.length + 1;
+      const newId = `FEAT-${String(nextNum).padStart(3, '0')}`;
+
+      document.getElementById('modalId').innerText = 'Create New Feature';
+      document.getElementById('modalFieldId').value = newId;
+      document.getElementById('modalFieldTitle').value = '';
+      document.getElementById('modalFieldStatus').value = 'backlog';
+      document.getElementById('modalFieldPriority').value = 'medium';
+      document.getElementById('modalFieldTags').value = '';
+      document.getElementById('modalFieldBody').value = '## Overview\n\n## Problem Statement\n\n## Acceptance Criteria\n- [ ] ';
+
+      document.getElementById('featureModal').classList.add('open');
+    }
+
+    function closeModal() {
+      document.getElementById('featureModal').classList.remove('open');
+    }
+
+    function saveFeatureFromModal() {
+      const id = document.getElementById('modalFieldId').value.trim();
+      const title = document.getElementById('modalFieldTitle').value.trim();
+      const status = document.getElementById('modalFieldStatus').value;
+      const priority = document.getElementById('modalFieldPriority').value;
+      const tags = document.getElementById('modalFieldTags').value.split(',').map(t => t.trim()).filter(Boolean);
+      const body = document.getElementById('modalFieldBody').value;
+
+      if (!id || !title) {
+        alert('ID and Title are required');
+        return;
+      }
+
+      if (currentEditingId === 'NEW') {
+        features.push({ id, title, status, priority, tags, body });
+      } else {
+        const feat = features.find(f => f.id === currentEditingId);
+        if (feat) {
+          feat.id = id;
+          feat.title = title;
+          feat.status = status;
+          feat.priority = priority;
+          feat.tags = tags;
+          feat.body = body;
+        }
+      }
+
+      closeModal();
+      renderBoard();
+    }
+
+    function toMarkdown(feat) {
+      const today = new Date().toISOString().slice(0, 10);
+      const tagsFormatted = (feat.tags || []).map(t => `  - ${t}`).join('\n');
+      return `---
+id: ${feat.id}
+title: ${feat.title}
+status: ${feat.status}
+priority: ${feat.priority || 'medium'}
+category: ${feat.category || 'feature'}
+assignee: unassigned
+created: ${today}
+updated: ${today}
+tags:
+${tagsFormatted}
+---
+
+# ${feat.title}
+
+${feat.body || ''}
+`;
+    }
+
+    function exportCurrentMarkdown() {
+      const id = document.getElementById('modalFieldId').value.trim();
+      const title = document.getElementById('modalFieldTitle').value.trim();
+      const status = document.getElementById('modalFieldStatus').value;
+      const priority = document.getElementById('modalFieldPriority').value;
+      const tags = document.getElementById('modalFieldTags').value.split(',').map(t => t.trim()).filter(Boolean);
+      const body = document.getElementById('modalFieldBody').value;
+
+      const feat = { id, title, status, priority, tags, body };
+      const md = toMarkdown(feat);
+
+      const blob = new Blob([md], { type: 'text/markdown' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `${feat.id.toLowerCase()}-${slugify(feat.title)}.md`;
+      a.click();
+    }
+
+    function slugify(text) {
+      return text.toString().toLowerCase()
+        .replace(/\\s+/g, '-')
+        .replace(/[^\\w\\-]+/g, '')
+        .replace(/\\-\\-+/g, '-')
+        .replace(/^-+/, '')
+        .replace(/-+$/, '');
+    }
+
+    function parseFrontmatter(mdText) {
+      const match = mdText.match(/^---([\s\S]*?)---([\s\S]*)$/);
+      if (!match) return { frontmatter: {}, body: mdText };
+
+      const yamlBlock = match[1];
+      const body = match[2].trim();
+      const frontmatter = {};
+
+      const lines = yamlBlock.split('\n');
+      let currentArrayKey = null;
+
+      for (let line of lines) {
+        line = line.trim();
+        if (!line || line.startsWith('#')) continue;
+
+        if (line.startsWith('- ') && currentArrayKey) {
+          frontmatter[currentArrayKey].push(line.replace(/^- /, '').trim());
+          continue;
+        }
+
+        const colonIdx = line.indexOf(':');
+        if (colonIdx !== -1) {
+          const key = line.slice(0, colonIdx).trim();
+          let val = line.slice(colonIdx + 1).trim();
+          if (val === '') {
+            currentArrayKey = key;
+            frontmatter[key] = [];
+          } else {
+            currentArrayKey = null;
+            frontmatter[key] = val.replace(/^['"](.*)['"]$/, '$1');
+          }
+        }
+      }
+
+      return { frontmatter, body };
+    }
+
+    async function handleFileImport(event) {
+      const files = event.target.files;
+      for (let file of files) {
+        const text = await file.text();
+        const { frontmatter, body } = parseFrontmatter(text);
+        if (frontmatter.id && frontmatter.title) {
+          const existingIdx = features.findIndex(f => f.id === frontmatter.id);
+          const featObj = {
+            id: frontmatter.id,
+            title: frontmatter.title,
+            status: frontmatter.status || 'backlog',
+            priority: frontmatter.priority || 'medium',
+            category: frontmatter.category || 'feature',
+            tags: Array.isArray(frontmatter.tags) ? frontmatter.tags : [],
+            body: body
+          };
+          if (existingIdx !== -1) {
+            features[existingIdx] = featObj;
+          } else {
+            features.push(featObj);
+          }
+        }
+      }
+      renderBoard();
+    }
+
+    // Initial render
+    renderBoard();
+  </script>
+</body>
+</html>
