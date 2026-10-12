@@ -4,6 +4,15 @@ on:
   push:
     branches:
       - main
+    paths-ignore:
+      - 'docs/**'
+      - '.github/agents/**'
+      - '.github/skills/**'
+      - '.github/copilot-instructions.md'
+      - 'README.md'
+      - 'LICENSE.md'
+      - 'dockerfiles/**'
+      - 'docker-compose.yml'
   workflow_dispatch:
 
 jobs:
@@ -38,7 +47,7 @@ jobs:
         SFTP_USERNAME: ${{ secrets.LIMA_SFTP_USERNAME }}
       run: |
         rsync -r --delete-after --quiet \
-          --exclude '/src/vendor/' \
+          --exclude 'vendor/' \
           --exclude 'node_modules/' \
           --exclude 'storage/' \
           --exclude '.env' \
@@ -47,6 +56,10 @@ jobs:
           --exclude 'public/js/' \
           --exclude 'database/database.sqlite' \
           --exclude 'database/old_database.sqlite' \
+          --exclude 'old_image_posts/' \
+          --exclude 'tests/' \
+          --exclude 'phpunit.xml' \
+          --exclude '.git*' \
           $GITHUB_WORKSPACE/src/ $SFTP_USERNAME@$SFTP_HOST:oe-app/        
       
     - name: Upload .env file
