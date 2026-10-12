@@ -17,7 +17,7 @@ If this project helps you, you can support ongoing development here:
 - Give your piece a name, turning it into a true work of art.
 - Comment other posts to share your profound insights (or witty remarks) with the artist.
 
-If you are a nerd (with love), or you just want the full history of this cool project, jump into the [CHANGELOG.md](src/CHANGELOG.md).
+If you are a nerd (with love), or you just want the full history of this cool project, jump into the [CHANGELOG.md](docs/CHANGELOG.md).
 You will find all the details there: zoom, pagination, and other gloriously boring stuff like that.
 
 \
