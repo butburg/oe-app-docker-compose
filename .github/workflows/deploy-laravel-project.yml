@@ -40,7 +40,7 @@ jobs:
       run: |
         ssh $SFTP_USERNAME@$SFTP_HOST "echo -------- Connection Successful --------"
 
-        
+
     - name: Upload files via SSH
       env:
         SFTP_HOST: ${{ secrets.LIMA_SFTP_HOST }}
@@ -60,8 +60,8 @@ jobs:
           --exclude 'tests/' \
           --exclude 'phpunit.xml' \
           --exclude '.git*' \
-          $GITHUB_WORKSPACE/src/ $SFTP_USERNAME@$SFTP_HOST:oe-app/        
-      
+          $GITHUB_WORKSPACE/src/ $SFTP_USERNAME@$SFTP_HOST:oe-app/
+
     - name: Upload .env file
       env:
         SFTP_HOST: ${{ secrets.LIMA_SFTP_HOST }}

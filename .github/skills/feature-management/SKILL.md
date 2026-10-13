@@ -35,5 +35,8 @@ user-invocable: true
 4. Mark completed acceptance criteria checkboxes (`[x]`).
 
 ### 3. Visualizing on the Kanban Board
-- Open `docs/kanban/index.html` in a web browser.
-- Use **Import .md** to load any newly added feature files or inspect existing ones.
+- `docs/features/FEAT-*.md` is the source of truth; board reads/writes relative to the repository through `docs/kanban/server.py`.
+- Start from repo root with `python3 docs/kanban/server.py`; open `http://localhost:8765/docs/kanban/index.html`.
+- Board edits and drag/drop status changes save the matching Markdown file and update `updated`; do not add seed data to HTML.
+- New cards create `FEAT-###-<slug>.md`; `template.md` and `README.md` are not tickets.
+- After changes, reload the board and verify the file and card metadata.

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -73,7 +74,8 @@
       gap: 10px;
     }
 
-    .toolbar input, .toolbar select {
+    .toolbar input,
+    .toolbar select {
       background: var(--card-bg);
       border: 1px solid var(--border);
       color: var(--text);
@@ -210,9 +212,20 @@
       border-radius: 4px;
     }
 
-    .priority-high { background: rgba(239, 68, 68, 0.2); color: var(--priority-high); }
-    .priority-medium { background: rgba(245, 158, 11, 0.2); color: var(--priority-med); }
-    .priority-low { background: rgba(16, 185, 129, 0.2); color: var(--priority-low); }
+    .priority-high {
+      background: rgba(239, 68, 68, 0.2);
+      color: var(--priority-high);
+    }
+
+    .priority-medium {
+      background: rgba(245, 158, 11, 0.2);
+      color: var(--priority-med);
+    }
+
+    .priority-low {
+      background: rgba(16, 185, 129, 0.2);
+      color: var(--priority-low);
+    }
 
     .card-title {
       font-size: 0.925rem;
@@ -246,6 +259,9 @@
       align-items: center;
       justify-content: center;
       z-index: 100;
+      overflow-y: auto;
+      scrollbar-gutter: stable;
+      padding: 5vh 0;
     }
 
     .modal-backdrop.open {
@@ -258,11 +274,11 @@
       border-radius: var(--radius);
       width: 90%;
       max-width: 650px;
-      max-height: 90vh;
       display: flex;
       flex-direction: column;
       overflow: hidden;
       box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+      margin: auto;
     }
 
     .modal-header {
@@ -279,7 +295,7 @@
 
     .modal-body {
       padding: 20px;
-      overflow-y: auto;
+      overflow: visible;
       display: flex;
       flex-direction: column;
       gap: 14px;
@@ -294,7 +310,9 @@
       display: block;
     }
 
-    .modal-body input, .modal-body select, .modal-body textarea {
+    .modal-body input,
+    .modal-body select,
+    .modal-body textarea {
       width: 100%;
       background: #0f172a;
       border: 1px solid var(--border);
@@ -307,7 +325,8 @@
 
     .modal-body textarea {
       font-family: monospace;
-      resize: vertical;
+      resize: none;
+      overflow: hidden;
       min-height: 140px;
     }
 
@@ -332,6 +351,7 @@
     }
   </style>
 </head>
+
 <body>
 
   <header>
@@ -348,11 +368,11 @@
         <option value="medium">Medium</option>
         <option value="low">Low</option>
       </select>
-      <button class="btn btn-secondary" onclick="document.getElementById('fileUpload').click()">
-        📁 Import .md
+      <button class="btn btn-secondary" id="reloadFeaturesBtn" onclick="loadFeaturesFromApi()">
+        ↻ Reload features
       </button>
-      <input type="file" id="fileUpload" multiple accept=".md" style="display:none" onchange="handleFileImport(event)">
-      <button class="btn" onclick="openNewFeatureModal()">+ New Feature</button>
+      <span id="syncStatus" role="status" aria-live="polite">Loading features...</span>
+      <button class="btn" id="newFeatureBtn" onclick="openNewFeatureModal()" disabled>+ New Feature</button>
     </div>
   </header>
 
@@ -400,14 +420,13 @@
         </div>
         <div>
           <label>Markdown Content</label>
-          <textarea id="modalFieldBody"></textarea>
+          <textarea id="modalFieldBody" oninput="resizeMarkdownContent()"></textarea>
         </div>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-secondary" onclick="exportCurrentMarkdown()">💾 Download .md</button>
         <div style="display: flex; gap: 8px;">
           <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
-          <button class="btn" onclick="saveFeatureFromModal()">Save Changes</button>
+          <button class="btn" onclick="saveFeatureFromModal()">Save to Markdown</button>
         </div>
       </div>
     </div>
@@ -422,47 +441,50 @@
       { id: 'done', title: 'Done', icon: '✅' }
     ];
 
-    // Seeded data reflecting docs/features/*.md
-    let features = [
-      {
-        id: 'FEAT-001',
-        title: 'Client-Side Image Resizing and Compression',
-        status: 'todo',
-        priority: 'high',
-        category: 'enhancement',
-        tags: ['image-processing', 'upload', 'performance'],
-        body: '## Overview\nCompress and resize user images directly in the browser using HTML5 Canvas / Web APIs before uploading to the server.\n\n## Problem Statement\nThe host PHP environment has strict memory limits (`memory_limit` in PHP configuration). Processing high-resolution modern camera photos (10MB–20MB+) on the server often hits memory exhausted errors or causes slow upload times and high memory spikes in PHP-FPM.\n\n## Acceptance Criteria\n- [ ] Implement client-side image compression prior to form dispatch.\n- [ ] Large images are downscaled to max width/height while maintaining aspect ratio and visual fidelity.\n- [ ] Graceful fallback or error notification if browser compression fails.\n- [ ] Reduces upload payload size significantly and avoids PHP host memory exhaustion.'
-      },
-      {
-        id: 'FEAT-002',
-        title: 'Pre-Upload Image Management',
-        status: 'in-progress',
-        priority: 'medium',
-        category: 'ui',
-        tags: ['upload', 'ui', 'images'],
-        body: '## Overview\nProvide an interactive staging area in the creation flow where users can manage selected images before generating and uploading the post.\n\n## Problem Statement\nCurrently, users cannot easily preview, reorder, or choose which image serves as the title/cover thumbnail before uploading. If an unwanted image is selected, they would have to start over.\n\n## Acceptance Criteria\n- [ ] Show image thumbnails immediately after selection.\n- [ ] Allow reordering images via drag-and-drop or move buttons.\n- [ ] Allow removing individual images before submission.\n- [ ] Allow selecting a primary "title image" (featured thumbnail).\n- [ ] Integration with client-side compression pipeline.'
-      },
-      {
-        id: 'FEAT-003',
-        title: 'AI-Assisted Ad Creation Flow',
-        status: 'backlog',
-        priority: 'medium',
-        category: 'feature',
-        tags: ['ai', 'ads', 'automation'],
-        body: '## Overview\nStreamline ad creation to only require uploaded images and an optional user prompt; AI automatically populates title, description, category, and other ad fields.\n\n## Problem Statement\nManually filling out multi-field forms for ads is tedious and slows down user engagement. Users usually have photos and an idea or brief sentence, but writing polished ad copy manually is friction-heavy.\n\n## Acceptance Criteria\n- [ ] User inputs only: image file(s) and an optional short text prompt.\n- [ ] AI prompt generation service analyzes context/images and auto-completes title, description, and suggested tags.\n- [ ] User can preview and adjust AI-generated values before final submission.\n- [ ] Clean error handling if AI completion service is unreachable.'
-      },
-      {
-        id: 'FEAT-004',
-        title: 'Lightweight Local Kanban Board Viewer',
-        status: 'done',
-        priority: 'low',
-        category: 'feature',
-        tags: ['kanban', 'productivity', 'tooling'],
-        body: '## Overview\nA zero-dependency, fast, self-contained HTML/JS single-page Kanban application to visualize and manage markdown feature files without third-party SaaS overhead.\n\n## Problem Statement\nStandard project management tools introduce external overhead, account management, and disconnect task state from git repository files. Managing features directly in git-tracked markdown files keeps everything in sync with the codebase.\n\n## Acceptance Criteria\n- [x] Self-contained single-page HTML file viewable directly in browser.\n- [x] Renders columns: Backlog, Todo, In Progress, In Review, Done.\n- [x] Reads feature files with YAML frontmatter.\n- [x] Allows editing status and exporting/saving markdown.\n- [x] Fast, clean dark-mode UI.'
-      }
-    ];
-
+    let features = [];
     let currentEditingId = null;
+
+    function setSyncStatus(message) {
+      document.getElementById('syncStatus').textContent = message;
+    }
+
+    async function loadFeaturesFromApi() {
+      setSyncStatus('Loading features...');
+      try {
+        const response = await fetch('/api/features', { cache: 'no-store' });
+        if (!response.ok) throw new Error(`Server returned ${response.status}`);
+        const markdownFiles = await response.json();
+        features = markdownFiles.map(({ fileName, markdown }) => {
+          const { frontmatter, body } = parseFrontmatter(markdown);
+          return {
+            id: frontmatter.id,
+            title: frontmatter.title,
+            status: frontmatter.status || 'backlog',
+            priority: frontmatter.priority || 'medium',
+            category: frontmatter.category || 'feature',
+            assignee: frontmatter.assignee || 'unassigned',
+            created: frontmatter.created || '',
+            updated: frontmatter.updated || '',
+            tags: Array.isArray(frontmatter.tags) ? frontmatter.tags : [],
+            metadata: frontmatter,
+            body,
+            fileName
+          };
+        }).filter(feature => feature.id && feature.title)
+          .sort((left, right) => left.id.localeCompare(right.id, undefined, { numeric: true }));
+        document.getElementById('newFeatureBtn').disabled = false;
+        setSyncStatus(`${features.length} feature(s) loaded from docs/features`);
+        renderBoard();
+      } catch (error) {
+        setSyncStatus(`Could not load features. Start the local board server: ${error.message}`);
+      }
+    }
+
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>"']/g, character => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      })[character]);
+    }
 
     function renderBoard() {
       const container = document.getElementById('boardContainer');
@@ -502,14 +524,14 @@
           card.onclick = () => openEditModal(feat.id);
 
           const priorityClass = `priority-${feat.priority || 'medium'}`;
-          const tagsHtml = (feat.tags || []).map(t => `<span class="tag">${t}</span>`).join('');
+          const tagsHtml = (feat.tags || []).map(t => `<span class="tag">${escapeHtml(t)}</span>`).join('');
 
           card.innerHTML = `
             <div class="card-top">
-              <span class="card-id">${feat.id}</span>
+              <span class="card-id">${escapeHtml(feat.id)}</span>
               <span class="badge-priority ${priorityClass}">${feat.priority || 'med'}</span>
             </div>
-            <div class="card-title">${feat.title}</div>
+            <div class="card-title">${escapeHtml(feat.title)}</div>
             <div class="card-tags">${tagsHtml}</div>
           `;
           listEl.appendChild(card);
@@ -541,15 +563,25 @@
       e.currentTarget.classList.remove('drag-over');
     }
 
-    function onDrop(e, columnId) {
+    async function onDrop(e, columnId) {
       e.preventDefault();
       e.currentTarget.classList.remove('drag-over');
       if (!draggedId) return;
 
       const feat = features.find(f => f.id === draggedId);
       if (feat && feat.status !== columnId) {
+        const previousStatus = feat.status;
         feat.status = columnId;
-        renderBoard();
+        feat.updated = new Date().toISOString().slice(0, 10);
+        try {
+          await writeFeatureFile(feat);
+          setSyncStatus(`Saved ${feat.id} to docs/features`);
+          renderBoard();
+        } catch (error) {
+          feat.status = previousStatus;
+          setSyncStatus(`Could not save ${feat.id}: ${error.message}`);
+          renderBoard();
+        }
       }
       draggedId = null;
     }
@@ -561,6 +593,7 @@
 
       document.getElementById('modalId').innerText = feat.id + ' — Details';
       document.getElementById('modalFieldId').value = feat.id;
+      document.getElementById('modalFieldId').disabled = true;
       document.getElementById('modalFieldTitle').value = feat.title;
       document.getElementById('modalFieldStatus').value = feat.status;
       document.getElementById('modalFieldPriority').value = feat.priority || 'medium';
@@ -568,15 +601,20 @@
       document.getElementById('modalFieldBody').value = feat.body || '';
 
       document.getElementById('featureModal').classList.add('open');
+      requestAnimationFrame(resizeMarkdownContent);
     }
 
     function openNewFeatureModal() {
       currentEditingId = 'NEW';
-      const nextNum = features.length + 1;
+      const nextNum = features.reduce((max, feature) => {
+        const match = feature.id.match(/^FEAT-(\d+)$/i);
+        return Math.max(max, match ? Number(match[1]) : 0);
+      }, 0) + 1;
       const newId = `FEAT-${String(nextNum).padStart(3, '0')}`;
 
       document.getElementById('modalId').innerText = 'Create New Feature';
       document.getElementById('modalFieldId').value = newId;
+      document.getElementById('modalFieldId').disabled = false;
       document.getElementById('modalFieldTitle').value = '';
       document.getElementById('modalFieldStatus').value = 'backlog';
       document.getElementById('modalFieldPriority').value = 'medium';
@@ -584,88 +622,117 @@
       document.getElementById('modalFieldBody').value = '## Overview\n\n## Problem Statement\n\n## Acceptance Criteria\n- [ ] ';
 
       document.getElementById('featureModal').classList.add('open');
+      requestAnimationFrame(resizeMarkdownContent);
+    }
+
+    function resizeMarkdownContent() {
+      const textarea = document.getElementById('modalFieldBody');
+      const borderHeight = parseFloat(getComputedStyle(textarea).borderTopWidth)
+        + parseFloat(getComputedStyle(textarea).borderBottomWidth);
+      for (let attempt = 0; attempt < 5; attempt++) {
+        textarea.style.height = 'auto';
+        textarea.style.height = `${textarea.scrollHeight + borderHeight}px`;
+        if (textarea.scrollHeight <= textarea.clientHeight) break;
+      }
     }
 
     function closeModal() {
       document.getElementById('featureModal').classList.remove('open');
     }
 
-    function saveFeatureFromModal() {
+    async function saveFeatureFromModal() {
       const id = document.getElementById('modalFieldId').value.trim();
       const title = document.getElementById('modalFieldTitle').value.trim();
       const status = document.getElementById('modalFieldStatus').value;
       const priority = document.getElementById('modalFieldPriority').value;
       const tags = document.getElementById('modalFieldTags').value.split(',').map(t => t.trim()).filter(Boolean);
       const body = document.getElementById('modalFieldBody').value;
+      const existing = currentEditingId === 'NEW' ? null : features.find(feature => feature.id === currentEditingId);
 
       if (!id || !title) {
         alert('ID and Title are required');
         return;
       }
-
-      if (currentEditingId === 'NEW') {
-        features.push({ id, title, status, priority, tags, body });
-      } else {
-        const feat = features.find(f => f.id === currentEditingId);
-        if (feat) {
-          feat.id = id;
-          feat.title = title;
-          feat.status = status;
-          feat.priority = priority;
-          feat.tags = tags;
-          feat.body = body;
-        }
+      if (features.some(feature => feature.id === id && feature.id !== currentEditingId)) {
+        alert(`A feature with ID ${id} already exists.`);
+        return;
       }
 
-      closeModal();
-      renderBoard();
+      const today = new Date().toISOString().slice(0, 10);
+      const feature = {
+        ...existing,
+        id,
+        title,
+        status,
+        priority,
+        category: existing?.category || 'feature',
+        assignee: existing?.assignee || 'unassigned',
+        created: existing?.created || today,
+        updated: today,
+        metadata: existing?.metadata || {},
+        tags,
+        body,
+        fileName: existing?.fileName || `${id.toLowerCase()}-${slugify(title)}.md`
+      };
+
+      try {
+        await writeFeatureFile(feature);
+        if (existing) {
+          features[features.indexOf(existing)] = feature;
+        } else {
+          features.push(feature);
+          features.sort((left, right) => left.id.localeCompare(right.id, undefined, { numeric: true }));
+        }
+        closeModal();
+        renderBoard();
+        setSyncStatus(`Saved ${feature.id} to docs/features`);
+      } catch (error) {
+        setSyncStatus(`Could not save ${feature.id}: ${error.message}`);
+      }
     }
 
     function toMarkdown(feat) {
-      const today = new Date().toISOString().slice(0, 10);
-      const tagsFormatted = (feat.tags || []).map(t => `  - ${t}`).join('\n');
+      const tagsFormatted = (feat.tags || []).map(tag => `  - ${JSON.stringify(tag)}`).join('\n');
+      const body = feat.body.trim() || `# ${feat.title}`;
+      const knownFields = new Set(['id', 'title', 'status', 'priority', 'category', 'assignee', 'created', 'updated', 'tags']);
+      const extraFields = Object.entries(feat.metadata || {})
+        .filter(([key, value]) => !knownFields.has(key) && /^[a-zA-Z_][\w-]*$/.test(key) && !Array.isArray(value))
+        .map(([key, value]) => `${key}: ${JSON.stringify(String(value))}`)
+        .join('\n');
       return `---
 id: ${feat.id}
-title: ${feat.title}
+title: ${JSON.stringify(feat.title)}
 status: ${feat.status}
 priority: ${feat.priority || 'medium'}
 category: ${feat.category || 'feature'}
-assignee: unassigned
-created: ${today}
-updated: ${today}
+assignee: ${JSON.stringify(feat.assignee || 'unassigned')}
+created: ${feat.created || new Date().toISOString().slice(0, 10)}
+updated: ${feat.updated || new Date().toISOString().slice(0, 10)}
 tags:
 ${tagsFormatted}
----
+${extraFields ? `${extraFields}\n` : ''}---
 
-# ${feat.title}
-
-${feat.body || ''}
+${body}
 `;
     }
 
-    function exportCurrentMarkdown() {
-      const id = document.getElementById('modalFieldId').value.trim();
-      const title = document.getElementById('modalFieldTitle').value.trim();
-      const status = document.getElementById('modalFieldStatus').value;
-      const priority = document.getElementById('modalFieldPriority').value;
-      const tags = document.getElementById('modalFieldTags').value.split(',').map(t => t.trim()).filter(Boolean);
-      const body = document.getElementById('modalFieldBody').value;
-
-      const feat = { id, title, status, priority, tags, body };
-      const md = toMarkdown(feat);
-
-      const blob = new Blob([md], { type: 'text/markdown' });
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = `${feat.id.toLowerCase()}-${slugify(feat.title)}.md`;
-      a.click();
+    async function writeFeatureFile(feature) {
+      const response = await fetch(`/api/features/${encodeURIComponent(feature.fileName)}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'text/markdown; charset=utf-8' },
+        body: toMarkdown(feature)
+      });
+      if (!response.ok) {
+        const result = await response.json().catch(() => ({}));
+        throw new Error(result.error || `Server returned ${response.status}`);
+      }
     }
 
     function slugify(text) {
       return text.toString().toLowerCase()
-        .replace(/\\s+/g, '-')
-        .replace(/[^\\w\\-]+/g, '')
-        .replace(/\\-\\-+/g, '-')
+        .replace(/\s+/g, '-')
+        .replace(/[^\w-]+/g, '')
+        .replace(/-+/g, '-')
         .replace(/^-+/, '')
         .replace(/-+$/, '');
     }
@@ -686,7 +753,7 @@ ${feat.body || ''}
         if (!line || line.startsWith('#')) continue;
 
         if (line.startsWith('- ') && currentArrayKey) {
-          frontmatter[currentArrayKey].push(line.replace(/^- /, '').trim());
+          frontmatter[currentArrayKey].push(parseScalar(line.replace(/^- /, '').trim()));
           continue;
         }
 
@@ -699,7 +766,7 @@ ${feat.body || ''}
             frontmatter[key] = [];
           } else {
             currentArrayKey = null;
-            frontmatter[key] = val.replace(/^['"](.*)['"]$/, '$1');
+            frontmatter[key] = parseScalar(val);
           }
         }
       }
@@ -707,34 +774,19 @@ ${feat.body || ''}
       return { frontmatter, body };
     }
 
-    async function handleFileImport(event) {
-      const files = event.target.files;
-      for (let file of files) {
-        const text = await file.text();
-        const { frontmatter, body } = parseFrontmatter(text);
-        if (frontmatter.id && frontmatter.title) {
-          const existingIdx = features.findIndex(f => f.id === frontmatter.id);
-          const featObj = {
-            id: frontmatter.id,
-            title: frontmatter.title,
-            status: frontmatter.status || 'backlog',
-            priority: frontmatter.priority || 'medium',
-            category: frontmatter.category || 'feature',
-            tags: Array.isArray(frontmatter.tags) ? frontmatter.tags : [],
-            body: body
-          };
-          if (existingIdx !== -1) {
-            features[existingIdx] = featObj;
-          } else {
-            features.push(featObj);
-          }
-        }
+    function parseScalar(value) {
+      const scalar = value.trim();
+      if (scalar.startsWith('"') && scalar.endsWith('"')) {
+        try {
+          return JSON.parse(scalar);
+        } catch { }
       }
-      renderBoard();
+      if (scalar.startsWith("'") && scalar.endsWith("'")) return scalar.slice(1, -1).replace(/''/g, "'");
+      return scalar;
     }
 
-    // Initial render
-    renderBoard();
+    loadFeaturesFromApi();
   </script>
 </body>
+
 </html>

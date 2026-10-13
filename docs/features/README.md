@@ -1,6 +1,6 @@
 # Features Directory
 
-This directory stores project feature specifications. Each feature is managed in its own Markdown file with frontmatter metadata at the top, making it easy to track, automate, and visualize in a Kanban board.
+This directory stores project feature specifications. Each feature is managed in its own Markdown file with frontmatter metadata at the top. The Kanban board reads and writes these files directly, so the Markdown remains the source of truth.
 
 ## File Naming Convention
 
@@ -43,4 +43,6 @@ tags:
 1. Copy [`template.md`](template.md) to a new file, e.g. `FEAT-005-my-feature.md`.
 2. Fill out the YAML frontmatter fields (especially `id`, `title`, and `status`).
 3. Describe the overview, problem statement, acceptance criteria, and technical plan.
-4. View or move tasks directly in the Kanban Board GUI at [`../kanban/index.html`](../kanban/index.html).
+4. From the repository root, run `python3 docs/kanban/server.py`, then open [`../kanban/index.html`](http://localhost:8765/docs/kanban/index.html). The board reads and writes this folder directly through a repo-relative local API.
+
+The board only treats files named `FEAT-<number>-<slug>.md` as tickets; it ignores this README and `template.md`. No folder picker or manual import is needed.

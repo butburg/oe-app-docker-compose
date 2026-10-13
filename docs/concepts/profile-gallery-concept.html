@@ -1,0 +1,947 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Weedy Gallery | Seitenkonzept</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: dark;
+      --page: #071d20;
+      --surface: #0d292d;
+      --surface-raised: #12363a;
+      --line: #285055;
+      --text: #ecf7f5;
+      --muted: #a9c3c2;
+      --quiet: #83a5a5;
+      --cyan: #00d9ff;
+      --lime: #a5e04d;
+      --pink: #f566db;
+      --content: 1160px;
+      font-family: 'Nanum Myeongjo', serif;
+      background: var(--page);
+      color: var(--text);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: radial-gradient(ellipse at 76% 1%, #103439 0, transparent 38%), var(--page);
+      color: var(--text);
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .topbar {
+      border-bottom: 1px solid var(--line);
+      background: rgba(3, 34, 38, .96);
+    }
+
+    .topbar-inner {
+      max-width: 1280px;
+      min-height: 64px;
+      margin: auto;
+      padding: 0 28px;
+      display: flex;
+      align-items: center;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text);
+      font: 800 16px/1.2 'Nanum Myeongjo', serif;
+      white-space: nowrap;
+    }
+
+    .brand img {
+      width: 48px;
+      height: 48px;
+      object-fit: contain;
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      margin-left: 28px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .nav a:first-child {
+      color: var(--text);
+    }
+
+    .nav-spacer {
+      flex: 1;
+    }
+
+    .user-menu {
+      padding: 9px 12px;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      color: var(--text);
+      background: transparent;
+      font: 700 13px 'Nanum Myeongjo', serif;
+    }
+
+    .user-menu span {
+      margin-left: 8px;
+      color: var(--muted);
+    }
+
+    .menu-button {
+      display: none;
+      width: 38px;
+      height: 38px;
+      place-items: center;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      color: var(--text);
+      background: transparent;
+      font-size: 19px;
+    }
+
+    .menu-button:hover,
+    .menu-button:focus-visible {
+      background: var(--surface);
+      outline: none;
+    }
+
+    .menu-close {
+      display: none;
+    }
+
+    .menu-button[aria-expanded="true"] .menu-open {
+      display: none;
+    }
+
+    .menu-button[aria-expanded="true"] .menu-close {
+      display: block;
+    }
+
+    .mobile-menu {
+      position: absolute;
+      z-index: 5;
+      top: 58px;
+      right: 0;
+      width: 192px;
+      padding: 5px 0;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--cyan);
+      color: #032226;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, .25);
+    }
+
+    .mobile-menu[hidden] {
+      display: none;
+    }
+
+    .mobile-menu a {
+      display: block;
+      padding: 10px 14px;
+      font-size: 14px;
+    }
+
+    .mobile-menu a:hover,
+    .mobile-menu a:focus-visible {
+      background: rgba(3, 34, 38, .12);
+      outline: none;
+    }
+
+    main {
+      max-width: var(--content);
+      margin: auto;
+      padding: 32px 28px 72px;
+    }
+
+    .profile {
+      display: grid;
+      grid-template-columns: 88px minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 22px;
+      padding: 22px 24px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: linear-gradient(110deg, var(--surface-raised), var(--surface) 65%);
+    }
+
+    .profile-avatar {
+      width: 88px;
+      height: 88px;
+      border: 2px solid var(--cyan);
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .profile-copy {
+      min-width: 0;
+    }
+
+    .eyebrow {
+      margin: 0 0 3px;
+      color: var(--cyan);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      margin-bottom: 3px;
+      font: 800 25px/1.2 'Nanum Myeongjo', serif;
+    }
+
+    .bio {
+      max-width: 540px;
+      margin: 5px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .profile-stats {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      margin-top: 12px;
+    }
+
+    .stat {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .stat strong {
+      margin-right: 4px;
+      color: var(--text);
+      font: 800 15px 'Nanum Myeongjo', serif;
+    }
+
+    .profile-actions {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 10px;
+    }
+
+    .online {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .online::before {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--lime);
+      content: '';
+    }
+
+    .button {
+      min-height: 38px;
+      padding: 0 15px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border: 1px solid var(--cyan);
+      border-radius: 6px;
+      color: #062326;
+      background: var(--cyan);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .section-heading {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 16px;
+      margin: 34px 0 16px;
+    }
+
+    .section-heading h2 {
+      margin: 0;
+      font: 800 20px/1.3 'Nanum Myeongjo', serif;
+    }
+
+    .section-heading p {
+      margin: 3px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .sort {
+      padding: 8px 11px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      color: var(--muted);
+      background: var(--surface);
+      font-size: 12px;
+    }
+
+    .post-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .post {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+    }
+
+    .post-image-wrap {
+      position: relative;
+      aspect-ratio: 1.44;
+      overflow: hidden;
+      background: var(--surface-raised);
+    }
+
+    .post-image {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform .4s ease;
+    }
+
+    .post:hover .post-image {
+      transform: scale(1.035);
+    }
+
+    .post-copy {
+      padding: 12px 13px 13px;
+    }
+
+    .post-copy h3 {
+      overflow: hidden;
+      margin: 0;
+      color: var(--text);
+      font: 700 14px/1.35 'Nanum Myeongjo', serif;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .post-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-top: 7px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .comments {
+      color: var(--cyan);
+      white-space: nowrap;
+    }
+
+    .page-index {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 26px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .page-index a {
+      padding: 7px 10px;
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      color: var(--muted);
+      background: var(--surface);
+      font-size: 12px;
+    }
+
+    .page-index a:hover,
+    .page-index a:focus-visible {
+      border-color: var(--cyan);
+      color: var(--text);
+    }
+
+    .page-type {
+      scroll-margin-top: 20px;
+      padding: 28px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .page-type h2 {
+      margin: 0 0 4px;
+      font: 800 22px/1.3 'Nanum Myeongjo', serif;
+    }
+
+    .page-type > p {
+      margin: 0 0 16px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .gallery-intro,
+    .feature-post,
+    .post-detail,
+    .form-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(240px, .9fr);
+      gap: 18px;
+    }
+
+    .gallery-intro {
+      grid-template-columns: 1fr auto;
+      align-items: end;
+      margin-bottom: 18px;
+    }
+
+    .gallery-intro h1,
+    .feature-copy h2 {
+      margin: 0;
+      font: 800 24px/1.3 'Nanum Myeongjo', serif;
+    }
+
+    .gallery-intro p,
+    .feature-copy p {
+      margin: 6px 0 0;
+      color: var(--muted);
+    }
+
+    .feature-post,
+    .content-panel {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+    }
+
+    .feature-post {
+      grid-template-columns: minmax(0, 1.2fr) minmax(220px, .8fr);
+      gap: 0;
+    }
+
+    .feature-post > img,
+    .post-detail > img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      min-height: 250px;
+      object-fit: cover;
+    }
+
+    .feature-copy,
+    .content-panel {
+      padding: 18px;
+    }
+
+    .feature-copy h2 {
+      margin: 6px 0;
+    }
+
+    .content-panel h3 {
+      margin: 0 0 12px;
+      font: 800 17px/1.3 'Nanum Myeongjo', serif;
+    }
+
+    .list-row {
+      display: grid;
+      grid-template-columns: 64px minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .list-row img {
+      width: 64px;
+      height: 56px;
+      border-radius: 5px;
+      object-fit: cover;
+    }
+
+    .list-row strong,
+    .metric strong {
+      display: block;
+      font-size: 14px;
+    }
+
+    .list-row small,
+    .muted {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .status {
+      color: var(--lime);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .form-field {
+      display: grid;
+      gap: 7px;
+      margin-bottom: 14px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .form-field input:not([type="checkbox"]),
+    .form-field textarea {
+      width: 100%;
+      min-height: 40px;
+      padding: 9px 11px;
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      color: var(--text);
+      background: var(--page);
+      font: 400 14px 'Nanum Myeongjo', serif;
+    }
+
+    .form-field textarea {
+      min-height: 76px;
+    }
+
+    .button-secondary {
+      min-height: 38px;
+      padding: 0 13px;
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      color: var(--text);
+      background: var(--surface-raised);
+      font: 700 13px 'Nanum Myeongjo', serif;
+    }
+
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+      margin-top: 14px;
+    }
+
+    .settings-grid,
+    .admin-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .settings-row,
+    .metric {
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--surface);
+    }
+
+    .metric strong {
+      margin-bottom: 4px;
+      color: var(--cyan);
+      font-size: 21px;
+    }
+
+    .login-panel {
+      max-width: 430px;
+      margin: 0 auto;
+    }
+
+    @media (max-width: 760px) {
+      .topbar-inner {
+        min-height: 58px;
+        padding: 0 17px;
+      }
+
+      .brand {
+        gap: 8px;
+        font-size: 14px;
+      }
+
+      .brand img {
+        width: 40px;
+        height: 40px;
+      }
+
+      .nav,
+      .user-menu {
+        display: none;
+      }
+
+      .menu-button {
+        display: grid;
+      }
+
+      .topbar-inner {
+        position: relative;
+      }
+
+      main {
+        padding: 22px 17px 48px;
+      }
+
+      .profile {
+        grid-template-columns: 64px minmax(0, 1fr);
+        gap: 13px;
+        padding: 16px;
+      }
+
+      .profile-avatar {
+        width: 64px;
+        height: 64px;
+      }
+
+      h1 {
+        font-size: 20px;
+      }
+
+      .eyebrow {
+        font-size: 10px;
+      }
+
+      .bio {
+        font-size: 12px;
+        line-height: 1.45;
+      }
+
+      .profile-stats {
+        gap: 13px;
+        margin-top: 9px;
+      }
+
+      .stat {
+        font-size: 10px;
+      }
+
+      .stat strong {
+        font-size: 13px;
+      }
+
+      .profile-actions {
+        grid-column: 1 / -1;
+        flex-direction: row-reverse;
+        align-items: center;
+        justify-content: space-between;
+        padding-top: 12px;
+        border-top: 1px solid var(--line);
+      }
+
+      .button {
+        min-height: 35px;
+      }
+
+      .section-heading {
+        margin: 27px 0 13px;
+      }
+
+      .section-heading h2 {
+        font-size: 18px;
+      }
+
+      .section-heading p {
+        font-size: 11px;
+      }
+
+      .post-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+
+      .post {
+        display: grid;
+        grid-template-columns: 112px minmax(0, 1fr);
+        min-height: 98px;
+      }
+
+      .post-image-wrap {
+        height: 100%;
+        min-height: 98px;
+        aspect-ratio: auto;
+      }
+
+      .post-copy {
+        align-self: center;
+        padding: 12px;
+      }
+
+      .post-copy h3 {
+        font-size: 13px;
+        white-space: normal;
+      }
+
+      .post-meta {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 3px;
+        font-size: 10px;
+      }
+
+      .page-index {
+        gap: 6px;
+        margin-bottom: 18px;
+      }
+
+      .page-index a {
+        padding: 6px 8px;
+        font-size: 11px;
+      }
+
+      .page-type {
+        padding: 22px 0;
+      }
+
+      .gallery-intro,
+      .feature-post,
+      .post-detail,
+      .form-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .gallery-intro {
+        align-items: flex-start;
+      }
+
+      .feature-post > img,
+      .post-detail > img {
+        min-height: 180px;
+        max-height: 250px;
+      }
+
+      .settings-grid,
+      .admin-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .list-row {
+        grid-template-columns: 52px minmax(0, 1fr);
+        gap: 9px;
+      }
+
+      .list-row img {
+        width: 52px;
+        height: 48px;
+      }
+
+      .list-row .status {
+        grid-column: 2;
+      }
+    }
+
+    @media (max-width: 380px) {
+      .nav {
+        gap: 11px;
+      }
+
+      .brand {
+        font-size: 13px;
+      }
+
+      .profile-stats {
+        gap: 9px;
+      }
+
+      .post {
+        grid-template-columns: 96px minmax(0, 1fr);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="topbar">
+    <nav class="topbar-inner" aria-label="Main navigation">
+      <a class="brand" href="#"><img src="../../src/public/favicons/android-chrome-192x192.png" alt=""><span>Weedy
+          Gallery</span></a>
+      <div class="nav"><a href="#">Weedy Gallery</a><a href="#">My Images</a></div>
+      <span class="nav-spacer"></span>
+      <button class="user-menu" type="button">Maya Chen <span aria-hidden="true">⌄</span></button>
+      <button class="menu-button" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path class="menu-open" stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+          <path class="menu-close" stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+        </svg>
+      </button>
+      <div class="mobile-menu" id="mobile-menu" hidden>
+        <a href="#admin">Admin Dashboard</a>
+        <a href="#settings">Profile</a>
+        <a href="#login">Log Out</a>
+      </div>
+    </nav>
+  </header>
+  <main>
+    <nav class="page-index" aria-label="Page types">
+      <a href="#gallery">Gallery</a>
+      <a href="#profile">Profile</a>
+      <a href="#my-images">My Images</a>
+      <a href="#post-detail">Post detail</a>
+      <a href="#post-form">Create / Edit</a>
+      <a href="#settings">Profile settings</a>
+      <a href="#admin">Admin</a>
+      <a href="#auth">Log in / Register</a>
+      <a href="#impressum">Impressum</a>
+    </nav>
+    <section class="page-type" id="gallery">
+      <h2>Public gallery</h2>
+      <p>Startseite mit aktuellen Bildern und direktem Einstieg in die Galerie.</p>
+      <div class="gallery-intro">
+        <div><h1>Weedy Gallery</h1><p>A community gallery for shared images and the stories behind them.</p></div>
+        <a class="button" href="#post-form">＋ Create a post</a>
+      </div>
+      <article class="feature-post">
+        <img src="https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=1100&h=720&fit=crop" alt="Blossoms in a sunlit garden">
+        <div class="feature-copy"><p class="eyebrow">Latest post</p><h2>After the rain</h2><p>A quiet afternoon in the garden, just after the clouds cleared.</p><p class="muted">By <a href="#profile">Maya Chen</a> · 12 Oct 2026 · 8 comments</p><a class="button" href="#post-detail">View post</a></div>
+      </article>
+      <div class="section-heading"><div><h2>Recent images</h2><p>Discover what's new in the community.</p></div><button class="sort" type="button">Recent <span aria-hidden="true">⌄</span></button></div>
+      <div class="post-grid">
+        <article class="post"><div class="post-image-wrap"><img class="post-image" src="https://images.unsplash.com/photo-1497250681960-ef046c08a56e?w=800&h=560&fit=crop" alt="Green leaves in soft light"></div><div class="post-copy"><h3>Green, in the quiet</h3><div class="post-meta"><span>04 Oct 2026</span><span class="comments">♡ 14 comments</span></div></div></article>
+        <article class="post"><div class="post-image-wrap"><img class="post-image" src="https://images.unsplash.com/photo-1501004318641-b39e6451bec6?w=800&h=560&fit=crop" alt="Sunlit plants and flowers"></div><div class="post-copy"><h3>Window-side light</h3><div class="post-meta"><span>28 Sep 2026</span><span class="comments">♡ 3 comments</span></div></div></article>
+        <article class="post"><div class="post-image-wrap"><img class="post-image" src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&h=560&fit=crop" alt="Sunlight passing through a forest"></div><div class="post-copy"><h3>Into the green</h3><div class="post-meta"><span>21 Sep 2026</span><span class="comments">♡ 6 comments</span></div></div></article>
+      </div>
+    </section>
+    <section class="page-type" id="profile">
+      <h2>Member profile</h2>
+      <p>Öffentliches Profil mit kompakter Vorstellung und Beiträgen.</p>
+    <section class="profile" aria-label="Profile">
+      <img class="profile-avatar"
+        src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=220&h=220&fit=crop&crop=faces"
+        alt="Maya Chen">
+      <div class="profile-copy">
+        <p class="eyebrow">Gallery member</p>
+        <h1>Maya Chen</h1>
+        <p class="bio">Small moments from the garden, collected in light and color.</p>
+        <div class="profile-stats">
+          <span class="stat"><strong>24</strong> posts</span>
+          <span class="stat"><strong>186</strong> comments</span>
+          <span class="stat">Member since 2023</span>
+        </div>
+      </div>
+      <div class="profile-actions">
+        <span class="online">Active now</span>
+      </div>
+    </section>
+    <section id="posts" aria-labelledby="posts-title">
+      <div class="section-heading">
+        <div>
+          <h2 id="posts-title">Maya's posts</h2>
+        </div>
+        <button class="sort">Recent <span aria-hidden="true">⌄</span></button>
+      </div>
+      <div class="post-grid">
+        <article class="post">
+          <div class="post-image-wrap"><img class="post-image"
+              src="https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=800&h=560&fit=crop"
+              alt="Pink flowers in a sunlit garden"></div>
+          <div class="post-copy">
+            <h3>After the rain</h3>
+            <div class="post-meta"><span>12 Oct 2026</span><span class="comments">♡ 8 comments</span></div>
+          </div>
+        </article>
+        <article class="post">
+          <div class="post-image-wrap"><img class="post-image"
+              src="https://images.unsplash.com/photo-1497250681960-ef046c08a56e?w=800&h=560&fit=crop"
+              alt="Green leaves in soft morning light"></div>
+          <div class="post-copy">
+            <h3>Green, in the quiet</h3>
+            <div class="post-meta"><span>04 Oct 2026</span><span class="comments">♡ 14 comments</span></div>
+          </div>
+        </article>
+        <article class="post">
+          <div class="post-image-wrap"><img class="post-image"
+              src="https://images.unsplash.com/photo-1501004318641-b39e6451bec6?w=800&h=560&fit=crop"
+              alt="Sunlit plants and flowers"></div>
+          <div class="post-copy">
+            <h3>Window-side light</h3>
+            <div class="post-meta"><span>28 Sep 2026</span><span class="comments">♡ 3 comments</span></div>
+          </div>
+        </article>
+      </div>
+    </section>
+    </section>
+    <section class="page-type" id="my-images">
+      <h2>My Images</h2>
+      <p>Eigene Entwürfe und veröffentlichte Beiträge an einem Ort.</p>
+      <div class="content-panel">
+        <div class="section-heading" style="margin-top:0"><div><h2>Your posts</h2><p>Manage drafts and published images.</p></div><a class="button" href="#post-form">＋ New post</a></div>
+        <h3>Not yet published</h3>
+        <div class="list-row"><img src="https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?w=180&h=150&fit=crop" alt="Sunrise over plants"><div><strong>First light</strong><small>Draft · Updated 2 hours ago</small></div><span class="status">Draft</span></div>
+        <div class="list-row"><img src="https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=180&h=150&fit=crop" alt="Flowers after rain"><div><strong>After the rain</strong><small>Published · 12 Oct 2026 · 8 comments</small></div><span class="status">Published</span></div>
+        <div class="list-row"><img src="https://images.unsplash.com/photo-1497250681960-ef046c08a56e?w=180&h=150&fit=crop" alt="Green leaves"><div><strong>Green, in the quiet</strong><small>Published · 04 Oct 2026 · 14 comments</small></div><span class="status">Published</span></div>
+      </div>
+    </section>
+    <section class="page-type" id="post-detail">
+      <h2>Post and comments</h2>
+      <p>Beitragsansicht mit Bild, Autor, Metadaten und Kommentarbereich.</p>
+      <div class="content-panel post-detail"><img src="https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=1100&h=800&fit=crop" alt="Pink flowers in a sunlit garden"><div><p class="eyebrow">12 Oct 2026</p><h1>After the rain</h1><p class="muted">By <a href="#profile">Maya Chen</a></p><p>Small moments from the garden, collected in light and color.</p><h3>Comments · 8</h3><div class="list-row"><div><strong>Lovely light</strong><small>Alex · 2 hours ago</small></div></div><div class="list-row"><div><strong>Beautiful detail in the petals.</strong><small>Sam · Yesterday</small></div></div><label class="form-field">Add a comment<textarea placeholder="Write a comment"></textarea></label><button class="button" type="button">Post comment</button></div></div>
+    </section>
+    <section class="page-type" id="post-form">
+      <h2>Create / Edit post</h2>
+      <p>Fokussiertes Formular für Bild, Titel und geschützte Beiträge.</p>
+      <div class="form-layout"><div class="content-panel"><h3>Create a post</h3><label class="form-field">Image<input type="file" aria-label="Choose image"></label><label class="form-field">Title<input type="text" value="A little more green"></label><label class="form-field">Description<textarea placeholder="Add a description"></textarea></label><label class="form-field"><span><input type="checkbox"> Mark as protected</span></label><div class="button-row"><button class="button" type="button">Save draft</button><button class="button-secondary" type="button">Cancel</button></div></div><aside class="content-panel"><h3>Preview</h3><img style="width:100%;aspect-ratio:1.4;object-fit:cover;border-radius:5px" src="https://images.unsplash.com/photo-1501004318641-b39e6451bec6?w=700&h=500&fit=crop" alt="Green plants"><p class="muted">Image and title appear together in the gallery.</p></aside></div>
+    </section>
+    <section class="page-type" id="settings">
+      <h2>Profile settings</h2>
+      <p>Verwaltung von Profilbild, Beschreibung, Zugangsdaten und Konto.</p>
+      <div class="settings-grid"><div class="settings-row"><strong>Profile image</strong><span class="muted">Update your profile photo</span><div class="button-row"><button class="button-secondary" type="button">Choose image</button></div></div><div class="settings-row"><strong>Description</strong><span class="muted">Small moments from the garden, collected in light and color.</span><div class="button-row"><button class="button-secondary" type="button">Edit description</button></div></div><div class="settings-row"><strong>Account information</strong><span class="muted">Maya Chen · maya@example.com</span><div class="button-row"><button class="button-secondary" type="button">Update account</button></div></div><div class="settings-row"><strong>Password</strong><span class="muted">Last changed recently</span><div class="button-row"><button class="button-secondary" type="button">Update password</button></div></div><div class="settings-row"><strong>Delete account</strong><span class="muted">Permanently remove your account and posts.</span><div class="button-row"><button class="button-secondary" type="button">Delete account</button></div></div></div>
+    </section>
+    <section class="page-type" id="admin">
+      <h2>Admin dashboard</h2>
+      <p>Überblick über Community, Beiträge und Moderation.</p>
+      <div class="admin-grid"><div class="metric"><strong>128</strong><span class="muted">Members</span></div><div class="metric"><strong>846</strong><span class="muted">Posts</span></div><div class="metric"><strong>12</strong><span class="muted">Drafts to review</span></div><div class="metric"><strong>3</strong><span class="muted">Recent reports</span></div></div>
+      <div class="content-panel" style="margin-top:14px"><h3>Recent posts</h3><div class="list-row"><img src="https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=180&h=150&fit=crop" alt="Flowers"><div><strong>After the rain</strong><small>Maya Chen · 12 Oct 2026</small></div><span class="status">Published</span></div><div class="list-row"><img src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=180&h=150&fit=crop" alt="Forest"><div><strong>Into the green</strong><small>Jordan Lee · 11 Oct 2026</small></div><span class="status">Review</span></div></div>
+    </section>
+    <section class="page-type" id="auth">
+      <h2>Log in / Register</h2>
+      <p>Authentifizierungsansicht im bestehenden Seitenstil.</p>
+      <div class="content-panel login-panel"><h3>Welcome back</h3><label class="form-field">Email address<input type="email" value="maya@example.com"></label><label class="form-field">Password<input type="password" value="password"></label><label class="form-field"><span><input type="checkbox" checked> Remember me</span></label><button class="button" type="button">Log in</button><p class="muted" style="margin:16px 0 0">New to the gallery? <a href="#auth">Create an account</a></p></div>
+    </section>
+    <section class="page-type" id="impressum">
+      <h2>Impressum</h2>
+      <p>Rechtliche Informationen auf einer ruhigen, textorientierten Inhaltsseite.</p>
+      <div class="content-panel"><h3>Contact</h3><p>Weedy Gallery<br>Gallery Street 12<br>12345 Garden City</p><h3>Responsible for this site</h3><p>Weedy Gallery Team<br>hello@example.com</p></div>
+    </section>
+  </main>
+  <script>
+    const menuButton = document.querySelector('.menu-button');
+    const mobileMenu = document.querySelector('#mobile-menu');
+
+    menuButton.addEventListener('click', () => {
+      const isExpanded = menuButton.getAttribute('aria-expanded') === 'true';
+      menuButton.setAttribute('aria-expanded', String(!isExpanded));
+      menuButton.setAttribute('aria-label', isExpanded ? 'Open menu' : 'Close menu');
+      mobileMenu.hidden = isExpanded;
+    });
+
+    mobileMenu.addEventListener('click', (event) => {
+      if (event.target.closest('a')) {
+        mobileMenu.hidden = true;
+        menuButton.setAttribute('aria-expanded', 'false');
+        menuButton.setAttribute('aria-label', 'Open menu');
+      }
+    });
+  </script>
+</body>
+
+</html>
