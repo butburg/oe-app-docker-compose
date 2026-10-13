@@ -14,6 +14,9 @@ user-invocable: true
 5. Share the concept and screenshots for review. Resolve open design decisions and record approval in the feature spec before implementation.
 6. Do not change application UI code before approval unless the user explicitly asks to skip the concept gate.
 
+## Handoff
+- This skill ends at concept review/approval. Once the user asks to implement the approved direction, treat `docs/concepts/` as read-only and work in the actual Laravel views/components; do not keep iterating on the concept unless explicitly requested.
+
 ## Local Preview
 - From the repository root: `python3 -m http.server 8765`
 - Concept URL: `http://localhost:8765/docs/concepts/<file>.html`
