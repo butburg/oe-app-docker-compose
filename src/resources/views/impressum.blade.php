@@ -8,13 +8,13 @@
             <div class="app-surface overflow-hidden p-4 sm:p-6">
                 <x-header2>Impressum</x-header2>
                 <div class="my-2">
-                    <img src="{{ asset('images/impressum-contact.png') }}" alt=" Information" width="130">
+                    <img src="{{ asset('images/impressum-contact.png') }}" alt=" Information" width="130" data-protected>
                 </div>
 
                 <x-header2>Kontakt</x-header2>
                 <div class="my-2">
                     <img src="{{ asset('images/impressum-mail.png') }}" alt="Mail Contact Information"
-                        width="155">
+                        width="155" data-protected>
                 </div>
 
                 <p>Quelle: <a class="font-medium text-c-primary underline underline-offset-4 hover:text-c-text"
@@ -106,11 +106,11 @@
                 <p>Die verantwortliche Stelle f&uuml;r die Datenverarbeitung auf dieser Website ist:</p>
                 <div class="my-2">
                     <img src="{{ asset('images/impressum-contact.png') }}" alt=" Information"
-                        width="130">
+                        width="130" data-protected>
                 </div>
                 Kontakt:
                 <div class="my-2">
-                    <img src="{{ asset('images/impressum-mail.png') }}" alt=" Information" width="155">
+                    <img src="{{ asset('images/impressum-mail.png') }}" alt=" Information" width="155" data-protected>
                 </div>
                 <p>Verantwortliche Stelle ist die nat&uuml;rliche oder juristische Person, die allein oder gemeinsam
                     mit anderen &uuml;ber die Zwecke und Mittel der Verarbeitung von personenbezogenen Daten
@@ -475,11 +475,11 @@
                     The party responsible for data processing on this website is</p>
                 <div class="my-2">
                     <img src="{{ asset('images/impressum-contact.png') }}" alt=" Information"
-                        width="130">
+                        width="130" data-protected>
                 </div>
                 <p>Contact:</p>
                 <div class="my-2">
-                    <img src="{{ asset('images/impressum-mail.png') }}" alt=" Information" width="155">
+                    <img src="{{ asset('images/impressum-mail.png') }}" alt=" Information" width="155" data-protected>
                 </div>
                 <p>The controller is the natural or legal person who alone or jointly with others determines the
                     purposes and means of the processing of personal data (e.g. names, email addresses, etc.).</p>

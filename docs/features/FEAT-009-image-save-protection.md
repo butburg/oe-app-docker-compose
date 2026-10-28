@@ -40,7 +40,7 @@ This is a deterrent, not real protection: the files are public under `storage/`,
 
 ## Decision
 Went with the alternative (global script), since it does not touch the zoom click handling at all:
-- Every protected `<img>` carries `data-protected` (normal, zoomable and zoom image in `image_or_placeholder`, About screenshots). The broken-image placeholder, logo, icons and hamsters are not marked.
+- Every protected `<img>` carries `data-protected` (normal, zoomable and zoom image in `image_or_placeholder`, About screenshots, Impressum contact images). The broken-image placeholder, logo, icons and hamsters are not marked.
 - `resources/js/app.js`: one `contextmenu` and one `dragstart` listener on `document` that call `preventDefault()` only when the target is an `img[data-protected]`. Click and keyboard events are never touched, so zoom keeps working.
 - `resources/css/app.css`: `img[data-protected]` gets `-webkit-touch-callout: none` (iOS long-press menu), `-webkit-user-drag: none` and `user-select: none`.
 - The zoomable image now also opens on Enter/Space (`@keydown.enter`/`@keydown.space`); before, it was focusable but only reacted to clicks.
