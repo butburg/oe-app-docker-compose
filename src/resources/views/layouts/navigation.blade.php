@@ -13,8 +13,8 @@
                 @auth
                     {{-- left nav links logged in, below lg they live in the hamburger menu --}}
                     <div class="mx-5 hidden items-center space-x-6 lg:flex">
-                        <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                            {{ config('app.name') }}
+                        <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" accent>
+                            <x-app-wordmark />
                         </x-nav-link>
                         <x-nav-link :href="route('posts.index')" :active="request()->routeIs('posts.index')">
                             {{ __('My Images') }}
@@ -31,8 +31,8 @@
                 @else
                     {{-- left nav links logged out --}}
                     <div class="mx-3 flex items-center space-x-3 sm:mx-5 sm:space-x-6" :class="{ 'max-lg:hidden': search }">
-                        <x-nav-link class="hidden sm:inline-flex" :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                            {{ config('app.name') }}
+                        <x-nav-link class="hidden sm:inline-flex" :href="route('dashboard')" :active="request()->routeIs('dashboard')" accent>
+                            <x-app-wordmark />
                         </x-nav-link>
                         <x-nav-link :href="route('login')" :active="request()->routeIs('login')">
                             {{ __('Log in') }}
@@ -91,8 +91,8 @@
                         </x-slot>
 
                         <x-slot name="content">
-                            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                                {{ config('app.name') }}
+                            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" accent>
+                                <x-app-wordmark />
                             </x-responsive-nav-link>
                             <x-responsive-nav-link :href="route('posts.index')" :active="request()->routeIs('posts.index')">
                                 {{ __('My Images') }}
