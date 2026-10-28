@@ -34,7 +34,7 @@ Next, navigate in your terminal to the directory you cloned this, and spin up th
 After that completes, follow the steps from the [src/README.md](src/README.md) file to get your Laravel project added in (or create a new blank one).
 
 **Note**: Local development uses SQLite (`DB_CONNECTION=sqlite`, file `src/database/database.sqlite`, see `src/.env.example`). Production runs on MySQL, configured only via the `.env` deployed from the GitHub secret `ENV_VARIABLES`; no database container is needed locally.
-There is no implicit fallback: without `DB_CONNECTION` the app fails with `Database connection [] not configured.`, and the SQLite file is never created automatically. For a fresh local setup create it once with `touch src/database/database.sqlite`, then run `docker-compose run --rm artisan migrate`.
+There is no implicit fallback: without `DB_CONNECTION` the app fails with `Database connection [] not configured.`, and the SQLite file is never created automatically. For a fresh local setup create it once with `touch src/database/database.sqlite`, then run `docker-compose run --rm artisan migrate --seed`.
 
 Bringing up the Docker Compose network with `app` instead of just using `up`, ensures that only our site's containers are brought up at the start, instead of all of the command containers as well. The following are built for our web server, with their exposed ports detailed:
 
@@ -134,9 +134,16 @@ docker-compose run --rm npm sqlite --version
 ```
 
 
-# Usefull for development and first run
+# Demo data for development
 
-Add all the exisiting images from legacy-image directory as new posts. Also generate from them posts and image versions. Use the old exported databse for inserting the details like user and upload date:
-```
-docker-compose run --rm artisan app:migrate-legacy-images
-```
+`artisan db:seed` fills the database with static demo data from `src/database/seeders/data/`: 31 CC0 images from Wikimedia Commons in mixed aspect ratios and sizes, drafts, comments and profile images. Sources and licenses are listed in `posts.json` and `profiles.json` there.
+
+| User | Login | Content |
+|---|---|---|
+| Test-Admin User | `admin@user.com` / `admin` | 3 published posts |
+| Test-User ohne Bilder | `user-ohne-bilder@user.com` / `password` | portrait profile image, no posts |
+| Test-User mit ganz vielen Bildern | `user-viele-bilder@user.com` / `password` | landscape profile image, 14 published posts, 14 drafts |
+
+On the local login page the two developer login buttons sign in as the user with many images or as the admin.
+
+To start over: `docker-compose run --rm artisan migrate:fresh --seed`. This wipes the local database, and the generated image files in `src/storage/app/public/files/posts` and `profiles` get overwritten by id.

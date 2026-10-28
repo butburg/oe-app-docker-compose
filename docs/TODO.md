@@ -11,4 +11,5 @@ Vorherige Liste: [archive/TODO-2026-10-28-ui-review.md](archive/TODO-2026-10-28-
 - [x] Nutzer: „Test-Admin User" (3 veröffentlicht), „Test-User ohne Bilder" (0), „Test-User mit ganz vielen Bildern" (14 veröffentlicht, 14 Entwürfe)
 - [x] 31 Kommentare verteilt 10/8/6/4/2/1, Rest ohne
 - [x] Seeder baut Bild-Varianten über `CreateImageVariants`, alte Factory-Seeder ersetzen (Daten in `src/database/seeders/data/`, Quellen in `posts.json`)
-- [ ] Legacy-Import entfernen (`ConvertBlobImages`, `MigrateLegacyImages`, `AssignUserIdToPosts`, Migration `migrate_old_data_to_posts_table` + DB-Verbindung `old_sqlite`), Skill `local-preview-data` anpassen
+- [x] Legacy-Import entfernen (`ConvertBlobImages`, `MigrateLegacyImages`, `AssignUserIdToPosts`, Migration `migrate_old_data_to_posts_table` + DB-Verbindung `old_sqlite`), Skill `local-preview-data` anpassen
+- [x] README, Skill und Deploy nachgezogen (Seed-Daten dokumentiert, `database/seeders/data/` wird nicht mit deployed)
