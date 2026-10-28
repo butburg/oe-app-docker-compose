@@ -101,16 +101,23 @@
                     </a>
                 </p>
 
+                {{-- major version for everyone, full details only for dev and admins --}}
                 <p class="text-c-primary/35">
-                    Laravel v{{ Illuminate\Foundation\Application::VERSION }} (PHP v{{ PHP_VERSION }})
-                    @if (app()->environment('local'))
+                    Laravel v{{ Str::before(app()->version(), '.') }}
+                    @if (app()->environment('local') || auth()->user()?->usertype === 'admin')
+                        @php($vitePackage = base_path('node_modules/vite/package.json'))
                         <br>
                         Laravel: {{ app()->version() }}<br>
-                        PHP {{ PHP_VERSION }}<br>
-                        Composer: {{ shell_exec('composer --version | grep -o -E "[0-9]+\.[0-9]+\.[0-9]+"') }}<br>
-                        npm: {{ shell_exec('npm --version | grep -o -E "[0-9]+\.[0-9]+\.[0-9]+"') }}<br>
-                        Vite: {{ shell_exec('npm show vite version | grep -o -E "[0-9]+\.[0-9]+\.[0-9]+"') }}<br>
-                        SQLite: {{ shell_exec('sqlite3 --version | grep -o -E "[0-9]+\.[0-9]+\.[0-9]+"') }}
+                        PHP: {{ PHP_VERSION }}<br>
+                        @if (function_exists('shell_exec'))
+                            Composer: {{ shell_exec('composer --version | grep -o -E "[0-9]+\.[0-9]+\.[0-9]+"') }}<br>
+                        @endif
+                        @if (file_exists($vitePackage))
+                            Vite: {{ json_decode(file_get_contents($vitePackage))->version }}<br>
+                        @endif
+                        @if (class_exists('SQLite3'))
+                            SQLite: {{ SQLite3::version()['versionString'] }}
+                        @endif
                     @endif
                 </p>
             </div>

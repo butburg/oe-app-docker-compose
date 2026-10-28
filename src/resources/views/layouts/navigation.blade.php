@@ -1,7 +1,7 @@
 <nav class="border-b border-c-line bg-c-surface text-c-text">
     <!-- Navigation Headbar -->
     <div class="mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8">
-        <div class="flex h-16 justify-between">
+        <div class="flex h-16 justify-between" x-data="{ search: false }">
             {{-- Left navigation side --}}
             <div class="flex">
                 <!-- Logo, always leads to the gallery -->
@@ -30,7 +30,7 @@
                     </div>
                 @else
                     {{-- left nav links logged out --}}
-                    <div class="mx-3 flex items-center space-x-3 sm:mx-5 sm:space-x-6">
+                    <div class="mx-3 flex items-center space-x-3 sm:mx-5 sm:space-x-6" :class="{ 'max-lg:hidden': search }">
                         <x-nav-link class="hidden sm:inline-flex" :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                             {{ config('app.name') }}
                         </x-nav-link>
@@ -44,33 +44,28 @@
                 @endauth
             </div>
 
-            <details class="relative ms-auto self-center lg:hidden">
-                <summary class="inline-flex h-10 w-10 list-none items-center justify-center rounded-md text-c-text hover:bg-c-surface-raised focus:outline-none focus-visible:ring-2 focus-visible:ring-c-primary"
-                    aria-label="Search gallery" title="Search gallery">
-                    <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-                        <circle cx="11" cy="11" r="7" />
-                        <path d="m20 20-4-4" />
-                    </svg>
-                </summary>
-                <form class="absolute end-0 top-full z-30 mt-2 w-[min(80vw,22rem)] rounded-md border border-c-line bg-c-surface-raised p-3 shadow-lg"
-                    action="{{ route('dashboard') }}" method="GET" role="search">
-                    <label class="sr-only" for="mobile-gallery-search">Search gallery</label>
-                    <x-text-input class="h-10 w-full text-sm" id="mobile-gallery-search" name="q" type="search"
-                        :value="request('q')" placeholder="Search gallery" />
-                </form>
-            </details>
-
-            <form class="ms-auto me-4 hidden w-48 self-center lg:block lg:w-64" action="{{ route('dashboard') }}" method="GET" role="search">
+            {{-- search, below lg it opens from the icon and fills the bar instead of a popup --}}
+            <form class="ms-auto flex items-center self-center lg:me-4" :class="{ 'ms-auto': !search, 'flex-1 ms-3': search }"
+                action="{{ route('dashboard') }}" method="GET" role="search"
+                @click.outside="search = false" @keydown.escape="search = false">
                 <label class="sr-only" for="gallery-search">Search gallery</label>
-                <div class="relative">
+                <div class="relative hidden w-full lg:block lg:w-64" :class="{ 'hidden': !search }">
                     <svg class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-c-quiet"
                         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
                         <circle cx="11" cy="11" r="7" />
                         <path d="m20 20-4-4" />
                     </svg>
                     <x-text-input class="h-10 ps-9 pe-3 text-sm" id="gallery-search" name="q" type="search"
-                        :value="request('q')" placeholder="Search gallery" />
+                        :value="request('q')" placeholder="Search gallery" x-ref="search" />
                 </div>
+                <button type="button" class="inline-flex h-10 w-10 items-center justify-center rounded-md text-c-text hover:bg-c-surface-raised focus:outline-none focus-visible:ring-2 focus-visible:ring-c-primary lg:hidden"
+                    :class="{ 'hidden': search }" @click="search = true; $nextTick(() => $refs.search.focus())"
+                    aria-label="Search gallery" title="Search gallery">
+                    <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                        <circle cx="11" cy="11" r="7" />
+                        <path d="m20 20-4-4" />
+                    </svg>
+                </button>
             </form>
 
             <!-- right navigation side -->

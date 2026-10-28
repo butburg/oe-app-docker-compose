@@ -4,7 +4,7 @@
     </x-slot>
 
     <div class="py-8 sm:py-10">
-        <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <!-- User Info Section -->
             <div class="app-surface mb-4 p-4 sm:p-6">
                 <div class="flex flex-col items-center gap-4 sm:flex-row sm:gap-6">

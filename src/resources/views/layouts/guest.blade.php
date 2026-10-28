@@ -39,6 +39,8 @@
             </div>
             @env('local')
                 <x-login-link class="app-button-secondary mt-4 w-full" />
+                {{-- logs in the first admin, or creates one if there is none --}}
+                <x-login-link class="app-button-secondary mt-2 w-full" :user-attributes="['usertype' => 'admin']" label="Developer Login (Admin)" />
             @endenv
 
             <div class="app-surface-accent mt-6 p-4 sm:p-6">

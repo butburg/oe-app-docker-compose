@@ -1,6 +1,6 @@
 {{-- Small tiles showing the users. Used for the Admin dashboard. --}}
 <div
-    class="app-surface m-3 flex w-full flex-col p-4 sm:max-w-xs sm:flex-shrink sm:flex-grow sm:basis-[320px] sm:p-5">
+    class="app-surface flex w-full flex-col p-4 sm:max-w-xs sm:flex-shrink sm:flex-grow sm:basis-[320px] sm:p-5">
 
     <div class="flex items-center gap-3">
         <!-- User Image -->

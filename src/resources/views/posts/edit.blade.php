@@ -1,8 +1,9 @@
 <x-app-layout>
     <div class="py-6">
-        <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
-            <div class="app-surface overflow-hidden">
-                <div class="p-4 text-c-text sm:p-6">
+        {{-- edit uses the full width on mobile like the gallery, create keeps the page gutter --}}
+        <div class="mx-auto max-w-7xl sm:px-6 lg:px-8 {{ isset($post) ? '' : 'px-4' }}">
+            <div class="app-surface overflow-hidden {{ isset($post) ? 'rounded-none border-x-0 sm:rounded-lg sm:border-x' : '' }}">
+                <div class="py-4 text-c-text sm:p-6 {{ isset($post) ? 'px-2' : 'px-4' }}">
                     {{-- 'Edit' or 'Create' depending on the existence of $post --}}
                     <x-header2>{{ isset($post) ? 'Edit' : 'Create' }}</x-header2>
                     {{-- Form for post creation/updation with file upload --}}

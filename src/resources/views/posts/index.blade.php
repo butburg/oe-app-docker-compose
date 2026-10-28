@@ -6,7 +6,7 @@ resources\views\layouts\app.blade.php view --}}
         <x-header2>My Images</x-header2>
     </x-slot>
 
-    <div class="mx-auto max-w-7xl py-6 text-c-text sm:px-6 lg:px-8">
+    <div class="mx-auto max-w-7xl px-4 py-6 text-c-text sm:px-6 lg:px-8">
         <!-- Drafts -->
 
         <div class="app-surface mb-4 overflow-hidden p-4 sm:p-6">
@@ -66,10 +66,10 @@ resources\views\layouts\app.blade.php view --}}
                         <div class="ml-4">
                             <span class="text-lg font-semibold text-c-text">{{ $post->title }}</span>
 
-                            <small class="block text-c-muted">
+                            <small class="flex items-center gap-x-1 text-c-muted">
                                 Created: {{ $post->created_at->diffForHumans() }}
                                 @if ($post->is_sensitive)
-                                    | <span class="inline-flex items-center gap-1" title="Protected image">
+                                    | <span class="flex" title="Protected image">
                                         <x-icons.lock class="mx-1 h-3.5 w-3.5" aria-hidden="true" />
                                     </span>
                                 @endif
@@ -158,11 +158,11 @@ resources\views\layouts\app.blade.php view --}}
                             @if (!$post->is_published)
                                 <span class="font-semibold text-rose-300">(Hidden)</span>
                             @endif
-                            <small class="block text-c-muted">
+                            <small class="flex items-center gap-x-1 text-c-muted">
                                 Published: {{ $post->published_at->diffForHumans() }}
                                 @if ($post->is_sensitive)
-                                    | <span class="inline-flex items-center gap-1" title="Protected image">
-                                        <x-icons.lock class="h-3.5 w-3.5 mx-1 translate-y-[0.2rem]" aria-hidden="true" />
+                                    | <span class="flex" title="Protected image">
+                                        <x-icons.lock class="mx-1 h-3.5 w-3.5" aria-hidden="true" />
                                     </span>
                                 @endif
                             </small>
@@ -227,7 +227,7 @@ resources\views\layouts\app.blade.php view --}}
                 </div>
 
             @empty
-                <div class="border-b border-slate-100 p-4">
+                <div class="border-b border-c-line p-4 text-c-muted">
                     <small>No published posts found. Create a post and <span class="font-semibold">publish</span>
                         it!</small>
                 </div>

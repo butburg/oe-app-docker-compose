@@ -4,7 +4,7 @@
     </x-slot>
 
     <div class="py-6">
-        <div class="mx-auto max-w-7xl py-2 sm:px-6 lg:px-8">
+        <div class="mx-auto max-w-7xl px-4 py-2 sm:px-6 lg:px-8">
             <div class="app-surface overflow-hidden p-4 sm:p-6">
                 <x-header2>Impressum</x-header2>
                 <div class="my-2">
@@ -22,7 +22,7 @@
             </div>
         </div>
 
-        <div class="mx-auto max-w-7xl py-2 sm:px-6 lg:px-8">
+        <div class="mx-auto max-w-7xl px-4 py-2 sm:px-6 lg:px-8">
             <div class="app-surface overflow-hidden p-4 sm:p-6">
                 <p><a class="underline hover:no-underline" href="#privacy-policy">(English version below)</a></p>
                 <x-header2>Datenschutz&shy;erkl&auml;rung</x-header2>
@@ -354,7 +354,7 @@
             </div>
         </div>
 
-        <div class="mx-auto max-w-7xl py-2 sm:px-6 lg:px-8">
+        <div class="mx-auto max-w-7xl px-4 py-2 sm:px-6 lg:px-8">
             <div class="app-surface overflow-hidden p-4 sm:p-6" id="privacy-policy">
                 <x-header2>Privacy policy</x-header2>
                 <p>1. data protection at a glance</p>

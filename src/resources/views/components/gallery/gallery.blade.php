@@ -26,7 +26,7 @@
             <div id="post-{{ $post->id }}" x-data x-init="$store.comments.init({{ $post->id }});
             window.addEventListener('resize', () => $store.comments.updateOnResize({{ $post->id }}))">
 
-                <main class="app-surface mx-1 mb-4 px-2 py-2 sm:mb-6 sm:px-6 sm:py-3">
+                <main class="app-surface mb-4 rounded-none border-x-0 px-2 py-2 sm:mx-1 sm:mb-6 sm:rounded-lg sm:border-x sm:px-6 sm:py-3">
                     <div class="mx-auto grid grid-cols-1 md:grid-cols-3 md:gap-x-10">
                         <!-- Image -->
                         <div class="col-span-3 flex items-center justify-center md:col-span-2 relative">
