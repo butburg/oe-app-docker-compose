@@ -11,6 +11,7 @@ use App\Http\Controllers\AdminController;
 Route::get('/', [PostController::class, 'gallery'])
     ->name('dashboard');
 
+Route::view('/about', 'about')->name('about');
 Route::view('/impressum', 'impressum')->name('impressum');
 
 Route::middleware('auth', 'verified')->group(function () {

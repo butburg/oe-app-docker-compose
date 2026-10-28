@@ -54,6 +54,17 @@
 
         <footer class="border-t border-c-line py-12 text-center text-sm text-c-muted sm:py-16">
             <div class="mx-auto flex w-full max-w-2xl flex-col items-center gap-8 px-4">
+                <p class="flex flex-col items-center gap-2">
+                    <a class="font-medium text-c-primary underline underline-offset-4 hover:text-c-accent"
+                        href="{{ route('about') }}">
+                        About this site
+                    </a>
+                    <a class="font-medium text-c-primary underline underline-offset-4 hover:text-c-accent"
+                        href="{{ route('impressum') }}">
+                        Impressum & Datenschutz
+                    </a>
+                </p>
+
                 <div>
                     <a class="group inline-flex items-center justify-center gap-3 rounded-xl px-3 py-2"
                         href="https://ko-fi.com/butburg" target="_blank" rel="noopener"
@@ -93,13 +104,6 @@
                             src="https://www.lima-city.de/assets/banner/button3.jpg">
                     </a>
                 </div>
-
-                <p>
-                    <a class="font-medium text-c-primary underline underline-offset-4 hover:text-c-accent"
-                        href="{{ route('impressum') }}">
-                        Impressum & Datenschutz
-                    </a>
-                </p>
 
                 {{-- major version for everyone, full details only for dev and admins --}}
                 <p class="text-c-primary/35">

@@ -67,6 +67,10 @@
     </div>
 
     <footer class="border-t border-c-line py-6 text-center text-xs text-c-quiet">
+        <a class="text-c-muted underline underline-offset-4 hover:text-c-primary" href="{{ route('about') }}">
+            About this site
+        </a>
+        <br>
         <a class="text-c-muted underline underline-offset-4 hover:text-c-primary" href="{{ route('impressum') }}">
             Impressum & Datenschutz
         </a>

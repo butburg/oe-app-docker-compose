@@ -44,6 +44,16 @@
                 @endauth
             </div>
 
+            {{-- easter egg on the about page: party hamsters between logo and search --}}
+            @if (request()->routeIs('about'))
+                <div class="flex min-w-0 flex-1 items-end justify-center overflow-hidden" :class="{ 'hidden': search }" aria-hidden="true">
+                    {{-- hidden below the bar, rises when the intro on the about page is clicked --}}
+                    <img class="pointer-events-none h-16 w-auto max-w-none translate-y-full transition-transform duration-1000 ease-out [image-rendering:pixelated]"
+                        src="{{ asset('images/about/hamster.gif') }}" alt="" width="139" height="74"
+                        x-data="{ up: false }" @hamster-party.window="up = !up" :class="up && '!translate-y-0'">
+                </div>
+            @endif
+
             {{-- search, below lg it opens from the icon and fills the bar instead of a popup --}}
             <form class="ms-auto flex items-center self-center lg:me-4" :class="{ 'ms-auto': !search, 'flex-1 ms-3': search }"
                 action="{{ route('dashboard') }}" method="GET" role="search"
