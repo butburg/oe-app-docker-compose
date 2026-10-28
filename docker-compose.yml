@@ -13,33 +13,17 @@ services:
       - "80:80"
     volumes:
       - ./src:/var/www/html:delegated
-      - ./src/vendor:/var/www/html/vendor:delegated  # This mounts vendor locally
+      - ./src/vendor:/var/www/html/vendor:delegated # This mounts vendor locally
     depends_on:
       - php
       - npm
       #- redis
-      - mysql
       - mailhog
     networks:
       - laravel
 
-  mysql:
-    image: mariadb:10.6
-    restart: unless-stopped
-    tty: true
-    ports:
-      - "3306:3306"
-    environment:
-      MYSQL_DATABASE: homestead
-      MYSQL_USER: homestead
-      MYSQL_PASSWORD: secret
-      MYSQL_ROOT_PASSWORD: secret
-      SERVICE_TAGS: dev
-      SERVICE_NAME: mysql
-    networks:
-      - laravel
-
-  php: # name should also be in dockerfiles/nginx/default.conf
+  php:
+    # name should also be in dockerfiles/nginx/default.conf
     build:
       context: ./dockerfiles
       dockerfile: php.dockerfile
@@ -101,8 +85,6 @@ services:
       - ./src:/var/www/html:delegated
     ports:
       - "8000:8000"
-    depends_on:
-      - mysql
     entrypoint: [ 'php', '/var/www/html/artisan' ]
     networks:
       - laravel

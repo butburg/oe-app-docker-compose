@@ -33,12 +33,12 @@ Next, navigate in your terminal to the directory you cloned this, and spin up th
 
 After that completes, follow the steps from the [src/README.md](src/README.md) file to get your Laravel project added in (or create a new blank one).
 
-**Note**: Your MySQL database host name should be `mysql`, **not** `localhost`. The username and database should both be `homestead` with a password of `secret`.
+**Note**: Local development uses SQLite (`DB_CONNECTION=sqlite`, file `src/database/database.sqlite`, see `src/.env.example`). Production runs on MySQL, configured only via the `.env` deployed from the GitHub secret `ENV_VARIABLES`; no database container is needed locally.
+There is no implicit fallback: without `DB_CONNECTION` the app fails with `Database connection [] not configured.`, and the SQLite file is never created automatically. For a fresh local setup create it once with `touch src/database/database.sqlite`, then run `docker-compose run --rm artisan migrate`.
 
 Bringing up the Docker Compose network with `app` instead of just using `up`, ensures that only our site's containers are brought up at the start, instead of all of the command containers as well. The following are built for our web server, with their exposed ports detailed:
 
 - **nginx** - `:80`
-- **mysql** - `:3306`
 - **php** - `:9000`
 - **redis** - `:6379`
 - **mailhog** - `:8025`
@@ -76,18 +76,6 @@ If you encounter any issues with filesystem permissions while visiting your appl
 
 Then, either bring back up your container network or re-run the command you were trying before, and see if that fixes it.
 
-## Persistent MySQL Storage
-
-By default, whenever you bring down the Docker network, your MySQL data will be removed after the containers are destroyed. If you would like to have persistent data that remains after bringing containers down and back up, do the following:
-
-1. Create a `mysql` folder in the project root, alongside the `nginx` and `src` folders.
-2. Under the mysql service in your `docker-compose.yml` file, add the following lines:
-
-```
-volumes:
-  - ./mysql:/var/lib/mysql
-```
-
 ## Usage in Production
 
 While I originally created this template for local development, it's robust enough to be used in basic Laravel application deployments. The biggest recommendation would be to ensure that HTTPS is enabled by making additions to the `nginx/default.conf` file and utilizing something like [Let's Encrypt](https://hub.docker.com/r/linuxserver/letsencrypt) to produce an SSL certificate.
@@ -123,11 +111,11 @@ To see the dashboard and view any emails coming through the system, visit [local
 
 Last Update: 10.11.24
 - Laravel Framework 11.7.0
-- php: 8.3.13
+- php: 8.3 (image pinned to `php:8.3-fpm-alpine`, phpredis 5.3.4 does not build on newer PHP)
 - composer: 2.8.2
 - npm: 22.1.0
 - vite: 5.4.10
-- SQLite: 10.9.0
+- Database: SQLite (dev), MySQL (prod)
 
 Check it with
 ```
