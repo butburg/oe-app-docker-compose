@@ -18,6 +18,11 @@ class AboutPageTest extends TestCase
         $response->assertSee('images/about/2022-plain-php.webp');
     }
 
+    public function test_screenshots_are_marked_as_protected(): void
+    {
+        $this->get('/about')->assertSee('loading="lazy" data-protected>', false);
+    }
+
     public function test_hamsters_are_only_loaded_on_the_about_page(): void
     {
         $this->get('/about')->assertSee('images/about/hamster.gif');

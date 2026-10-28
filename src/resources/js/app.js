@@ -35,3 +35,12 @@ document.addEventListener('click', (event) => {
         alert('Link copied to clipboard!');
     }).catch(console.error);
 });
+
+// deterrent only: the files stay public under storage/
+['contextmenu', 'dragstart'].forEach((type) => {
+    document.addEventListener(type, (event) => {
+        if (event.target.closest?.('img[data-protected]')) {
+            event.preventDefault();
+        }
+    });
+});

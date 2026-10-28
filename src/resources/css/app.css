@@ -32,6 +32,13 @@
         -webkit-appearance: none;
     }
 
+    /* no long-press save menu (iOS) and no dragging/selecting, see app.js */
+    img[data-protected] {
+        -webkit-touch-callout: none;
+        -webkit-user-drag: none;
+        user-select: none;
+    }
+
     ::selection {
         background: rgb(var(--primary) / .3);
     }

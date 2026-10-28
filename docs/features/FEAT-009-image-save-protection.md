@@ -1,7 +1,7 @@
 ---
 id: FEAT-009
 title: Discourage saving gallery images (right-click, drag, overlay)
-status: backlog # backlog | todo | in-progress | review | done
+status: review # backlog | todo | in-progress | review | done
 priority: low # low | medium | high
 category: enhancement # feature | enhancement | bugfix | ui | security
 assignee: unassigned
@@ -24,16 +24,23 @@ Right now nothing protects the images. Every `<img>` (gallery, zoom view, profil
 This is a deterrent, not real protection: the files are public under `storage/`, so dev tools, the network tab, screenshots or disabling JavaScript still get the image. Do not promise users more than that.
 
 ## Acceptance Criteria
-- [ ] Right-click on a gallery, zoom, profile or About image does not open the browser's image menu (no "Save image as…" / "Open image in new tab").
-- [ ] Images cannot be dragged out of the page (desktop) and long-press does not offer "Save image" (mobile Safari/Chrome).
-- [ ] Zoom still works: click opens, click closes, keyboard (Enter/Space) still opens.
-- [ ] Right-click elsewhere (text, links, inputs) keeps working normally.
-- [ ] Alt texts stay intact for screen readers.
-- [ ] Applies everywhere `image_or_placeholder` renders plus the About screenshots, not to the logo or UI icons.
-- [ ] Tests and validation passed (container), manual check in desktop and mobile browser.
+- [x] Right-click on a gallery, zoom, profile or About image does not open the browser's image menu (no "Save image as…" / "Open image in new tab").
+- [x] Images cannot be dragged out of the page (desktop) and long-press does not offer "Save image" (mobile Safari/Chrome).
+- [x] Zoom still works: click opens, click closes, keyboard (Enter/Space) still opens.
+- [x] Right-click elsewhere (text, links, inputs) keeps working normally.
+- [x] Alt texts stay intact for screen readers.
+- [x] Applies everywhere `image_or_placeholder` renders plus the About screenshots, not to the logo or UI icons.
+- [ ] Tests and validation passed (container), manual check in desktop and mobile browser. (Tests and build pass; manual browser check still open.)
 
 ## Technical Implementation Notes
 - **Affected files / components**: `resources/views/components/image_or_placeholder.blade.php` (normal and zoom image), `resources/views/about.blade.php` (screenshots), `resources/css/app.css` (shared class), possibly `resources/js/app.js`.
 - **Approach**: a shared `.app-protected-image` wrapper with a transparent `absolute inset-0` overlay above the image; move the zoom `@click`/keyboard handlers from the `<img>` to the wrapper so the overlay does not break zoom. On the `<img>`: `draggable="false"`, `select-none`, `[-webkit-touch-callout:none]`, and `@contextmenu.prevent` on the wrapper.
 - **Alternative**: no overlay, only one global `contextmenu`/`dragstart` listener in `app.js` for images with a `data-protected` attribute. Less markup, same effect; the overlay adds protection against "inspect → open image" for less technical users only marginally.
 - **Constraints**: keep the zoom overlay's own click handling (`@click.stop`) working; check the hamster easter egg is unaffected (it is already `pointer-events-none`).
+
+## Decision
+Went with the alternative (global script), since it does not touch the zoom click handling at all:
+- Every protected `<img>` carries `data-protected` (normal, zoomable and zoom image in `image_or_placeholder`, About screenshots). The broken-image placeholder, logo, icons and hamsters are not marked.
+- `resources/js/app.js`: one `contextmenu` and one `dragstart` listener on `document` that call `preventDefault()` only when the target is an `img[data-protected]`. Click and keyboard events are never touched, so zoom keeps working.
+- `resources/css/app.css`: `img[data-protected]` gets `-webkit-touch-callout: none` (iOS long-press menu), `-webkit-user-drag: none` and `user-select: none`.
+- The zoomable image now also opens on Enter/Space (`@keydown.enter`/`@keydown.space`); before, it was focusable but only reacted to clicks.

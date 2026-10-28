@@ -37,19 +37,20 @@
                 }
             }
         }" class="contents">
-            <img @click="toggle()" class="{{ $style }} cursor-zoom-in" src="{{ asset('storage/' . $imagePath) }}"
+            <img @click="toggle()" @keydown.enter.prevent="toggle()" @keydown.space.prevent="toggle()"
+                class="{{ $style }} cursor-zoom-in" src="{{ asset('storage/' . $imagePath) }}"
                 title="{{ $alt_title }}" alt="{{ $alt_title }}" loading="lazy" role="button" tabindex="0"
-                aria-label="Enlarge image">
+                aria-label="Enlarge image" data-protected>
 
             <div x-cloak x-show="isOpen" x-transition.opacity.duration.150ms @click="toggle()"
                 class="fixed inset-0 z-[70] bg-black/40 p-3 sm:p-6 flex items-center justify-center">
                 <img @click.stop="toggle()" src="{{ asset('storage/' . $resolvedZoomPath) }}" alt="{{ $alt_title }}"
-                    class="max-h-full max-w-full object-contain cursor-zoom-out">
+                    class="max-h-full max-w-full object-contain cursor-zoom-out" data-protected>
             </div>
         </div>
     @else
         <img class="{{ $style }}" src="{{ asset('storage/' . $imagePath) }}" title="{{ $alt_title }}"
-            alt="{{ $alt_title }}" loading="lazy">
+            alt="{{ $alt_title }}" loading="lazy" data-protected>
     @endif
 @else
     <img class="{{ $style }}" src="{{ asset($placeholder) }}" title="{{ $alt_title }}"

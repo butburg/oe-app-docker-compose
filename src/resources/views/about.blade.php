@@ -106,7 +106,7 @@
                                     <img class="h-auto w-full rounded-md border border-c-line"
                                         src="{{ asset('images/about/' . $image['file']) }}"
                                         alt="Screenshot: {{ $image['caption'] }}" width="{{ $image['width'] }}"
-                                        height="{{ $image['height'] }}" loading="lazy">
+                                        height="{{ $image['height'] }}" loading="lazy" data-protected>
                                     <figcaption class="mt-2 text-xs text-c-quiet">{{ $image['caption'] }}</figcaption>
                                 </figure>
                             @endforeach
