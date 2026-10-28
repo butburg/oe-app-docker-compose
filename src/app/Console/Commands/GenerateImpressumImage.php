@@ -32,9 +32,9 @@ class GenerateImpressumImage extends Command
 
     private const FONT_SIZE = 30;
     private const PADDING = 18;
-    private const LINE_HEIGHT = 52;
-    private const MAX_ROTATION = 10;
-    private const MAX_SHIFT = 4;
+    private const LINE_HEIGHT = 30;
+    private const MAX_ROTATION = 3;
+    private const MAX_SHIFT = 3;
     private const MAX_GAP = 3;
 
     private Randomizer $random;
@@ -134,9 +134,9 @@ class GenerateImpressumImage extends Command
         $width = imagesx($image);
         $height = imagesy($image);
 
-        imagesetthickness($image, 2);
-        for ($i = 0; $i < 3; $i++) {
-            $shade = $this->random->getInt(60, 120);
+        imagesetthickness($image, 3);
+        for ($i = 0; $i < 2; $i++) {
+            $shade = $this->random->getInt(190, 240);
             $color = imagecolorallocatealpha($image, $shade, $shade, $shade, 25);
             $y = $this->random->getInt(self::PADDING, $height - self::PADDING);
 
