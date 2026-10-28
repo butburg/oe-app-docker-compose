@@ -150,15 +150,6 @@ class PostController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     */
-    public function show(string $id): View
-    {
-        $post = Post::findOrFail($id);
-        return view('posts.show', compact('post'));
-    }
-
-    /**
      * Calculate the gallery page number for a specific post that is PUBLISHED.
      */
     public function getPageForPost(Post $post, $perPage = null)
@@ -185,7 +176,7 @@ class PostController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id): View
+    public function edit(string $id): View|RedirectResponse
     {
         // Retrieve the post with the specified ID
         $post = Post::findOrFail($id);

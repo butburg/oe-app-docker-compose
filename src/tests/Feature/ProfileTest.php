@@ -21,15 +21,14 @@ class ProfileTest extends TestCase
         $response->assertOk();
     }
 
-    public function test_profile_information_can_be_updated(): void
+    public function test_name_can_be_updated(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['name' => 'Old Name']);
 
         $response = $this
             ->actingAs($user)
-            ->patch('/profile', [
+            ->patch(route('profile.updateName'), [
                 'name' => 'Test User',
-                'email' => 'test@example.com',
             ]);
 
         $response
@@ -39,6 +38,25 @@ class ProfileTest extends TestCase
         $user->refresh();
 
         $this->assertSame('Test User', $user->name);
+        $this->assertSame('Old Name', $user->previous_name);
+    }
+
+    public function test_email_can_be_updated_and_needs_new_verification(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->patch(route('profile.updateEmail'), [
+                'email' => 'test@example.com',
+            ]);
+
+        $response
+            ->assertSessionHasNoErrors()
+            ->assertRedirect('/profile');
+
+        $user->refresh();
+
         $this->assertSame('test@example.com', $user->email);
         $this->assertNull($user->email_verified_at);
     }
@@ -47,15 +65,13 @@ class ProfileTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this
+        $this
             ->actingAs($user)
-            ->patch('/profile', [
-                'name' => 'Test User',
+            ->from('/profile')
+            ->patch(route('profile.updateEmail'), [
                 'email' => $user->email,
-            ]);
-
-        $response
-            ->assertSessionHasNoErrors()
+            ])
+            ->assertSessionHasErrors('email')
             ->assertRedirect('/profile');
 
         $this->assertNotNull($user->refresh()->email_verified_at);

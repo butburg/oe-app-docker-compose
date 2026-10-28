@@ -22,7 +22,6 @@ class AuthPostTest extends TestCase
             'posts' => ['posts'],
             'posts/create' => ['posts/create'],
             'posts/1/edit' => ['posts/1/edit'], // Assuming '1' is an example post ID
-            'posts/1' => ['posts/1'], 
             'posts/1/make-draft' => ['posts/1/make-draft'],
             'posts/1/publish' => ['posts/1/publish'],
         ];

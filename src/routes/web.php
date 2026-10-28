@@ -46,10 +46,9 @@ Route::middleware('auth', 'verified')->group(function () {
 
 
     // Resources route because it contains exact routes we need for a typical CRUD.
-    Route::resources([
-        'posts' => PostController::class,
-        'comments' => CommentController::class,
-    ]);
+    // Posts have no show page, the gallery displays them.
+    Route::resource('posts', PostController::class)->except('show');
+    Route::resource('comments', CommentController::class);
 
     // Mail
     #Route::get('/send-test-email', [TestMailController::class, 'sendTestEmail']);
