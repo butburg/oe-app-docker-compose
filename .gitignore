@@ -1,4 +1,6 @@
-mysql
 .DS_Store
 .idea
 
+
+# local archive of legacy data (old SQLite DB, blob CSV)
+archiv/

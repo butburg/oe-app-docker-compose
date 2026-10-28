@@ -54,9 +54,6 @@ jobs:
           --exclude 'bootstrap/cache/' \
           --exclude 'public/css/' \
           --exclude 'public/js/' \
-          --exclude 'database/database.sqlite' \
-          --exclude 'database/old_database.sqlite' \
-          --exclude 'old_image_posts/' \
           --exclude 'tests/' \
           --exclude 'phpunit.xml' \
           --exclude '.git*' \
