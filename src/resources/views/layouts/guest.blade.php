@@ -38,7 +38,8 @@
                 {{ $slot }}
             </div>
             @env('local')
-                <x-login-link class="app-button-secondary mt-4 w-full" />
+                {{-- seeded user with drafts and published posts, see database/seeders/data/posts.json --}}
+                <x-login-link class="app-button-secondary mt-4 w-full" email="user-viele-bilder@user.com" />
                 {{-- logs in the first admin, or creates one if there is none --}}
                 <x-login-link class="app-button-secondary mt-2 w-full" :user-attributes="['usertype' => 'admin']" label="Developer Login (Admin)" />
             @endenv

@@ -1,0 +1,18 @@
+[
+    {
+        "file": "portrait-parrot.jpg",
+        "owner": "none",
+        "title": "Parrot",
+        "author": "Johann Jakob Louis / Ludwigsburg Porcelain Manufactory",
+        "license": "CC0",
+        "source": "https://commons.wikimedia.org/wiki/File:Parrot_MET_211627.jpg"
+    },
+    {
+        "file": "landscape-dogs.jpg",
+        "owner": "many",
+        "title": "Two French bulldogs swimming in life jackets",
+        "author": "W.carter",
+        "license": "CC0",
+        "source": "https://commons.wikimedia.org/wiki/File:Two_French_bulldogs_swimming_in_life_jackets.jpg"
+    }
+]
