@@ -24,9 +24,9 @@ RUN apk --no-cache add \
     imagemagick-dev \ 
     $PHPIZE_DEPS
 
-#GD:
-#RUN docker-php-ext-configure gd --enable-gd --with-webp=/usr/include/ --with-jpeg=/usr/include/ --with-freetype=/usr/include/
-#RUN docker-php-ext-install -j$(nproc) gd
+#GD: the app uses Imagick, GD is needed by UploadedFile::fake()->image() in tests
+RUN docker-php-ext-configure gd --with-webp --with-jpeg --with-freetype
+RUN docker-php-ext-install -j$(nproc) gd
 
 #ImageMagick:
 RUN pecl install imagick

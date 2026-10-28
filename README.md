@@ -47,6 +47,7 @@ Three additional containers are included that handle Composer, NPM, and Artisan 
 
 - `docker-compose run --rm composer update`
 - `docker-compose run --rm artisan migrate`
+- `docker-compose run --rm artisan test` (tests run only in the container, on an in-memory SQLite DB)
 - `docker-compose run --rm npm npm install` (important for first setup)
 - `docker-compose run --rm npm run dev`
 
