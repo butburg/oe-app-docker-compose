@@ -14,7 +14,7 @@ class ImpressumPageTest extends TestCase
         $response = $this->get('/impressum');
 
         $response->assertStatus(200);
-        $response->assertSee('width="130" data-protected>', false);
-        $response->assertSee('width="155" data-protected>', false);
+        $response->assertSee('width="180" data-protected>', false);
+        $response->assertSee('width="200" data-protected>', false);
     }
 }

@@ -50,7 +50,27 @@ Three additional containers are included that handle Composer, NPM, and Artisan 
 - `docker-compose run --rm artisan test` (tests run only in the container, on an in-memory SQLite DB)
 - `docker-compose run --rm npm npm install` (important for first setup)
 - `docker-compose run --rm npm run dev`
+- `docker-compose run --rm artisan impressum:image --contact "..."` (see [Impressum images](#impressum-images))
 
+
+## Impressum images
+
+The contact and mail data on the impressum are shown as images (`public/images/impressum-contact-protected.png` and `impressum-mail-protected.png`). The text is drawn with shifted, rotated letters on a noisy background, so simple scrapers can't read it while people still can. Regenerate them with the `impressum:image` Artisan command whenever the data changes.
+
+```bash
+# address image, each quoted argument becomes one line
+docker-compose run --rm artisan impressum:image --contact "Jane Doe" "Example Street 1" "12345 Berlin"
+
+# mail image
+docker-compose run --rm artisan impressum:image --mail "someone@example.com"
+```
+
+- Pass exactly one of `--contact` or `--mail`. It decides which file is written and the existing one is overwritten.
+- For a line break, start a new quoted argument. `\n` inside the text is not interpreted.
+- Add `--seed=7` (any number) to get the same image every run; without it every run looks different.
+- `docker-compose run --rm artisan impressum:image --help` lists all options.
+
+Pass the real data only on the command line and never write it into a file in the repository, because the repository is public. Commit only the generated PNGs.
 
 ## Best Practice for development experience
 This project includes a list of recommended VS Code extensions. This list can be found in the .vscode/extensions.json file within the repository. It includes extensions that enhance Laravel support, such as code completion for PHP, Blade templating, and Tailwind CSS, among others.

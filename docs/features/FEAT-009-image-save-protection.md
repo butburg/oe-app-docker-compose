@@ -44,3 +44,7 @@ Went with the alternative (global script), since it does not touch the zoom clic
 - `resources/js/app.js`: one `contextmenu` and one `dragstart` listener on `document` that call `preventDefault()` only when the target is an `img[data-protected]`. Click and keyboard events are never touched, so zoom keeps working.
 - `resources/css/app.css`: `img[data-protected]` gets `-webkit-touch-callout: none` (iOS long-press menu), `-webkit-user-drag: none` and `user-select: none`.
 - The zoomable image now also opens on Enter/Space (`@keydown.enter`/`@keydown.space`); before, it was focusable but only reacted to clicks.
+
+## Impressum text images
+
+The contact and mail images on the impressum carry personal data, so besides the save deterrent they are rendered by `php artisan impressum:image` (`app/Console/Commands/GenerateImpressumImage.php`): every character gets its own rotation, height offset and spacing on a noisy background with strike lines. This stops simple OCR scrapers while people can still read it; it does not stop modern OCR or AI models. The text is passed only as arguments (one per line) so it never lands in the public repository. Font: Figtree Medium (`resources/fonts`, SIL OFL).
