@@ -13,18 +13,23 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                serif: ['"Nanum Myeongjo"', ...defaultTheme.fontFamily.sans],
+                sans: ['Figtree', ...defaultTheme.fontFamily.sans],
             },
             colors: {
                 'c-text': 'rgb(var(--text) / <alpha-value>)',
                 'c-background': 'rgb(var(--background) / <alpha-value>)',
+                'c-surface': 'rgb(var(--surface) / <alpha-value>)',
+                'c-surface-raised': 'rgb(var(--surface-raised) / <alpha-value>)',
+                'c-line': 'rgb(var(--line) / <alpha-value>)',
+                'c-muted': 'rgb(var(--muted) / <alpha-value>)',
+                'c-quiet': 'rgb(var(--quiet) / <alpha-value>)',
                 'c-primary': 'rgb(var(--primary) / <alpha-value>)',
                 'c-secondary': 'rgb(var(--secondary) / <alpha-value>)',
                 'c-accent': 'rgb(var(--accent) / <alpha-value>)',
             },
-                borderWidth: {
-                  DEFAULT: 'thin', // use 'thin' instead 1px since chrome likes this more
-                },
+            borderWidth: {
+                DEFAULT: 'thin', // use 'thin' instead 1px since chrome likes this more
+            },
 
         },
     },

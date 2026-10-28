@@ -70,18 +70,25 @@ class PostController extends Controller
      */
     public function gallery(Request $request): View
     {
-        if (Auth::check()) {
-            $posts = Post::where('is_published', true)
-                ->orderBy('published_at', 'desc')
-                ->paginate(config('app.posts_per_page'));
-        } else {
-            $posts = Post::where('is_published', true)
-                ->where('is_sensitive', false)
-                ->orderBy('published_at', 'desc')
-                ->paginate(config('app.posts_per_page'));
+        $search = trim((string) $request->query('q', ''));
+        $query = Post::where('is_published', true);
+
+        if (!Auth::check()) {
+            $query->where('is_sensitive', false);
         }
 
-        return view('welcome', compact('posts'));
+        if ($search !== '') {
+            $query->where(function ($query) use ($search) {
+                $query->where('title', 'like', "%{$search}%")
+                    ->orWhere('username', 'like', "%{$search}%");
+            });
+        }
+
+        $posts = $query->orderBy('published_at', 'desc')
+            ->paginate(config('app.posts_per_page'))
+            ->withQueryString();
+
+        return view('welcome', compact('posts', 'search'));
     }
 
     /**

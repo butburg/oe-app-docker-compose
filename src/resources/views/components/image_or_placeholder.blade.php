@@ -3,7 +3,7 @@
     'size_type',
     'alt_title' => null,
     'style' => '',
-    'placeholder' => 'storage/files/images/broken.png',
+    'placeholder' => 'images/broken.png',
     'zoomable' => false,
     'full_size_type' => 'xl',
 ])

@@ -1,9 +1,9 @@
 <section>
     <header>
-        <h2 class="text-content-text text-lg font-medium">
+        <h2 class="text-lg font-semibold text-c-text">
             {{ __('Profile Information') }}
         </h2>
-        <p class="mt-1 text-sm text-gray-300">
+        <p class="mt-1 text-sm leading-6 text-c-muted">
             {{ __("Update your account's profile information and email address. A username is how others recognize you.") }}
         </p>
     </header>
@@ -21,7 +21,7 @@
         <div class="flex items-center gap-4">
             <x-primary-button>{{ __('Update Username') }}</x-primary-button>
             @if (session('status') === 'profile-updated')
-                <p class="text-sm text-gray-100" x-data="{ show: true }" x-show="show" x-transition
+                <p class="text-sm text-c-accent" x-data="{ show: true }" x-show="show" x-transition
                     x-init="setTimeout(() => show = false, 4000)">
                     {{ __('Username updated.') }}
                 </p>
@@ -40,16 +40,16 @@
             <x-input-error class="mt-2" :messages="$errors->get('email')" />
             @if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && !$user->hasVerifiedEmail())
                 <div>
-                    <p class="mt-2 text-sm text-gray-800">
+                    <p class="mt-2 text-sm text-c-muted">
                         {{ __('Your email address is unverified.') }}
                         <button
-                            class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                            class="rounded-sm text-sm text-c-primary underline underline-offset-4 hover:text-c-text focus:outline-none focus-visible:ring-2 focus-visible:ring-c-primary"
                             form="send-verification">
                             {{ __('Click here to re-send the verification email.') }}
                         </button>
                     </p>
                     @if (session('status') === 'verification-link-sent')
-                        <p class="mt-2 text-sm font-medium text-green-600">
+                        <p class="mt-2 text-sm font-medium text-c-accent" role="status" aria-live="polite">
                             {{ __('A new verification link has been sent to your email address.') }}
                         </p>
                     @endif

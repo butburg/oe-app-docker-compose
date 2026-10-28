@@ -1,5 +1,5 @@
 @if ($paginator->hasPages())
-    <nav>
+    <nav class="app-pagination">
         <!-- Mobile page arrows on top -->
         <div class="mx-2 flex flex-1 justify-between sm:hidden">
 

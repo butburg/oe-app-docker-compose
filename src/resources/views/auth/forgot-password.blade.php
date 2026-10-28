@@ -1,12 +1,12 @@
 <x-guest-layout>
-    <div class="mb-4 text-sm text-gray-600">
+    <div class="mb-4 text-sm leading-6 text-c-muted">
         {{ __('Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.') }}
     </div>
 
     <!-- Session Status -->
     @if (session('status'))
         <div
-            class="inline-flex items-center rounded-md bg-c-accent px-4 py-2 text-xs font-semibold tracking-widest text-gray-700 shadow-sm">
+            class="mb-4 block rounded-md border border-c-accent/30 bg-c-accent/10 px-3 py-2 text-sm text-c-text" role="status" aria-live="polite">
             {{ session('status') }}</div>
     @endif
     <form method="POST" action="{{ route('password.email') }}">

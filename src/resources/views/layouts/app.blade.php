@@ -29,14 +29,22 @@
     <div class="min-h-screen">
         @include('layouts.navigation')
 
-        <!-- Page Heading -->
+        <!-- Page Heading, only for screen readers and search engines, the navigation shows where you are -->
         @if (isset($header))
-            <header class="bg-c-primary/10 text-c-text">
-                <div class="mx-auto max-w-screen-2xl px-4 py-3 shadow sm:px-6 lg:px-8">
-                    {{ $header }}
-
-                </div>
+            <header class="sr-only">
+                {{ $header }}
             </header>
+        @endif
+
+        @if (Session::has('notif.success'))
+            <div class="mx-auto max-w-screen-2xl px-4 pt-3 sm:px-6 lg:px-8" role="status" aria-live="polite">
+                <div class="flex items-start gap-2 rounded-md border border-c-accent/30 bg-c-accent/10 px-3 py-2 text-sm text-c-text">
+                    <svg class="mt-0.5 h-4 w-4 shrink-0 text-c-accent" aria-hidden="true" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.78-9.97a.75.75 0 0 0-1.06-1.06l-3.47 3.47-1.47-1.47a.75.75 0 1 0-1.06 1.06l2 2a.75.75 0 0 0 1.06 0l4-4Z" clip-rule="evenodd" />
+                    </svg>
+                    <span class="min-w-0 break-words">{{ Session::get('notif.success') }}</span>
+                </div>
+            </div>
         @endif
 
         <!-- Page Content -->
@@ -44,14 +52,14 @@
             {{ $slot }}
         </main>
 
-        <footer class="py-16 text-center text-sm text-c-text">
+        <footer class="border-t border-c-line py-12 text-center text-sm text-c-muted sm:py-16">
             <div class="mx-auto flex w-full max-w-2xl flex-col items-center gap-8 px-4">
                 <div>
                     <a class="group inline-flex items-center justify-center gap-3 rounded-xl px-3 py-2"
                         href="https://ko-fi.com/butburg" target="_blank" rel="noopener"
                         aria-label="Made with love by EW">
                         <span
-                            class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-c-primary/10 text-c-primary/35 transition-all duration-300 group-hover:bg-c-primary/20 group-hover:text-c-accent">
+                            class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-c-surface-raised text-c-muted transition-colors group-hover:text-c-accent">
                             <svg class="h-8 w-8 rotate-180 transform transition-transform duration-300 group-hover:rotate-[225deg]"
                                 viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
                                 aria-hidden="true">

@@ -1,11 +1,10 @@
-<section>
+<section class="mt-5">
     <header>
-        <h2 class="text-lg font-medium text-content-text text-gray-400">
+        <h2 class="text-base font-semibold text-c-muted">
             {{ __('About Me') }}
         </h2>
-    </header>   
+    </header>
 
-    <p class="mt-2 text-sm text-gray-400">
-        {{ $user->description ?? __('No description provided.') }}
-    </p>
+    {{-- content inline, otherwise pre-line renders the template's line breaks --}}
+    <p class="mt-1 whitespace-pre-line text-sm leading-6 text-c-muted">{{ $user->description ?? __('No description provided.') }}</p>
 </section>

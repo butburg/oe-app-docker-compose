@@ -1,11 +1,11 @@
 {{-- Small tiles showing the users. Used for the Admin dashboard. --}}
 <div
-    class="m-3 flex w-full flex-col rounded-lg bg-c-primary/10 p-6 shadow-lg sm:max-w-xs sm:flex-shrink sm:flex-grow sm:basis-[320px]">
+    class="app-surface m-3 flex w-full flex-col p-4 sm:max-w-xs sm:flex-shrink sm:flex-grow sm:basis-[320px] sm:p-5">
 
     <div class="flex items-center gap-3">
         <!-- User Image -->
         @php
-            $isOnline = $user->session ? 'border-4 border-green-500' : '';
+            $isOnline = $user->session ? 'border-2 border-c-accent' : 'border-2 border-c-line';
         @endphp
         <a class="transform transition-transform hover:scale-105"
             href="{{ $user ? route('profile.show', $user) : '' }}">
@@ -13,8 +13,8 @@
                 'image' => $user->image,
                 'size_type' => 'xs',
                 'alt_title' => 'Your Profile Image',
-                'style' => "{$isOnline} h-24 w-24 my-2 rounded-full box-border bg-gray-200",
-                'placeholder' => 'storage/files/images/starfish.svg',
+                'style' => "{$isOnline} my-2 h-20 w-20 rounded-full bg-c-surface-raised object-cover",
+                'placeholder' => 'images/starfish.svg',
             ])
         </a>
 
@@ -26,7 +26,7 @@
 
     <!-- Former Name and Title -->
     @include('components.profile.user-name', ['user' => $user])
-    <p class="mb-2 truncate text-sm text-c-primary/70">{{ $user->email }}
+    <p class="mb-2 truncate text-sm text-c-muted">{{ $user->email }}
     </p>
 
     <!-- User Type -->
@@ -35,7 +35,7 @@
     </p>
 
     <!-- Timestamp Group -->
-    <div class="mt-2 text-sm text-gray-400">
+    <div class="mt-2 text-sm text-c-muted">
         <p>
             <strong>Seen:</strong>
             @if ($user->session)
@@ -58,7 +58,7 @@
                 {{ $user->email_verified_at->format('d.m.y H:i') }}
             @else
                 <strong>Email Verified:</strong> <span
-                    class="text-yellow-800">No</span>
+                    class="text-rose-300">No</span>
             @endif
         </p>
     </div>

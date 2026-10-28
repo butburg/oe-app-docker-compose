@@ -1,10 +1,10 @@
 <section>
     <header>
-        <h2 class="text-lg font-medium text-content-text">
+        <h2 class="text-lg font-semibold text-c-text">
             {{ __('Update Description') }}
         </h2>
 
-        <p class="mt-1 text-sm text-gray-300">
+        <p class="mt-1 text-sm leading-6 text-c-muted">
             {{ __('Write a short description about yourself.') }}
         </p>
     </header>
@@ -15,7 +15,7 @@
 
         <div>
             <x-input-label for="description" :value="__('Description')" />
-            <textarea id="description" name="description" rows="4" class="mt-1 block w-full rounded-md text-gray-800 border-gray-300 shadow-sm">{{ old('description', $user->description) }}</textarea>
+            <textarea id="description" name="description" rows="4" class="app-field mt-1 block w-full">{{ old('description', $user->description) }}</textarea>
             <x-input-error :messages="$errors->updateDescription->get('description')" class="mt-2" />
         </div>
 
@@ -23,7 +23,7 @@
             <x-primary-button>{{ __('Save') }}</x-primary-button>
 
             @if (session('status') === 'description-updated')
-                <p x-data="{ show: true }" x-show="show" x-transition x-init="setTimeout(() => show = false, 2000)" class="text-sm text-gray-600">{{ __('Saved.') }}</p>
+                <p x-data="{ show: true }" x-show="show" x-transition x-init="setTimeout(() => show = false, 2000)" class="text-sm text-c-accent">{{ __('Saved.') }}</p>
             @endif
         </div>
     </form>

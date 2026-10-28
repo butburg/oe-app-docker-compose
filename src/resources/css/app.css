@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -11,49 +9,89 @@
     }
 
     :root {
-        --text: 226 251 253;
-        --background: 3 34 38;
+        --text: 236 247 245;
+        --background: 7 29 32;
+        --surface: 13 41 45;
+        --surface-raised: 18 54 58;
+        --line: 40 80 85;
+        --muted: 169 195 194;
+        --quiet: 131 165 165;
+        --ambient: 16 52 57;
         --primary: 0 217 255;
-        --secondary: 153 10 127;
+        --secondary: 245 102 219;
         --accent: 165 224 77;
     }
 
-    :light {
-        --text: 2 27 29;
-        --background: 217 248 252;
-        --primary: 0 217 255;
-        --secondary: 245 102 219;
-        --accent: 119 178 31;
+    body {
+        background-image: radial-gradient(ellipse at 76% 0%, rgb(var(--ambient) / .4), transparent 38%);
+        color: rgb(var(--text));
     }
 
-    /*:root {
-        --swamp: 2 27 29;
-        --salt-mountain: 217 248 252;
-        --neon-blue: 0 217 255;
-        --candy-pink: 245 102 219;
-        --lima: 119 178 31;
+    /* no native clear button in search fields */
+    input[type='search']::-webkit-search-cancel-button {
+        -webkit-appearance: none;
     }
 
-    .dark {
-        --calm-water: 226 251 253;
-        --midnight-dream: 3 34 38;
-        --neon-blue: 0 217 255;
-        --haunted-purple: 153 10 127;
-        --light-lime: 165 224 77;
+    ::selection {
+        background: rgb(var(--primary) / .3);
+    }
+}
+
+@layer components {
+    .app-surface {
+        @apply rounded-lg border border-c-line bg-c-surface;
     }
 
-    :root {
-        --text: #021b1d;
-        --background: #d9f8fc;
-        --primary: #00d9ff;
-        --secondary: #f566db;
-        --accent: #77b21f;
-      }
-      .dark {
-        --text: #e2fbfd;
-        --background: #032226;
-        --primary: #00d9ff;
-        --secondary: #990a7f;
-        --accent: #a5e04d;
-      }*/
+    /* tinted surface to set information or alternating sections apart */
+    .app-surface-accent {
+        @apply rounded-lg border border-c-primary/30 bg-c-primary/10;
+    }
+
+    .app-surface-raised {
+        @apply rounded-lg border border-c-line bg-c-surface-raised;
+    }
+
+    .app-field {
+        @apply block w-full rounded-md border border-c-line bg-c-surface-raised text-c-text placeholder:text-c-quiet shadow-none focus:border-c-primary focus:ring-1 focus:ring-c-primary;
+    }
+
+    .app-button-primary {
+        @apply inline-flex min-h-10 items-center justify-center gap-2 rounded-md border border-c-primary bg-c-primary px-4 text-sm font-semibold text-c-background transition-colors hover:bg-c-primary/80 focus:outline-none focus:ring-2 focus:ring-c-primary focus:ring-offset-2 focus:ring-offset-c-background disabled:cursor-not-allowed disabled:opacity-50;
+    }
+
+    .app-button-secondary {
+        @apply inline-flex min-h-10 items-center justify-center gap-2 rounded-md border border-c-line bg-c-surface px-4 text-sm font-medium text-c-text transition-colors hover:bg-c-surface-raised focus:outline-none focus:ring-2 focus:ring-c-primary focus:ring-offset-2 focus:ring-offset-c-background disabled:cursor-not-allowed disabled:opacity-50;
+    }
+
+    /* outlined action with a thick colored bar on the left, fills with the bar color on hover */
+    .app-button-bar {
+        @apply inline-flex min-h-10 min-w-[130px] items-center justify-center gap-2 rounded-md border border-l-4 bg-c-surface px-4 text-sm font-semibold text-c-text transition-colors hover:text-c-background focus:outline-none focus-visible:ring-2 focus-visible:ring-c-primary focus-visible:ring-offset-2 focus-visible:ring-offset-c-background;
+    }
+
+    .app-button-danger {
+        @apply inline-flex min-h-10 items-center justify-center gap-2 rounded-md border border-rose-400/50 bg-rose-500/10 px-4 text-sm font-semibold text-rose-200 transition-colors hover:bg-rose-500/20 focus:outline-none focus:ring-2 focus:ring-rose-400 focus:ring-offset-2 focus:ring-offset-c-background disabled:cursor-not-allowed disabled:opacity-50;
+    }
+}
+
+.app-pagination a,
+.app-pagination span,
+.app-pagination [role='menuitem'] {
+    border-color: rgb(var(--line));
+    background-color: rgb(var(--surface));
+    color: rgb(var(--muted));
+}
+
+.app-pagination a:hover,
+.app-pagination a:focus-visible,
+.app-pagination [role='menuitem']:hover,
+.app-pagination [role='menuitem']:focus-visible {
+    border-color: rgb(var(--primary));
+    background-color: rgb(var(--surface-raised));
+    color: rgb(var(--text));
+}
+
+.app-pagination [aria-current='page'] span {
+    border-color: rgb(var(--primary));
+    background-color: rgb(var(--primary));
+    color: rgb(var(--background));
 }

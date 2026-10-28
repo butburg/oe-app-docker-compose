@@ -1,13 +1,13 @@
 <x-app-layout>
-    <div class="overflow-hidden bg-white shadow-sm">
-        <div class="p-6 text-gray-900">
-            <div class="mb-4 text-sm text-gray-600">
+    <div class="app-surface overflow-hidden">
+        <div class="p-4 text-c-text sm:p-6">
+            <div class="mb-4 text-sm leading-6 text-c-muted">
                 {{ __('Thanks for signing up! Before getting started, could you verify your email address :email by clicking on
                                 the link we just emailed to you? If you didn\'t receive the email, we will gladly send you another.',['email' => Auth::user()->email]) }}
             </div>
 
             @if (session('status') == 'verification-link-sent')
-                <div class="mb-4 text-sm font-medium text-green-600">
+                <div class="mb-4 text-sm font-medium text-c-accent" role="status" aria-live="polite">
                     {{ __('A new verification link has been sent to :email', ['email' => Auth::user()->email]) }}
                 </div>
             @endif
@@ -27,7 +27,7 @@
                     @csrf
 
                     <button
-                        class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                        class="rounded-sm text-sm text-c-muted underline underline-offset-4 hover:text-c-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-c-primary"
                         type="submit">
                         {{ __('Log Out') }}
                     </button>

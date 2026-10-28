@@ -1,38 +1,42 @@
-<nav class="border-b border-gray-100 bg-c-background text-c-text" x-data="{ open: false }">
+<nav class="border-b border-c-line bg-c-surface text-c-text">
     <!-- Navigation Headbar -->
     <div class="mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8">
         <div class="flex h-16 justify-between">
             {{-- Left navigation side --}}
             <div class="flex">
+                <!-- Logo, always leads to the gallery -->
+                <div class="flex shrink-0 items-center">
+                    <a href="{{ route('dashboard') }}" aria-label="{{ config('app.name') }} home">
+                        <x-application-logo class="h-10 w-10" />
+                    </a>
+                </div>
                 @auth
-                    <!-- Logo -->
-                    <div class="flex shrink-0 items-center">
-                        <a href="{{ route('dashboard') }}">
-                            <x-application-logo class="h-14" />
-                        </a>
-                    </div>
-                    {{-- left nav links logged in --}}
-                    <div class="mx-5 flex space-x-8 sm:-my-px">
+                    {{-- left nav links logged in, below lg they live in the hamburger menu --}}
+                    <div class="mx-5 hidden items-center space-x-6 lg:flex">
                         <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                            {{ config('app.name', 'Start') }}
+                            {{ config('app.name') }}
                         </x-nav-link>
                         <x-nav-link :href="route('posts.index')" :active="request()->routeIs('posts.index')">
-                            {{ 'My Images' }}
+                            {{ __('My Images') }}
                         </x-nav-link>
+                        <x-nav-link :href="route('profile.edit')" :active="request()->routeIs('profile.edit')">
+                            {{ __('Profile') }}
+                        </x-nav-link>
+                        @if (Auth::user()->usertype == 'admin')
+                            <x-nav-link :href="route('admin.index')" :active="request()->routeIs('admin.index')">
+                                {{ __('Admin') }}
+                            </x-nav-link>
+                        @endif
                     </div>
                 @else
-                    <!-- Logo -->
-                    <div class="flex shrink-0 items-center">
-                        <a href="{{ route('dashboard') }}">
-                            <x-application-logo class="h-14" />
-                        </a>
-                    </div>
                     {{-- left nav links logged out --}}
-                    <div class="mx-5 flex space-x-8 sm:-my-px">
+                    <div class="mx-3 flex items-center space-x-3 sm:mx-5 sm:space-x-6">
+                        <x-nav-link class="hidden sm:inline-flex" :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+                            {{ config('app.name') }}
+                        </x-nav-link>
                         <x-nav-link :href="route('login')" :active="request()->routeIs('login')">
                             {{ __('Log in') }}
                         </x-nav-link>
-
                         <x-nav-link :href="route('register')" :active="request()->routeIs('register')">
                             {{ __('Register') }}
                         </x-nav-link>
@@ -40,14 +44,46 @@
                 @endauth
             </div>
 
-            <!-- right navigation side: Dropdown -->
+            <details class="relative ms-auto self-center lg:hidden">
+                <summary class="inline-flex h-10 w-10 list-none items-center justify-center rounded-md text-c-text hover:bg-c-surface-raised focus:outline-none focus-visible:ring-2 focus-visible:ring-c-primary"
+                    aria-label="Search gallery" title="Search gallery">
+                    <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                        <circle cx="11" cy="11" r="7" />
+                        <path d="m20 20-4-4" />
+                    </svg>
+                </summary>
+                <form class="absolute end-0 top-full z-30 mt-2 w-[min(80vw,22rem)] rounded-md border border-c-line bg-c-surface-raised p-3 shadow-lg"
+                    action="{{ route('dashboard') }}" method="GET" role="search">
+                    <label class="sr-only" for="mobile-gallery-search">Search gallery</label>
+                    <x-text-input class="h-10 w-full text-sm" id="mobile-gallery-search" name="q" type="search"
+                        :value="request('q')" placeholder="Search gallery" />
+                </form>
+            </details>
+
+            <form class="ms-auto me-4 hidden w-48 self-center lg:block lg:w-64" action="{{ route('dashboard') }}" method="GET" role="search">
+                <label class="sr-only" for="gallery-search">Search gallery</label>
+                <div class="relative">
+                    <svg class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-c-quiet"
+                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                        <circle cx="11" cy="11" r="7" />
+                        <path d="m20 20-4-4" />
+                    </svg>
+                    <x-text-input class="h-10 ps-9 pe-3 text-sm" id="gallery-search" name="q" type="search"
+                        :value="request('q')" placeholder="Search gallery" />
+                </div>
+            </form>
+
+            <!-- right navigation side -->
             @auth
                 <!-- Hamburger for small screen -->
-                <div class="ms-6 flex items-center sm:hidden">
-                    <x-dropdown align="right" width="48" contentClasses="py-1 bg-c-primary">
+                <div class="ms-3 flex items-center gap-2 lg:hidden">
+                    @unless (request()->routeIs('posts.create', 'posts.edit'))
+                        <x-create-post-button />
+                    @endunless
+                    <x-dropdown align="right" width="48" contentClasses="py-1 bg-c-surface-raised">
                         <x-slot name="trigger">
-                            <button
-                                class="inline-flex items-center justify-center rounded-md p-2 text-c-text transition duration-150 ease-in-out hover:bg-c-background hover:text-gray-500 focus:bg-gray-100 focus:text-gray-500 focus:outline-none">
+                            <button type="button" aria-label="Open menu" :aria-expanded="open.toString()"
+                                class="inline-flex h-10 w-10 items-center justify-center rounded-md text-c-text transition-colors hover:bg-c-surface-raised focus:outline-none focus-visible:ring-2 focus-visible:ring-c-primary">
                                 <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
                                     <path class="inline-flex" :class="{ 'hidden': open, 'inline-flex': !open }"
                                         stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -60,75 +96,61 @@
                         </x-slot>
 
                         <x-slot name="content">
-                            <div class="space-y-1">
-                                <div class="block w-full border-b-2 py-2 pe-4 ps-3 text-start text-base font-medium">
-                                    <div class="text-base font-medium text-c-background">
-                                        {{ Str::limit(Auth::user()->name, config('app.truncate_name'), '...') }}
-                                    </div>
-                                </div>
-                                @if (Auth::user()->usertype == 'admin')
-                                    <x-responsive-nav-link :href="route('admin.index')">
-                                        {{ __('Admin Dashboard') }}
-                                    </x-responsive-nav-link>
-                                @endif
-                                <x-responsive-nav-link :href="route('profile.edit')">
-                                    {{ __('Profile') }}
+                            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+                                {{ config('app.name') }}
+                            </x-responsive-nav-link>
+                            <x-responsive-nav-link :href="route('posts.index')" :active="request()->routeIs('posts.index')">
+                                {{ __('My Images') }}
+                            </x-responsive-nav-link>
+                            <x-responsive-nav-link :href="route('profile.edit')" :active="request()->routeIs('profile.edit')">
+                                {{ __('Profile') }}
+                            </x-responsive-nav-link>
+                            @if (Auth::user()->usertype == 'admin')
+                                <x-responsive-nav-link :href="route('admin.index')" :active="request()->routeIs('admin.index')">
+                                    {{ __('Admin') }}
                                 </x-responsive-nav-link>
+                            @endif
 
-                                <!-- Authentication -->
-                                <form method="POST" action="{{ route('logout') }}">
-                                    @csrf
-                                    <x-responsive-nav-link :href="route('logout')"
-                                        onclick="event.preventDefault();
-                                                        this.closest('form').submit();">
-                                        {{ __('Log Out') }}
-                                    </x-responsive-nav-link>
-                                </form>
-                            </div>
+                            <!-- Authentication -->
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <x-responsive-nav-link :href="route('logout')"
+                                    onclick="event.preventDefault();
+                                                    this.closest('form').submit();">
+                                    {{ __('Log Out') }}
+                                </x-responsive-nav-link>
+                            </form>
+
+                            <p class="mt-1 truncate border-t border-c-line px-3 pb-1 pt-2 text-xs text-c-quiet"
+                                title="{{ Auth::user()->name }}">
+                                {{ Str::limit(Auth::user()->name, config('app.truncate_name'), '...') }}
+                            </p>
                         </x-slot>
                     </x-dropdown>
                 </div>
 
-                {{-- user menu for desktop --}}
-                <div class="hidden sm:ms-6 sm:flex sm:items-center">
-                    <x-dropdown align="right" width="48" contentClasses="py-1 bg-c-primary">
-                        <x-slot name="trigger">
-                            <button
-                                class="inline-flex items-center rounded-md border border-transparent px-3 py-2 text-sm font-medium leading-4 text-c-text transition duration-150 ease-in-out hover:bg-c-primary/20 focus:outline-none">
-                                <div>
-                                    {{ Str::limit(Auth::user()->name, config('app.truncate_name'), '...') }}
-                                </div>
-
-                                <div class="ms-1">
-                                    <svg class="h-4 w-4 fill-current" xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd"
-                                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                            clip-rule="evenodd" />
-                                    </svg>
-                                </div>
-                            </button>
-                        </x-slot>
-                        <x-slot name="content">
-                            @if (Auth::user()->usertype == 'admin')
-                                <x-dropdown-link :href="route('admin.index')">
-                                    {{ __('Admin Dashboard') }}
-                                </x-dropdown-link>
-                            @endif
-                            <x-dropdown-link :href="route('profile.edit')">
-                                {{ __('Profile') }}
-                            </x-dropdown-link>
-                            <!-- Authentication -->
-                            <form method="POST" action="{{ route('logout') }}">
-                                @csrf
-                                <x-dropdown-link :href="route('logout')"
-                                    onclick="event.preventDefault();
-                                                    this.closest('form').submit();">
-                                    {{ __('Log Out') }}
-                                </x-dropdown-link>
-                            </form>
-                        </x-slot>
-                    </x-dropdown>
+                {{-- user actions for desktop --}}
+                <div class="hidden items-center gap-4 lg:flex">
+                    @unless (request()->routeIs('posts.create', 'posts.edit'))
+                        <x-create-post-button />
+                    @endunless
+                    <span class="hidden max-w-40 truncate text-xs text-c-quiet xl:inline" title="{{ Auth::user()->name }}">
+                        {{ Str::limit(Auth::user()->name, config('app.truncate_name'), '...') }}
+                    </span>
+                    <form class="flex self-stretch" method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <x-nav-link :href="route('logout')"
+                            onclick="event.preventDefault();
+                                            this.closest('form').submit();">
+                            {{ __('Log Out') }}
+                        </x-nav-link>
+                    </form>
+                </div>
+            @else
+                <div class="ms-3 flex items-center">
+                    @unless (request()->routeIs('login', 'register', 'password.*'))
+                        <x-create-post-button />
+                    @endunless
                 </div>
             @endauth
         </div>

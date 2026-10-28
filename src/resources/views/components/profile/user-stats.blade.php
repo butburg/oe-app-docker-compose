@@ -1,7 +1,7 @@
-<div class="text-c-text">
+<div class="flex gap-4 text-c-muted">
     <div class="flex items-center gap-2">
 
-        <span class="text-lg font-bold">{{ $user->posts_count }}</span>
+        <span class="text-sm font-semibold text-c-text">{{ $user->posts_count }}</span>
         <svg class="" xmlns="http://www.w3.org/2000/svg" width="16"
             height="16" fill="currentColor" viewBox="0 0 16 16">
             <path d="M4.502 9a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3" />
@@ -10,7 +10,7 @@
         </svg>
     </div>
     <div class="flex items-center gap-2">
-        <span class="text-lg font-bold">{{ $user->comments_count }} </span>
+        <span class="text-sm font-semibold text-c-text">{{ $user->comments_count }} </span>
         <svg class="" xmlns="http://www.w3.org/2000/svg" width="16"
             height="16" fill="currentColor" viewBox="0 0 16 16">
             <path

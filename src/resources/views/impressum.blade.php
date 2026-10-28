@@ -5,25 +5,25 @@
 
     <div class="py-6">
         <div class="mx-auto max-w-7xl py-2 sm:px-6 lg:px-8">
-            <div class="overflow-hidden bg-white/80 p-6 shadow-xl sm:rounded-lg">
+            <div class="app-surface overflow-hidden p-4 sm:p-6">
                 <x-header2>Impressum</x-header2>
                 <div class="my-2">
-                    <img src="{{ asset('storage/files/images/impressum-contact.png') }}" alt=" Information" width="130">
+                    <img src="{{ asset('images/impressum-contact.png') }}" alt=" Information" width="130">
                 </div>
 
                 <x-header2>Kontakt</x-header2>
                 <div class="my-2">
-                    <img src="{{ asset('storage/files/images/impressum-mail.png') }}" alt="Mail Contact Information"
+                    <img src="{{ asset('images/impressum-mail.png') }}" alt="Mail Contact Information"
                         width="155">
                 </div>
 
-                <p>Quelle: <a class="font-medium text-blue-600 underline hover:no-underline dark:text-blue-500"
+                <p>Quelle: <a class="font-medium text-c-primary underline underline-offset-4 hover:text-c-text"
                         href="https://www.e-recht24.de">e-recht24.de</a></p>
             </div>
         </div>
 
         <div class="mx-auto max-w-7xl py-2 sm:px-6 lg:px-8">
-            <div class="overflow-hidden bg-white/80 p-6 shadow-xl sm:rounded-lg">
+            <div class="app-surface overflow-hidden p-4 sm:p-6">
                 <p><a class="underline hover:no-underline" href="#privacy-policy">(English version below)</a></p>
                 <x-header2>Datenschutz&shy;erkl&auml;rung</x-header2>
                 <h2 class="my-2 text-xl font-semibold">1. Datenschutz auf einen Blick</h2>
@@ -105,12 +105,12 @@
                 <h3 class="my-2 text-lg font-semibold">Hinweis zur verantwortlichen Stelle</h3>
                 <p>Die verantwortliche Stelle f&uuml;r die Datenverarbeitung auf dieser Website ist:</p>
                 <div class="my-2">
-                    <img src="{{ asset('storage/files/images/impressum-contact.png') }}" alt=" Information"
+                    <img src="{{ asset('images/impressum-contact.png') }}" alt=" Information"
                         width="130">
                 </div>
                 Kontakt:
                 <div class="my-2">
-                    <img src="{{ asset('storage/files/images/impressum-mail.png') }}" alt=" Information" width="155">
+                    <img src="{{ asset('images/impressum-mail.png') }}" alt=" Information" width="155">
                 </div>
                 <p>Verantwortliche Stelle ist die nat&uuml;rliche oder juristische Person, die allein oder gemeinsam
                     mit anderen &uuml;ber die Zwecke und Mittel der Verarbeitung von personenbezogenen Daten
@@ -349,13 +349,13 @@
                         Speicherung widersprechen, sofern Ihre Interessen unser berechtigtes Interesse
                         &uuml;berwiegen.</strong></p>
 
-                <p>Quelle: <a class="font-medium text-blue-600 underline hover:no-underline dark:text-blue-500"
+                <p>Quelle: <a class="font-medium text-c-primary underline underline-offset-4 hover:text-c-text"
                         href="https://www.e-recht24.de">e-recht24.de</a></p>
             </div>
         </div>
 
         <div class="mx-auto max-w-7xl py-2 sm:px-6 lg:px-8">
-            <div class="overflow-hidden bg-white/80 p-6 shadow-xl sm:rounded-lg" id="privacy-policy">
+            <div class="app-surface overflow-hidden p-4 sm:p-6" id="privacy-policy">
                 <x-header2>Privacy policy</x-header2>
                 <p>1. data protection at a glance</p>
                 <p>
@@ -474,12 +474,12 @@
                 <p>
                     The party responsible for data processing on this website is</p>
                 <div class="my-2">
-                    <img src="{{ asset('storage/files/images/impressum-contact.png') }}" alt=" Information"
+                    <img src="{{ asset('images/impressum-contact.png') }}" alt=" Information"
                         width="130">
                 </div>
                 <p>Contact:</p>
                 <div class="my-2">
-                    <img src="{{ asset('storage/files/images/impressum-mail.png') }}" alt=" Information" width="155">
+                    <img src="{{ asset('images/impressum-mail.png') }}" alt=" Information" width="155">
                 </div>
                 <p>The controller is the natural or legal person who alone or jointly with others determines the
                     purposes and means of the processing of personal data (e.g. names, email addresses, etc.).</p>
@@ -805,7 +805,7 @@
                     in the blacklist is not limited in time.</p>
                 <p>You can object to the storage if your interests outweigh
                     our legitimate interest.</p>
-                <p>Source: <a class="font-medium text-blue-600 underline hover:no-underline dark:text-blue-500"
+                <p>Source: <a class="font-medium text-c-primary underline underline-offset-4 hover:text-c-text"
                         href="https://www.e-recht24.de">e-recht24.de</a></p>
             </div>
         </div>

@@ -1,45 +1,35 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex items-center justify-between">
-            <x-header2>Profile</x-header2>
-            {{-- check if there is a notif.success flash session --}}
-            @if (Session::has('notif.success'))
-                <div class="-my-3 rounded-lg bg-blue-300 px-4 py-2">
-                    <span
-                        class="italic text-white">{{ Session::get('notif.success') }}</span>
-                </div>
-            @endif
-            <span></span>
-        </div>
+        <x-header2>Profile settings</x-header2>
     </x-slot>
 
-    <div class="py-6">
-        
-        <div class="mx-auto max-w-7xl space-y-6 sm:px-6 lg:px-8">
+    <div class="py-5 sm:py-8">
+
+        <div class="mx-auto max-w-7xl space-y-4 px-4 sm:space-y-5 sm:px-6 lg:px-8">
             <!-- New Section for Profile Image Update -->
             <div
-                class="bg-c-primary/10 p-4 text-c-text shadow sm:rounded-lg sm:p-8">
+                class="app-surface p-4 sm:p-6">
                 <div class="max-w-xl">
                     @include('profile.partials.update-profile-image-form')
                 </div>
             </div>
 
             <div
-            class="bg-c-primary/40 p-4 text-c-text shadow sm:rounded-lg sm:p-8">
+            class="app-surface-accent p-4 sm:p-6">
             <div class="max-w-xl">
                 @include('profile.partials.update-description-form')
             </div>
         </div>
 
             <div
-                class="bg-c-primary/10 p-4 text-c-text shadow sm:rounded-lg sm:p-8">
+                class="app-surface p-4 sm:p-6">
                 <div class="max-w-xl">
                     @include('profile.partials.update-password-form')
                 </div>
             </div>
 
             <div
-                class="bg-c-primary/40 p-4 text-c-text shadow sm:rounded-lg sm:p-8">
+                class="app-surface-accent p-4 sm:p-6">
                 <div class="flex flex-col lg:flex-row lg:items-start lg:gap-1">
                     <div class="max-w-xl">
                         @include('profile.partials.update-profile-information-form')
@@ -47,7 +37,7 @@
 
                     {{-- info box --}}
                     <div class="mt-4 max-w-xl flex-shrink-0 lg:ml-4">
-                        <div class="flex rounded-lg bg-red-50 p-4 text-sm text-red-800 dark:bg-gray-800 dark:text-red-400"
+                        <div class="flex rounded-md border border-rose-400/30 bg-rose-500/10 p-4 text-sm text-rose-100"
                             role="alert">
                             <svg class="me-3 mt-[2px] inline h-4 w-4 flex-shrink-0"
                                 aria-hidden="true"
@@ -60,7 +50,7 @@
                             <div>
                                 <span class="font-medium">Keep in mind if you
                                     want to change your username:</span>
-                                <ul class="mt-1.5 list-inside list-disc">
+                                <ul class="mt-2 list-outside list-disc space-y-1 pl-5 leading-6">
                                     <li>A username is how others recognize you.
                                     </li>
                                     <li>You can only change your username once a
@@ -77,7 +67,7 @@
             </div>
 
             <div
-                class="bg-c-primary/10 p-4 text-c-text shadow sm:rounded-lg sm:p-8">
+                class="app-surface p-4 sm:p-6">
                 <div class="max-w-xl">
                     @include('profile.partials.delete-user-form')
                 </div>

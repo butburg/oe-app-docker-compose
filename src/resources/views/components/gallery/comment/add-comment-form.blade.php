@@ -1,6 +1,6 @@
 {{-- Add Comment Form --}}
 @if (Auth::check())
-    <div class="flex items-center space-x-1 mt-3" @click="showComments = true">
+    <div class="mt-3 flex items-center gap-2" @click="showComments = true">
         <x-gallery.form.form action="{{ route('comments.store') }}" method="POST" :formId="'commentAdd_' . $post->id">
             <input name="post_id" type="hidden" value="{{ $post->id }}">
             <x-gallery.form.textarea name="comment" placeholder="Add comment..."></x-gallery.form.textarea>
@@ -10,7 +10,7 @@
         </x-gallery.form.form>
 
         <x-text-button
-            class="rounded-lg border-2 border-c-accent/80 active:border-c-primary  bg-c-accent/80 px-3 py-1 text-c-background hover:bg-c-accent"
+            class="app-button-primary h-10 w-10 shrink-0 px-0"
             :formId="'commentAdd_' . $post->id">
             <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path

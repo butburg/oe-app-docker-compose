@@ -68,15 +68,15 @@
             <!-- Check for privacy policy -->
             <div class="mt-4 flex items-center">
                 <input
-                    class="h-4 w-4 rounded border-gray-300 bg-gray-100 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                    class="h-4 w-4 rounded border-c-line bg-c-surface-raised accent-c-primary focus:ring-2 focus:ring-c-primary"
                     id="privacy_policy" name="privacy_policy" type="checkbox" value="1">
-                <label class="ms-2 text-sm font-medium text-gray-900" for="privacy_policy">I agree
+                <label class="ms-2 text-sm font-medium text-c-text" for="privacy_policy">I agree
                     with the <a class="text-c-accent hover:underline" href="{{ route('impressum') }}">privacy
                         policy</a>.</label>
             </div>
-            
+
             <x-input-error class="mt-2" :messages="$errors->get('privacy_policy')" />
-            
+
             <div class="mt-4 flex items-center justify-end">
                 <x-primary-button class="ms-4">
                     {{ __('Register') }}

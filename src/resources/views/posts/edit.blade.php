@@ -1,15 +1,12 @@
 <x-app-layout>
-    {{-- Header section with 'Edit' or 'Create' depending on the existence of $post --}}
-    <x-slot name="header">
-        <x-header2>{{ isset($post) ? 'Edit' : 'Create' }}</x-header2>
-    </x-slot>
-
     <div class="py-6">
         <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
-            <div class="overflow-hidden bg-c-primary/20 shadow-sm sm:rounded-lg">
-                <div class="p-6 text-c-text">
+            <div class="app-surface overflow-hidden">
+                <div class="p-4 text-c-text sm:p-6">
+                    {{-- 'Edit' or 'Create' depending on the existence of $post --}}
+                    <x-header2>{{ isset($post) ? 'Edit' : 'Create' }}</x-header2>
                     {{-- Form for post creation/updation with file upload --}}
-                    <form class="mt-6 space-y-6" method="post"
+                    <form class="mt-4 space-y-5 sm:mt-6 sm:space-y-6" method="post"
                         action="{{ isset($post) ? route('posts.update', $post->id) : route('posts.store') }}"
                         enctype="multipart/form-data">
                         @csrf {{-- CSRF protection --}}
@@ -40,7 +37,7 @@
                                 <span class="sr-only">Choose image to
                                     upload</span>
                                 <input
-                                    class="block w-full text-sm text-slate-100 file:mr-4 file:rounded-full file:border-0 file:bg-violet-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-violet-700 hover:file:bg-violet-100"
+                                    class="block w-full min-w-0 text-sm text-c-muted file:mr-4 file:rounded-md file:border-0 file:bg-c-surface-raised file:px-3 file:py-2 file:text-sm file:font-medium file:text-c-text hover:file:bg-c-line"
                                     id="image_file" name="image_file" type="file"
                                     accept="image/jpeg,image/png,image/gif,image/svg+xml,image/webp" />
                             </label>
@@ -78,20 +75,18 @@
                         </div>
 
                         {{-- Title Info Box --}}
-                        <div class="text-md mb-4 max-w-screen-md rounded-lg bg-c-background p-4 text-blue-300"
+                        <div class="mb-4 max-w-screen-md rounded-md border border-c-line bg-c-surface-raised p-3 text-sm text-c-muted sm:p-4"
                             role="alert">
-                            <div class="flex">
-                                <svg class="me-3 mt-[2px] inline h-4 w-4 flex-shrink-0" aria-hidden="true"
+                            <div class="flex min-w-0 items-start gap-3">
+                                <svg class="mt-1 h-4 w-4 shrink-0 text-c-accent" aria-hidden="true"
                                     xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
                                     <path
                                         d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
                                 </svg>
                                 <span class="sr-only">Info</span>
-                                <div>
-                                    <span class="font-medium">Please
-                                        Note:</span>
-                                    <ul class="mt-1.5 list-inside list-disc">
-                                        <ul class="list-inside list-disc">
+                                <div class="min-w-0">
+                                    <span class="font-semibold">Please Note:</span>
+                                    <ul class="mt-2 list-outside list-disc space-y-1 pl-5 leading-6">
                                             <li>Your <span class="font-medium">title</span>
                                                 must be at least <strong>3
                                                     characters long</strong>.
@@ -118,8 +113,6 @@
                                                 private from the general public,
                                                 while still sharing it with site
                                                 members.</li>
-                                        </ul>
-
                                     </ul>
                                 </div>
                             </div>

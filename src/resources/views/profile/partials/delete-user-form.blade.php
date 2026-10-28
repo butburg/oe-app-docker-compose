@@ -1,10 +1,10 @@
 <section class="space-y-6">
     <header>
-        <h2 class="text-content-text text-lg font-medium">
+        <h2 class="text-lg font-semibold text-c-text">
             {{ __('Delete Account') }}
         </h2>
 
-        <p class="mt-1 text-sm text-gray-300">
+        <p class="mt-1 text-sm leading-6 text-c-muted">
             {{ __('Once your account is deleted, all of its resources and data will be permanently deleted. Before
             deleting your account, please download any data or information that you wish to retain.') }}
         </p>
@@ -18,11 +18,11 @@
             @csrf
             @method('delete')
 
-            <h2 class="text-content-text text-lg font-medium">
+            <h2 class="text-lg font-semibold text-c-text">
                 {{ __('Are you sure you want to delete your account?') }}
             </h2>
 
-            <p class="mt-1 text-sm text-gray-300">
+            <p class="mt-1 text-sm leading-6 text-c-muted">
                 {{ __('Once your account is deleted, all of its resources and data will be permanently deleted. Please
                 enter your password to confirm you would like to permanently delete your account.') }}
             </p>
@@ -48,7 +48,7 @@
                         'label' => 'Delete all my Comments'
                     ])
                 </div>
-            
+
                 <div class="mt-4">
                     @include('components.checkbox', [
                         'id' => 'delete_posts',

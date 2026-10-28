@@ -20,13 +20,13 @@
     });
 </script>
 
-<div class="mx-auto py-6">
+<div class="mx-auto py-4 sm:py-5">
     <div class="{{-- grid grid-cols-1 lg:grid-cols-2 gap-4 --}}">
         @foreach ($posts as $post)
             <div id="post-{{ $post->id }}" x-data x-init="$store.comments.init({{ $post->id }});
             window.addEventListener('resize', () => $store.comments.updateOnResize({{ $post->id }}))">
 
-                <main class="md:x-8 mx-1 mb-4 rounded-lg bg-c-primary/10 px-2 py-0 sm:mb-6 sm:px-6 md:mb-10">
+                <main class="app-surface mx-1 mb-4 px-2 py-2 sm:mb-6 sm:px-6 sm:py-3">
                     <div class="mx-auto grid grid-cols-1 md:grid-cols-3 md:gap-x-10">
                         <!-- Image -->
                         <div class="col-span-3 flex items-center justify-center md:col-span-2 relative">
@@ -43,12 +43,12 @@
                         <div class="relative col-span-3 flex flex-col py-3 md:col-span-1">
                             <!-- Title and Author -->
                             <div class="flex flex-col rounded-lg bg-none">
-                                <h1 class="text-content-bg break-words text-lg font-semibold md:text-2xl">
+                                <h1 class="break-words text-lg font-semibold leading-snug text-c-text md:text-xl">
                                     {{ $post->title }}
                                 </h1>
 
                                 @if ($post->user)
-                                    <p class="text-nav-bg text-sm font-medium" title="{{ $post->user->name }}">
+                                    <p class="mt-1 text-sm font-medium text-c-muted" title="{{ $post->user->name }}">
                                         <a class="cursor-pointer hover:underline"
                                             href="{{ route('profile.show', $post->user) }}">
                                             {{ Str::limit($post->user->name, config('app.truncate_name'), '...') }}
@@ -59,65 +59,67 @@
                                         @endphp
 
                                         @if ($formerName)
-                                            <span class="text-xs text-gray-500">(Formerly:
+                                            <span class="text-xs text-c-quiet">(Formerly:
                                                 {{ Str::limit($formerName, config('app.truncate_name'), '...') }})</span>
                                         @endif
                                     </p>
                                 @else
                                     {{-- no user found --}}
-                                    <p class="text-nav-bg text-sm font-medium text-gray-500"
+                                    <p class="mt-1 text-sm font-medium text-c-muted"
                                         title="{{ $post->username }}">
                                         {{ Str::limit($post->username, config('app.truncate_name'), '...') }}
                                     </p>
                                 @endif
 
-                                <p class="mt-2 text-xs font-medium leading-4">
+                                <p class="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs font-medium leading-5 text-c-muted">
                                     @php
                                         $publishedAt = $post->published_at ?? $post->created_at;
                                     @endphp
                                     <span class="relative inline-flex" x-data="{ open: false }"
                                         @keydown.escape.window="open = false">
                                         <button type="button"
-                                            class="cursor-pointer opacity-60 underline-offset-2 hover:underline"
+                                            class="cursor-pointer rounded-sm underline-offset-2 hover:text-c-primary hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-c-primary"
                                             @click="open = !open" :aria-expanded="open.toString()"
                                             aria-label="Show publish date">
                                             {{ $publishedAt->diffForHumans() }}
                                         </button>
                                         <span x-show="open" x-cloak @click.outside="open = false"
                                             x-transition.opacity.duration.120ms
-                                            class="absolute left-0 top-full z-20 mt-1 w-max max-w-[80vw] rounded-md bg-c-primary px-2 py-1 text-[11px] text-c-primary-content shadow-lg">
-                                            {{ $publishedAt->format('M d, Y') }}
+                                            class="absolute left-0 top-full z-20 mt-1 w-max max-w-[80vw] rounded-md bg-c-primary px-2 py-1 text-[11px] font-semibold text-c-background shadow-lg">
+                                            {{ $publishedAt->format('d.m.Y') }}
                                         </span>
                                     </span>
                                     @if ($post->comments()->count() > 0)
                                         |
-                                        <span class="cursor-pointer opacity-60 md:cursor-auto"
+                                        <button type="button" class="cursor-pointer rounded-sm text-c-muted hover:text-c-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-c-primary md:cursor-auto"
                                             :class="{ 'underline': !$store.comments.visibility[{{ $post->id }}] }"
-                                            @click="$store.comments.toggle({{ $post->id }})">
+                                            @click="$store.comments.toggle({{ $post->id }})"
+                                            :aria-expanded="$store.comments.visibility[{{ $post->id }}] ? 'true' : 'false'"
+                                            aria-controls="comments-{{ $post->id }}">
                                             {{ $post->comments()->count() }}
                                             comment{{ $post->comments()->count() > 1 ? 's' : '' }}
-                                            ♥</span>
+                                            ♥</button>
                                     @endif
-                                    | <span class="opacity-60">@include('components.gallery.share', ['post' => $post])</span>
+                                    <span>@include('components.gallery.share', ['post' => $post])</span>
                                     @if ($post->is_sensitive)
-                                        | <span class="inline-flex items-center gap-1 opacity-60"
+                                        <span class="inline-flex items-center gap-1 text-c-muted"
                                             title="Protected image">
-                                            <x-icons.lock class="h-3.5 w-3.5 mx-1 translate-y-[0.2rem]" aria-hidden="true" />
+                                            <x-icons.lock class="mx-1 h-3.5 w-3.5" aria-hidden="true" />
                                         </span>
                                     @endif
                                 </p>
                             </div>
                             <!-- Add Comment Form (always visible) -->
                             <x-gallery.comment.add-comment-form :post="$post" />
-                            <div class="text-title-bg mt-4 max-h-64 space-y-4 overflow-auto px-3 text-sm leading-6 sm:px-0 md:max-h-[420px] md:flex-grow"
-                                x-init="scrollToBottom" x-show="$store.comments.visibility[{{ $post->id }}]">
+                            <div id="comments-{{ $post->id }}" class="mt-4 max-h-64 space-y-4 overflow-auto px-3 text-sm leading-6 text-c-text sm:px-0 md:max-h-[420px] md:flex-grow"
+                                x-show="$store.comments.visibility[{{ $post->id }}]">
                                 <!-- Comments Section (conditionally visible) -->
                                 @auth
                                     <x-gallery.comment.show-comments :post="$post" />
                                 @else
-                                    <div class="text-comment-text rounded-lg bg-c-primary/40 p-3">
+                                    <div class="rounded-md border border-c-line bg-c-surface-raised p-3 text-c-muted">
                                         <p>
-                                            <a class="hover:text-nav-text text-primary rounded-md text-sm underline focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                                            <a class="rounded-sm text-sm text-c-primary underline hover:text-c-text focus:outline-none focus-visible:ring-2 focus-visible:ring-c-primary"
                                                 href="{{ route('login') }}">
                                                 Log in</a> to view and post comments.
                                         </p>

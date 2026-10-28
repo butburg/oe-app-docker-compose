@@ -1,23 +1,20 @@
 <x-app-layout>
     <x-slot name="header">
-        <!-- Flex container with space between elements -->
-        <div class="flex items-center justify-between">
-            <x-header2>Weedy Gallery</x-header2>
-            {{-- check if there is a notif.success flash session --}}
-            @if (Session::has('notif.success'))
-                <div class="-my-3 rounded-lg bg-blue-300 px-4 py-2">
-                    {{-- if it's there then print the notification --}}
-                    <span
-                        class="italic text-white">{{ Session::get('notif.success') }}</span>
-                </div>
-            @endif
-            <!-- Link to add a new post -->
-            <x-create-post-button />
-        </div>
+        <x-header2>{{ config('app.name') }}</x-header2>
     </x-slot>
+
     <div class="bg-c-background text-c-text">
         <div class="mx-auto max-w-screen-2xl sm:px-6 lg:px-8">
             <x-gallery.gallery :posts="$posts" />
+            @if ($posts->isEmpty())
+                <div class="app-surface mt-4 p-5 text-sm text-c-muted" role="status">
+                    @if ($search !== '')
+                        No gallery posts match “{{ $search }}”.
+                    @else
+                        No public posts have been shared yet.
+                    @endif
+                </div>
+            @endif
             <!-- Pagination links -->
             <div class="mt-4">
                 {{ $posts->links() }}

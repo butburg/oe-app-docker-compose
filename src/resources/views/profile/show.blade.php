@@ -3,34 +3,36 @@
         <x-header2>Profile from {{ $user->name }}</x-header2>
     </x-slot>
 
-    <div class="py-12">
+    <div class="py-8 sm:py-10">
         <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
             <!-- User Info Section -->
-            <div class="mb-6 overflow-hidden bg-c-primary/10 p-6 shadow-sm sm:rounded-lg">
-                <div class="flex flex-wrap justify-center gap-6">
+            <div class="app-surface mb-4 p-4 sm:p-6">
+                <div class="flex flex-col items-center gap-4 sm:flex-row sm:gap-6">
 
                     <!-- Profile Image -->
                     @php
-                        $isOnline = $user->session ? 'border-4 border-green-500' : '';
+                        $isOnline = $user->session ? 'border-2 border-c-accent' : 'border-2 border-c-line';
                     @endphp
                     @include('components.image_or_placeholder', [
                         'image' => $user->image,
                         'size_type' => 'l',
                         'alt_title' => 'Your Profile Image',
-                        'style' => "{$isOnline} h-80 w-80 my-2 rounded-full box-border object-cover bg-gray-200",
-                        'placeholder' => 'storage/files/images/starfish.svg',
+                        'style' => "{$isOnline} my-2 h-80 w-80 shrink-0 rounded-full object-cover bg-c-surface-raised",
+                        'placeholder' => 'images/starfish.svg',
                     ])
 
-                    <div class="max-w-80 flex flex-col justify-center gap-2">
+                    <div class="min-w-0 max-w-2xl text-center sm:text-left">
                         <!-- User Name and Former Name Below Image and Stats -->
                         @include('components.profile.user-name', [
                             'user' => $user,
                         ])
 
                         <!-- User Stats -->
-                        @include('components.profile.user-stats', [
-                            'user' => $user,
-                        ])
+                        <div class="flex justify-center sm:justify-start">
+                            @include('components.profile.user-stats', [
+                                'user' => $user,
+                            ])
+                        </div>
 
                         @include('profile.partials.display-description', ['user' => $user])
 
@@ -48,7 +50,7 @@
                                 : $userUpdatedAt;
                         @endphp
 
-                        <div class="text-sm text-gray-400">
+                        <div class="mt-3 text-sm text-c-muted">
                             <p>
                                 <strong>Seen:</strong>
                                 @if ($user->session)
@@ -71,23 +73,23 @@
             </div>
 
             <!-- User Posts Section -->
-            <div class="posts-container overflow-hidden bg-c-primary/10 p-6 text-c-text shadow-sm sm:rounded-lg">
-                <h3 class="mb-4 truncate text-lg font-bold">Posts released by
+            <div class="posts-container app-surface overflow-hidden p-4 text-c-text sm:p-6">
+                <h3 class="mb-4 break-words text-lg font-semibold leading-snug">Posts released by
                     {{ $user->name }}
                 </h3>
-                <ul class="flex flex-wrap gap-x-8">
+                <ul class="flex flex-wrap gap-4">
                     @forelse ($posts as $post)
                         @php
                             $page = app('App\Http\Controllers\PostController')->getPageForPost($post);
                         @endphp
-                        <li class="mb-6  bg-c-primary/40 p-1 rounded-lg w-72">
-                            <a class="text-c-primary"
+                        <li class="app-surface-raised w-full max-w-72 p-2 sm:w-72">
+                            <a class="block h-full min-w-0 text-c-text transition-colors hover:text-c-primary"
                                 href="{{ route('dashboard') }}?page={{ $page }}#post-{{ $post->id }}">
-                                <div class="flex gap-4 items-center h-full">
+                                <div class="flex h-full items-center gap-3">
                                     <!-- Post Image -->
-                                    <x-image_or_placeholder style="h-16 w-16 rounded-md object-cover" :image="$post->image"
+                                    <x-image_or_placeholder style="h-16 w-16 shrink-0 rounded-md bg-c-background object-contain" :image="$post->image"
                                         :alt_title="$post->title" size_type="s" />
-                                    <div>
+                                    <div class="min-w-0 flex-1 break-words">
                                         <!-- Construct the URL with the page query parameter and the post anchor -->
                                         {{ $post->title }}
 
