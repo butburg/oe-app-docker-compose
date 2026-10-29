@@ -3,9 +3,12 @@
 namespace App\Providers;
 
 use App\Mail\MailAssets;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
 use Illuminate\Mail\Events\MessageSending;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Database\Eloquent\Model;
 
@@ -37,5 +40,9 @@ class AppServiceProvider extends ServiceProvider
 
         // the mail logo is attached to the mail, not loaded from the server (FEAT-016)
         Event::listen(MessageSending::class, [MailAssets::class, 'embedLogo']);
+
+        // Named, so it has its own counter: a plain throttle:6,1 shares one counter per IP
+        // with all other throttled routes, and the submit would use up the resend limit
+        RateLimiter::for('register', fn (Request $request) => Limit::perMinute(6)->by($request->ip()));
     }
 }

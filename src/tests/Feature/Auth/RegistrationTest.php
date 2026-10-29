@@ -211,6 +211,32 @@ class RegistrationTest extends TestCase
         Mail::assertSent(ConfirmRegistration::class, 4);
     }
 
+    public function test_register_is_throttled_per_ip(): void
+    {
+        for ($i = 0; $i < 6; $i++) {
+            $this->register(['email' => "test{$i}@example.com"])->assertRedirect(route('register.pending'));
+        }
+
+        $this->register(['email' => 'test6@example.com'])->assertStatus(429);
+    }
+
+    public function test_mails_per_address_are_limited_and_keep_the_pending_link(): void
+    {
+        for ($i = 0; $i < PendingRegistration::MAILS_PER_HOUR; $i++) {
+            // A new IP each time, so only the limit per address applies
+            $this->withServerVariables(['REMOTE_ADDR' => "10.0.0.{$i}"])->register();
+        }
+        $link = $this->linkSentTo('test@example.com');
+
+        $this->withServerVariables(['REMOTE_ADDR' => '10.0.1.1'])->register(['name' => 'Attacker'])
+            ->assertSessionHasErrors('email');
+        $this->post(route('register.pending.resend'))->assertSessionHasErrors('email');
+
+        Mail::assertSent(ConfirmRegistration::class, PendingRegistration::MAILS_PER_HOUR);
+        $this->post($link)->assertRedirect(route('dashboard', absolute: false));
+        $this->assertDatabaseHas('users', ['email' => 'test@example.com', 'name' => 'Test User']);
+    }
+
     public function test_second_registration_for_same_email_replaces_the_first(): void
     {
         $this->register();

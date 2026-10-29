@@ -45,6 +45,7 @@ class RegisteredUserController extends Controller
             'password' => ['required', Rules\Password::defaults()], // Removed 'confirmed' rule
             'privacy_policy' => 'accepted',
         ]);
+        PendingRegistration::ensureCanSendTo($request->email);
 
         PendingRegistration::deleteExpired();
         // A new registration for the same email replaces the old one, its link stops working
@@ -85,6 +86,7 @@ class RegisteredUserController extends Controller
             return $this->registerAgain();
         }
 
+        PendingRegistration::ensureCanSendTo($pending->email);
         $pending->sendLink();
 
         return back()->with('status', 'link-sent');
@@ -104,6 +106,7 @@ class RegisteredUserController extends Controller
         $validated = $request->validate([
             'email' => ['required', 'string', 'email', 'max:255'],
         ]);
+        PendingRegistration::ensureCanSendTo($validated['email']);
 
         PendingRegistration::where('email', $validated['email'])->whereKeyNot($pending->id)->delete();
 

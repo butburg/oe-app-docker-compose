@@ -43,6 +43,10 @@ Betroffen ist [routes/auth.php:19](src/routes/auth.php#L19).
 - Früher verhinderte die Unique-Regel auf der E-Mail mehrere Mails an dieselbe Adresse. Jetzt verschickt jeder Submit eine Mail an eine beliebige Adresse (`AccountAlreadyExists` oder `ConfirmRegistration`). Das ist eine Mail-Bombe und schadet der SMTP-Reputation.
 - Nebenbei löscht jeder Submit die laufende Registrierung des Opfers.
 - **Fix:** `->middleware('throttle:6,1')`, besser ein RateLimiter pro E-Mail-Adresse.
+- ✅ **Erledigt:**
+  - Pro Adresse gehen höchstens 7 Mails pro Stunde raus (`PendingRegistration::MAILS_PER_HOUR`). Das gilt für Registrieren, Resend und E-Mail-Ändern zusammen, denn auch Resend und E-Mail-Ändern ließen vorher etwa 180 Mails pro Stunde an eine fremde Adresse zu.
+  - Das Limit wird geprüft, bevor sich etwas ändert. Ein geblockter Submit löscht die laufende Registrierung des Opfers also nicht.
+  - `POST /register` hat zusätzlich einen benannten Limiter `register` mit 6 pro Minute pro IP. Ein schlichtes `throttle:6,1` hätte sich den Zähler mit Resend geteilt.
 
 ---
 
