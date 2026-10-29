@@ -6,6 +6,7 @@ use Illuminate\View\View;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use App\Models\User;
@@ -14,6 +15,7 @@ use App\Http\Requests\ProfileUpdateRequest;
 use App\Enums\ImageSizeType;
 use App\Actions\LastNameChange;
 use App\Actions\CreateImageVariants;
+use App\Actions\DeleteUser;
 
 
 class ProfileController extends Controller
@@ -141,7 +143,7 @@ class ProfileController extends Controller
     /**
      * Delete the user's account.
      */
-    public function destroy(Request $request): RedirectResponse
+    public function destroy(Request $request, DeleteUser $deleteUser): RedirectResponse
     {
         $request->validateWithBag('userDeletion', [
             'password' => ['required', 'current_password'],
@@ -150,58 +152,16 @@ class ProfileController extends Controller
         ]);
 
         $user = $request->user();
-        \DB::beginTransaction();
         try {
-            if ($user->image) {
-                $image = $user->image;
-
-                // Delete the image variants from storage
-                foreach ($image->variants as $variant) {
-                    Storage::disk('public')->delete($variant->path);
-                }
-
-                // Delete the image record (this will cascade and delete associated variants)
-                $image->delete();
-            }
-
-            // Handle deletion options
-            if ($request->boolean('delete_comments')) {
-                // Delete comments associated with the user
-                $user->comments()->delete();
-            }
-
-            if ($request->boolean('delete_posts')) {
-                // Delete posts associated with the user and their images
-                foreach ($user->posts as $post) {
-                    // Delete the post images
-                    if ($post->image) {
-                        // Delete the image variants from storage
-                        foreach ($post->image->variants as $variant) {
-                            Storage::disk('public')->delete($variant->path);
-                        }
-
-                        // Delete the image record
-                        $post->image->delete();
-                    }
-
-                    // Delete the post itself
-                    $post->delete();
-                }
-            }
-
+            // Log out first: logout() saves a new remember token, which would re-insert a deleted user
             Auth::logout();
 
-            $user->delete();
-
+            $deleteUser->handle($user, $request->boolean('delete_comments'), $request->boolean('delete_posts'));
 
             $request->session()->invalidate();
             $request->session()->regenerateToken();
-            \DB::commit();
             return Redirect::to('/');
         } catch (\Exception $e) {
-            // Rollback the transaction in case of an error
-            \DB::rollBack();
-
             // Log the error
             Log::error('User deletion failed: ' . $e->getMessage());
 

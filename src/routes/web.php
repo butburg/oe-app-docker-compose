@@ -19,6 +19,7 @@ Route::middleware('auth', 'verified')->group(function () {
     // Admin
     Route::middleware(Admin::class)->group(function () {
         Route::get('/admin', [AdminController::class, 'dashboard'])->name('admin.index');
+        Route::delete('/admin/users/{user}', [AdminController::class, 'destroyUser'])->name('admin.users.destroy');
         Route::get('/admin/posts', [PostController::class, 'all'])->name('posts.index');
         Route::get('/posts/{post}/make-draft', [PostController::class, 'makedraft'])->name('posts.make-draft');
     });
