@@ -1,7 +1,7 @@
 ---
 id: FEAT-010
 title: Unverified users see only the guest view, with a hint to verify
-status: review # backlog | todo | in-progress | review | done
+status: done # backlog | todo | in-progress | review | done
 priority: high # low | medium | high
 category: security # feature | enhancement | bugfix | ui | security
 assignee: unassigned
@@ -34,13 +34,13 @@ Since FEAT-013 this is rare, which is why the "Verify your email" hint is hard t
 - To see it locally: use the seeded unverified account `user-unverified@user.com` ("Developer Login (Unverified)" on the login page).
 
 ## Acceptance Criteria
-- [ ] Gallery: unverified users get the same post list as guests (no `is_sensitive` posts), also with search.
-- [ ] Gallery: unverified users do not see comments; instead of "Log in to view and post comments" they see "Verify your email to view and post comments" with a link to `verification.notice`.
-- [ ] The comment form is not shown to unverified users.
-- [ ] Navigation: for unverified users, My Images / Profile are replaced or accompanied by a visible "Verify email" hint (decide during implementation; links already redirect to the verify page).
-- [ ] Any other place that checks only `auth` for showing protected content is found and fixed (grep for `@auth`, `Auth::check()`, `auth()->check()` in views and controllers).
-- [ ] Verified users and admins see everything as before.
-- [ ] Feature tests: unverified user sees no sensitive posts and no comments; verified user does; guest unchanged. Tests and validation passed (container).
+- [x] Gallery: unverified users get the same post list as guests (no `is_sensitive` posts), also with search.
+- [x] Gallery: unverified users do not see comments; instead of "Log in to view and post comments" they see "Verify your email to view and post comments" with a link to `verification.notice`.
+- [x] The comment form is not shown to unverified users.
+- [x] Navigation: for unverified users, My Images / Profile are replaced or accompanied by a visible "Verify email" hint (decide during implementation; links already redirect to the verify page).
+- [x] Any other place that checks only `auth` for showing protected content is found and fixed (grep for `@auth`, `Auth::check()`, `auth()->check()` in views and controllers).
+- [x] Verified users and admins see everything as before.
+- [x] Feature tests: unverified user sees no sensitive posts and no comments; verified user does; guest unchanged. Tests and validation passed (container).
 
 ## Technical Implementation Notes
 - **Affected files / components**: `app/Http/Controllers/PostController.php` (`gallery`), `resources/views/components/gallery/gallery.blade.php`, `resources/views/components/gallery/comment/add-comment-form.blade.php`, `resources/views/components/gallery/comment/show-comments.blade.php`, `resources/views/layouts/navigation.blade.php`, tests in `tests/Feature`.

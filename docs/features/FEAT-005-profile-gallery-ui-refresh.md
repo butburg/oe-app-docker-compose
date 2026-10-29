@@ -1,12 +1,12 @@
 ---
 id: FEAT-005
 title: Profile and Gallery UI Refresh
-status: in-progress
+status: done
 priority: high
 category: ui
 assignee: unassigned
 created: 2026-10-13
-updated: 2026-10-13
+updated: 2026-10-29
 tags:
   - ui
   - accessibility
@@ -28,12 +28,12 @@ Profile details occupy too much vertical space, post previews are cramped, and s
 - [x] Test at 320px, 375px, 768px, and desktop widths; verify gallery width, image fit, and mobile comment toggling.
 
 ## Acceptance Criteria
-- [ ] Existing gallery images retain their aspect ratio and zoom behavior; no image-cover cropping is introduced for artwork.
-- [ ] Existing comment collapse/expand behavior, routes, pagination, and publish/edit/delete actions remain unchanged.
-- [ ] No follow action, image-overlay tags, or breadcrumb navigation is introduced.
-- [ ] Nanum Myeongjo remains the display typeface; body text, metadata, and controls retain the app's established visual language.
-- [ ] Spacing and hierarchy are improved without replacing the existing page structure or adding a new styling framework.
-- [ ] Validate responsive layout at 320px, 375px, 768px, and desktop; verify focus, zoom/reflow, and long user-generated text.
+- [x] Existing gallery images retain their aspect ratio and zoom behavior; no image-cover cropping is introduced for artwork.
+- [x] Existing comment collapse/expand behavior, routes, pagination, and publish/edit/delete actions remain unchanged.
+- [x] No follow action, image-overlay tags, or breadcrumb navigation is introduced.
+- [x] Nanum Myeongjo remains the display typeface; body text, metadata, and controls retain the app's established visual language.
+- [x] Spacing and hierarchy are improved without replacing the existing page structure or adding a new styling framework.
+- [x] Validate responsive layout at 320px, 375px, 768px, and desktop; verify focus, zoom/reflow, and long user-generated text.
 
 ## Risks and Failure Modes
 - A concept can look polished with sample content but break with long names, empty biographies, high post counts, missing images, or translated labels; include these cases in the review and implementation checks.

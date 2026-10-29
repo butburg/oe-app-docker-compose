@@ -1,7 +1,7 @@
 ---
 id: FEAT-013
 title: Create the account only after the email is confirmed
-status: review # backlog | todo | in-progress | review | done
+status: done # backlog | todo | in-progress | review | done
 priority: high # low | medium | high
 category: feature # feature | enhancement | bugfix | ui | security
 assignee: unassigned
@@ -31,15 +31,15 @@ Today registration creates the user immediately, logs them in and redirects to t
 4. If the user leaves the page without doing anything: exactly one mail was sent; no account exists; the pending registration expires.
 
 ## Acceptance Criteria
-- [ ] `POST /register` creates no row in `users` and does not log in; it stores a pending registration (name, email, hashed password, token hash, expiry) and sends one mail.
-- [ ] The "Check your email" page offers change email, resend and abort, as described above. Resend and change email are throttled.
-- [ ] The link is single-use and expires after 60 minutes (`PendingRegistration::VALID_MINUTES`). Opening it creates the user verified, logs them in, deletes the pending registration and redirects to the gallery.
-- [ ] Expired, used or aborted links show a friendly page with a link back to register.
-- [ ] A second registration for the same email replaces the pending one (the old link becomes invalid). Registering an email that already has an account does not reveal that fact (same "check your email" page; optionally send a "you already have an account" mail instead).
-- [ ] Expired pending registrations are deleted without a cron job or queue worker: every new registration first deletes all expired ones (`PendingRegistration::deleteExpired()`). Until then their links are rejected anyway.
-- [ ] If the user is logged out between submit and click, the link still works (it does not depend on the session).
-- [ ] The `verified` middleware and the existing verify page stay for old unverified accounts (FEAT-010, FEAT-012). An email change in the profile uses a pending email with its own link instead and keeps the user verified.
-- [ ] Feature tests for: submit creates no user; link creates a verified user and logs in; expired/used/aborted link; change email invalidates the old link; resend throttle; no account enumeration. Tests and validation passed (container).
+- [x] `POST /register` creates no row in `users` and does not log in; it stores a pending registration (name, email, hashed password, token hash, expiry) and sends one mail.
+- [x] The "Check your email" page offers change email, resend and abort, as described above. Resend and change email are throttled.
+- [x] The link is single-use and expires after 60 minutes (`PendingRegistration::VALID_MINUTES`). Opening it creates the user verified, logs them in, deletes the pending registration and redirects to the gallery.
+- [x] Expired, used or aborted links show a friendly page with a link back to register.
+- [x] A second registration for the same email replaces the pending one (the old link becomes invalid). Registering an email that already has an account does not reveal that fact (same "check your email" page; optionally send a "you already have an account" mail instead).
+- [x] Expired pending registrations are deleted without a cron job or queue worker: every new registration first deletes all expired ones (`PendingRegistration::deleteExpired()`). Until then their links are rejected anyway.
+- [x] If the user is logged out between submit and click, the link still works (it does not depend on the session).
+- [x] The `verified` middleware and the existing verify page stay for old unverified accounts (FEAT-010, FEAT-012). An email change in the profile uses a pending email with its own link instead and keeps the user verified.
+- [x] Feature tests for: submit creates no user; link creates a verified user and logs in; expired/used/aborted link; change email invalidates the old link; resend throttle; no account enumeration. Tests and validation passed (container).
 
 ## Technical Implementation Notes
 - **Affected files / components**: `app/Http/Controllers/Auth/RegisteredUserController.php`, new `PendingRegistration` model + migration, new mail/notification, `routes/auth.php`, `resources/views/auth/register.blade.php`, new "check your email" view, `tests/Feature/Auth/RegistrationTest.php`.

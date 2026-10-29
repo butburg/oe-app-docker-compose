@@ -1,7 +1,7 @@
 ---
 id: FEAT-012
 title: Cancel registration from the verify page
-status: review # backlog | todo | in-progress | review | done
+status: done # backlog | todo | in-progress | review | done
 priority: medium # low | medium | high
 category: feature # feature | enhancement | bugfix | ui | security
 assignee: unassigned
@@ -23,11 +23,11 @@ An unverified user can delete their account directly from the "verify your email
 Once FEAT-013 is done, new registrations no longer create unverified accounts. This feature is still needed for existing unverified accounts; for them the action reads "Delete account" rather than "Cancel registration". An email change in the profile no longer makes a user unverified (the old email stays until the new one is confirmed, see FEAT-010), so those users never land here.
 
 ## Acceptance Criteria
-- [ ] The verify page shows a "Cancel registration / delete account" action next to "Resend" and "Log out".
-- [ ] It asks for confirmation (password, like the profile delete) before deleting.
-- [ ] Deletion uses `App\Actions\DeleteUser`; the user is logged out and redirected to the gallery with a short success message.
-- [ ] Only the logged-in unverified user can delete themselves through this route; verified users keep using the profile; admins are not affected.
-- [ ] Feature tests: unverified user can delete themselves; wrong password deletes nothing; nobody else is deleted; route is not usable by guests. Tests and validation passed (container).
+- [x] The verify page shows a "Cancel registration / delete account" action next to "Resend" and "Log out".
+- [x] It asks for confirmation (password, like the profile delete) before deleting.
+- [x] Deletion uses `App\Actions\DeleteUser`; the user is logged out and redirected to the gallery with a short success message.
+- [x] Only the logged-in unverified user can delete themselves through this route; verified users keep using the profile; admins are not affected.
+- [x] Feature tests: unverified user can delete themselves; wrong password deletes nothing; nobody else is deleted; route is not usable by guests. Tests and validation passed (container).
 
 ## Technical Implementation Notes
 - **Affected files / components**: `resources/views/auth/verify-email.blade.php`, `routes/auth.php` (new route in the `auth` group, not `verified`), a small controller method (or reuse `ProfileController::destroy` on a route without `verified`), `App\Actions\DeleteUser`.
