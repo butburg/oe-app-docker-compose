@@ -4,9 +4,11 @@ Die App braucht auf dem Server Cronjobs, die der Hoster ausführt. Die Einträge
 
 Bei lima-city im Kundenbereich unter **Cronjobs > Cronjob erstellen**. Hilfe: https://www.lima-city.de/hilfe/cronjobs
 
-## Queue-Worker (Sammel-Mails)
+## Queue-Worker
 
-Verschickt die Kommentar-, Neues-Bild- und Ankündigungs-Mails (FEAT-017 bis 020). Ohne ihn bleiben sie in der Tabelle `jobs` liegen. Lokal macht das der `queue`-Container.
+Manche Arbeit erledigt die App nicht sofort im Request. Sie legt dafür einen Job in die Queue, also in die Tabelle `jobs`, oft mit „frühestens um X Uhr“. Der Worker holt die fälligen Jobs dort ab und führt sie aus, egal welche es sind. Ohne Worker bleiben alle Jobs liegen. Lokal macht das der `queue`-Container.
+
+Welche Jobs es gibt, steht in `src/app/Jobs/`. Ein Beispiel sind die Sammel-Mails (Kommentare, neue Bilder, Ankündigungen), die erst nach einer Wartezeit gebündelt rausgehen.
 
 Erst nach dem Deploy von Branch 05 anlegen.
 
@@ -15,18 +17,18 @@ Erst nach dem Deploy von Branch 05 anlegen.
 | Typ | **Shell-Cronjob** (nicht URL-Cronjob) |
 | Ausführungszeitpunkte | `* * * * *` |
 | Kommando (bei URL-Cronjob heißt das Feld „URL“) | `cd oe-app && flock -n ~/.cronlock-queue php artisan queue:work --stop-when-empty --quiet &>> ~/queue-cron.log` |
-| Bemerkung | `Laravel Queue: Sammel-Mails verschicken` |
+| Bemerkung | `Laravel Queue-Worker: arbeitet die fälligen Jobs ab` |
 
 Was die Teile bedeuten:
-- `* * * * *`: jede Minute. Der Worker schaut nach, welche Mails fällig sind, verschickt sie und beendet sich wieder (`--stop-when-empty`).
+- `* * * * *`: jede Minute. Der Worker arbeitet alle fälligen Jobs ab und beendet sich wieder (`--stop-when-empty`).
 - `cd oe-app`: Der Cronjob startet bei lima-city im Home-Verzeichnis, die App liegt in `~/oe-app`.
 - `flock -n ~/.cronlock-queue`: Läuft der vorige Durchgang noch, wird dieser übersprungen.
-- `--quiet &>> ~/queue-cron.log`: Nur Fehler landen in `~/queue-cron.log`. Fehlgeschlagene Mails stehen zusätzlich in der Tabelle `failed_jobs` und in `storage/logs/laravel.log`.
+- `--quiet &>> ~/queue-cron.log`: Nur Fehler des Workers landen in `~/queue-cron.log`. Fehlgeschlagene Jobs stehen zusätzlich in der Tabelle `failed_jobs` und in `storage/logs/laravel.log`.
 
 Warum kein URL-Cronjob: Der ruft nur eine Webseite auf. Dafür bräuchte die App eine öffentliche, abgesicherte Route, die den Worker startet. Der Shell-Cronjob führt den Befehl direkt aus.
 
-Warum nicht einfach `QUEUE_CONNECTION=sync`: Dann läuft der Job sofort im Request, die Wartezeit fürs Bündeln wird ignoriert, und der Job blockiert sich selbst (500er nach 10 s).
+Warum nicht einfach `QUEUE_CONNECTION=sync`: Dann gibt es keine Queue, und jeder Job läuft sofort im Request. „Frühestens um X Uhr“ wird ignoriert. Jobs, die warten sollen, funktionieren damit nicht. Die Sammel-Mails blockieren sich dann sogar selbst (500er nach 10 s).
 
 ### Prüfen, ob er läuft
 1. Nach 1 bis 2 Minuten: `~/queue-cron.log` ist leer oder existiert nicht. Steht etwas drin, z. B. `php: command not found`, im Kommando den vollen Pfad aus `which php` einsetzen.
-2. Einen Kommentar auf ein fremdes Bild schreiben. Nach ca. 61 Minuten (`MAIL_BUNDLE_MINUTES`, Standard 60) ist die Mail beim Besitzer, und die Tabelle `jobs` ist leer.
+2. Die Tabelle `jobs` enthält nur Jobs, deren Zeitpunkt noch in der Zukunft liegt (Spalte `available_at`). Beispiel: Einen Kommentar auf ein fremdes Bild schreiben. Nach ca. 61 Minuten (`MAIL_BUNDLE_MINUTES`, Standard 60) ist die Mail beim Besitzer, und der Job ist aus `jobs` verschwunden.
