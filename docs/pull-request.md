@@ -56,6 +56,11 @@ Betroffen ist [routes/auth.php:19](src/routes/auth.php#L19).
 - Die Dateien liegen weiter unter `/storage/files/posts/images/{size}/{image_id}.jpeg`, und `image_id` ist fortlaufend. Damit sind alle Bilder durchzählbar, auch sensitive Posts und Drafts. Token und `public_id` bringen nichts, solange die Dateien nicht auf die private Disk umziehen. Das steht zwar im PR, aber eher als Randnotiz.
 - Gleichzeitig ist jetzt jedes Bild ein eigener PHP-FPM-Request mit komplettem Laravel-Boot und einer DB-Query ([ImageController.php:16](src/app/Http/Controllers/ImageController.php#L16)). Auf Shared Hosting mit wenigen PHP-Prozessen kostet eine Galerieseite mit 20 bis 40 Bildern deutlich mehr.
 - Die Galerie lädt außerdem nichts vor ([PostController.php:72](src/app/Http/Controllers/PostController.php#L72)), es fehlt `with('image.variants', ...)`. `Image::url()` lädt die `variants` deshalb pro Bild einzeln nach. Das N+1 gab es schon vorher, jetzt fällt es stärker ins Gewicht.
+- ✅ **Erledigt:**
+  - Die Bilder liegen jetzt auf der eigenen Disk `images` (`storage/app/images`), außerhalb von `public/`. Erreichbar sind sie nur noch über `/img/{variant}/{token}`.
+  - `images:move-private` verschiebt die vorhandenen Dateien. Der Befehl ist idempotent und läuft bei jedem Deploy nach `storage:link` mit.
+  - Die Galerie, „My images“, die Admin-Liste und das Profil laden Bild, Varianten, User und Kommentare vor. Eine Galerieseite mit 12 Posts und je 3 Kommentaren braucht 21 statt 206 Queries.
+  - Der PHP-Request pro Bild bleibt, er ist der Preis für den Schutz. Lazy Loading und der private Browser-Cache fangen ihn ab.
 
 **6. Die Mail-Rate wird nur innerhalb eines `collect()`-Aufrufs verteilt**
 Betroffen ist [CollectMail.php:86](src/app/Actions/CollectMail.php#L86).

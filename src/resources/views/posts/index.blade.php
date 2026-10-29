@@ -164,7 +164,7 @@ resources\views\layouts\app.blade.php view --}}
                                 <small class="block text-c-muted">Last update: {{ $post->updated_at->diffForHumans() }}</small>
                             @endif
                             <small class="block text-c-muted">Comments:
-                                {{ $post->comments->count() }}</small>
+                                {{ $post->comments_count }}</small>
                         </div>
                     </div>
                     <!-- Actions -->

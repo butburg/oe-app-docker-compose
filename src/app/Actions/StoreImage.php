@@ -44,7 +44,7 @@ class StoreImage
         $this->stripMetadata($image->core()->native());
 
         $encodedImage = $image->toJpeg(quality: $sizeType->getQuality(), progressive: true);
-        Storage::disk('public')->put($filePath, $encodedImage);
+        Storage::disk('images')->put($filePath, $encodedImage);
 
         return [
             'path' => $filePath,

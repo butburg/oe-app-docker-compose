@@ -18,7 +18,7 @@ class DeleteUser
             if ($user->image) {
                 // Delete the image variants from storage
                 foreach ($user->image->variants as $variant) {
-                    Storage::disk('public')->delete($variant->path);
+                    Storage::disk('images')->delete($variant->path);
                 }
 
                 // Delete the image record (this will cascade and delete associated variants)
@@ -33,7 +33,7 @@ class DeleteUser
                 foreach ($user->posts as $post) {
                     if ($post->image) {
                         foreach ($post->image->variants as $variant) {
-                            Storage::disk('public')->delete($variant->path);
+                            Storage::disk('images')->delete($variant->path);
                         }
                         $post->image->delete();
                     }

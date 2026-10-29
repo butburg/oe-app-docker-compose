@@ -112,7 +112,7 @@ private User $user;
     public function test_store_creates_post()
     {
 
-        Storage::fake('public');
+        Storage::fake('images');
         $file = UploadedFile::fake()->image('image_file.jpg', 1200, 600);
         $data = [
             'title' => 'Test Post',
@@ -133,8 +133,8 @@ private User $user;
             'size_type' => 's',
             'path' => $smallVariantPath,
         ]);
-        Storage::disk('public')->assertExists($smallVariantPath);
-        $dimensions = getimagesize(Storage::disk('public')->path($smallVariantPath));
+        Storage::disk('images')->assertExists($smallVariantPath);
+        $dimensions = getimagesize(Storage::disk('images')->path($smallVariantPath));
         $this->assertSame([100, 100], [$dimensions[0], $dimensions[1]]);
     }
 
@@ -168,7 +168,7 @@ private User $user;
     public function test_update_updates_post()
     {
 
-        Storage::fake('public');
+        Storage::fake('images');
         $post = Post::factory()->forUser($this->user)->withImage()->create(['is_published' => false]);
         $file = UploadedFile::fake()->image('image_file.jpg', 1200, 600);
         $data = [
@@ -181,17 +181,17 @@ private User $user;
         $response->assertRedirect(route('posts.index'));
         $this->assertDatabaseHas('posts', ['id' => $post->id, 'title' => 'Updated Post']);
         $image = $post->image()->first();
-        Storage::disk('public')->assertExists("files/posts/images/s/{$image->id}.jpeg");
+        Storage::disk('images')->assertExists("files/posts/images/s/{$image->id}.jpeg");
     }
 
     public function test_destroy_deletes_post()
     {
 
-        Storage::fake('public');
+        Storage::fake('images');
         $post = Post::factory()->forUser($this->user)->withImage()->create();
         $image = $post->image()->first();
         foreach ($image->variants as $variant) {
-            Storage::disk('public')->put($variant->path, 'image');
+            Storage::disk('images')->put($variant->path, 'image');
         }
 
         $response = $this->actingAs($this->user)->delete(route('posts.destroy', $post));
@@ -200,7 +200,7 @@ private User $user;
         $this->assertDatabaseMissing('posts', ['id' => $post->id]);
         $this->assertDatabaseMissing('images', ['id' => $image->id]);
         foreach ($image->variants as $variant) {
-            Storage::disk('public')->assertMissing($variant->path);
+            Storage::disk('images')->assertMissing($variant->path);
         }
     }
 

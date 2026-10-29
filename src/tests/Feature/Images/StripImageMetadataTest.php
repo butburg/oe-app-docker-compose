@@ -21,7 +21,7 @@ class StripImageMetadataTest extends TestCase
     {
         parent::setUp();
 
-        Storage::fake('public');
+        Storage::fake('images');
     }
 
     /**
@@ -62,7 +62,7 @@ class StripImageMetadataTest extends TestCase
 
     private function stored(string $path): \Imagick
     {
-        return new \Imagick(Storage::disk('public')->path($path));
+        return new \Imagick(Storage::disk('images')->path($path));
     }
 
     public function test_fixture_contains_gps(): void
@@ -117,7 +117,7 @@ class StripImageMetadataTest extends TestCase
         $variant = ImageVariant::create([
             'image_id' => $image->id, 'path' => 'files/posts/images/l/1.jpeg', 'size_type' => 'l', 'quality' => 80, 'width' => 40, 'height' => 20,
         ]);
-        Storage::disk('public')->put($variant->path, file_get_contents($this->photoWithGps()));
+        Storage::disk('images')->put($variant->path, file_get_contents($this->photoWithGps()));
 
         $this->artisan('images:strip-metadata --dry-run')
             ->expectsOutputToContain('Would strip: files/posts/images/l/1.jpeg')

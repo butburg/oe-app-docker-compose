@@ -33,7 +33,7 @@ class ImageController extends Controller
             'Cache-Control' => "private, max-age={$maxAge}",
         ];
 
-        $disk = Storage::disk('public');
+        $disk = Storage::disk('images');
         abort_unless($disk->exists($variant->path), 404);
 
         // file() marks the response as public by default, a proxy must not keep the image

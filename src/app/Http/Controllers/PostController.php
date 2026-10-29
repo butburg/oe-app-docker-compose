@@ -26,13 +26,16 @@ class PostController extends Controller
         $userType = Auth::user()->usertype;
 
         // Retrieve published and draft posts from the database
-        $draftPosts = Post::whereNotNull('user_id')
+        $draftPosts = Post::with('image.variants')
+            ->whereNotNull('user_id')
             ->where('user_id', $userId)
             ->where('is_published', false)
             ->orderBy('created_at', 'desc')
             ->paginate(config('app.posts_per_page'), pageName: 'draft');
 
-        $publishedPosts = Post::whereNotNull('user_id')
+        $publishedPosts = Post::with('image.variants')
+            ->withCount('comments')
+            ->whereNotNull('user_id')
             ->where('user_id', $userId)
             ->where('is_published', true)
             ->orderBy('published_at', 'desc')
@@ -51,12 +54,15 @@ class PostController extends Controller
     public function all(): View
     {
         // Retrieve draft posts sorted by created_at
-        $draftPosts = Post::where('is_published', false)
+        $draftPosts = Post::with('image.variants')
+            ->where('is_published', false)
             ->orderBy('created_at', 'desc')
             ->paginate(config('app.posts_per_page'));
 
         // Retrieve published posts sorted by published_at
-        $publishedPosts = Post::where('is_published', true)
+        $publishedPosts = Post::with('image.variants')
+            ->withCount('comments')
+            ->where('is_published', true)
             ->orderBy('published_at', 'desc')
             ->paginate(config('app.posts_per_page'));
 
@@ -72,7 +78,9 @@ class PostController extends Controller
     public function gallery(Request $request): View
     {
         $search = trim((string) $request->query('q', ''));
-        $query = Post::where('is_published', true);
+        // Load everything the page shows in a few queries instead of several per post
+        $query = Post::with(['image.variants', 'user', 'comments.user.image.variants'])
+            ->where('is_published', true);
 
         // Unverified users see the same as guests (who is unverified: see @verified in AppServiceProvider)
         if (!Auth::user()?->hasVerifiedEmail()) {
@@ -240,7 +248,7 @@ class PostController extends Controller
 
             // Delete the image variants from storage
             foreach ($image->variants as $variant) {
-                Storage::disk('public')->delete($variant->path);
+                Storage::disk('images')->delete($variant->path);
             }
 
             // Delete the image record (this will cascade and delete associated variants)

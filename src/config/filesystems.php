@@ -44,6 +44,13 @@ return [
             'throw' => false,
         ],
 
+        // Uploaded images, outside public/: only reachable through /img/{variant}/{token} (FEAT-011)
+        'images' => [
+            'driver' => 'local',
+            'root' => storage_path('app/images'),
+            'throw' => false,
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),

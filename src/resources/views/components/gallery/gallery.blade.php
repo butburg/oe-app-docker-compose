@@ -89,15 +89,15 @@
                                             {{ $publishedAt->format('d.m.Y') }}
                                         </span>
                                     </span>
-                                    @if ($post->comments()->count() > 0)
+                                    @if ($post->comments->count() > 0)
                                         |
                                         <button type="button" class="cursor-pointer rounded-sm text-c-muted hover:text-c-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-c-primary md:cursor-auto"
                                             :class="{ 'underline': !$store.comments.visibility[{{ $post->id }}] }"
                                             @click="$store.comments.toggle({{ $post->id }})"
                                             :aria-expanded="$store.comments.visibility[{{ $post->id }}] ? 'true' : 'false'"
                                             aria-controls="comments-{{ $post->id }}">
-                                            {{ $post->comments()->count() }}
-                                            comment{{ $post->comments()->count() > 1 ? 's' : '' }}
+                                            {{ $post->comments->count() }}
+                                            comment{{ $post->comments->count() > 1 ? 's' : '' }}
                                             ♥</button>
                                     @endif
                                     <span>@include('components.gallery.share', ['post' => $post])</span>

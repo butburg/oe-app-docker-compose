@@ -21,7 +21,7 @@ class ImageLinkTest extends TestCase
     {
         parent::setUp();
 
-        Storage::fake('public');
+        Storage::fake('images');
         $this->owner = User::factory()->create();
         $this->post = Post::factory()->forUser($this->owner)->withImage()->create([
             'is_published' => true,
@@ -34,7 +34,7 @@ class ImageLinkTest extends TestCase
     // The factory only creates the DB rows, the controller needs the files to send them
     private function storeFiles(Image $image): void
     {
-        $image->variants->each(fn ($variant) => Storage::disk('public')->put($variant->path, 'jpeg-bytes'));
+        $image->variants->each(fn ($variant) => Storage::disk('images')->put($variant->path, 'jpeg-bytes'));
     }
 
     private function image(): Image

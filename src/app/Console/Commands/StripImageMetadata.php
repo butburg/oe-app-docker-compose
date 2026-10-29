@@ -23,7 +23,7 @@ class StripImageMetadata extends Command
 
     public function handle(StoreImage $storeImage): int
     {
-        $disk = Storage::disk('public');
+        $disk = Storage::disk('images');
         $found = 0;
         $missing = 0;
 
