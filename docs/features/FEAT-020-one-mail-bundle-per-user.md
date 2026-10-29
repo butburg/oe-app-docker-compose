@@ -28,7 +28,7 @@ FEAT-018 sent one mail per comment, FEAT-019 bundled only the images of one uplo
 - [x] Mail: announcements first (admin Markdown, placeholders per recipient), then "New comments on your images" grouped by post with excerpts and a link to the post, then "Fresh images in the gallery" grouped by uploader (max. 10 titles each). Button "Open the gallery" only when there are comments or images.
 - [x] Subject from the parts, e.g. `Maintenance on Sunday · Ben commented on your image · Anna published 3 new images`.
 - [x] Footer and `List-Unsubscribe` header with the settings link only when the mail has comments or images; announcements only keep the default footer (they cannot be switched off).
-- [x] Rate limit: bundle jobs started by one action (e.g. an announcement to all users) are spread with at most `MAIL_PER_MINUTE` per minute.
+- [x] Rate limit: the queue worker takes at most 30 jobs per run (`--max-jobs=30`, cron job every minute), one job sends at most one mail. Replaces the spreading by `MAIL_PER_MINUTE`, which only held within one action.
 - [x] Settings page and admin preview say that mails are bundled.
 - [x] Tests (container): `tests/Feature/Mail/MailBundleTest.php`, `tests/Feature/Admin/AdminMailTest.php`.
 

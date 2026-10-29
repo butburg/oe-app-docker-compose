@@ -206,17 +206,16 @@ class AdminMailTest extends TestCase
         $this->assertDatabaseCount('admin_mails', 1);
     }
 
-    public function test_bundles_are_spread_over_minutes_by_the_rate_limit(): void
+    public function test_every_bundle_waits_for_the_bundle_window(): void
     {
         $this->freezeTime();
-        config(['mail.per_minute' => 2]);
         User::factory()->count(4)->create();
 
         $this->actingAs($this->admin)->post(route('admin.mails.send'), $this->mailData());
 
-        // 5 users, 2 per minute: after the bundle window 2, a minute later 2, then 1
-        $minutes = Queue::pushed(SendMailBundle::class)->map(fn ($job) => (int) now()->diffInMinutes($job->delay))->countBy()->sortKeys()->all();
-        $this->assertSame([60 => 2, 61 => 2, 62 => 1], $minutes);
+        // the rate limit is the worker's job (--max-jobs), the jobs are not spread here
+        $minutes = Queue::pushed(SendMailBundle::class)->map(fn ($job) => (int) now()->diffInMinutes($job->delay))->countBy()->all();
+        $this->assertSame([60 => 5], $minutes);
     }
 
     public function test_body_is_markdown_with_html_escaped_and_no_settings_link(): void

@@ -61,8 +61,8 @@ class CollectMail
     }
 
     /**
-     * Users that had nothing waiting get a bundle job. Jobs of one call are spread over the minutes,
-     * at most mail.per_minute per minute, so the SMTP provider's limit is never hit.
+     * Users that had nothing waiting get a bundle job. The SMTP provider's limit is kept by the worker,
+     * it takes at most 30 jobs per run (docs/server-cronjobs.md).
      * Items long overdue have lost their job, so these users get a new one instead of waiting forever.
      *
      * @param int[] $userIds
@@ -86,10 +86,8 @@ class CollectMail
             ], $chunk));
         }
 
-        $perMinute = max(1, (int) config('mail.per_minute'));
-        foreach (array_values(array_diff($userIds, $waiting)) as $index => $userId) {
-            SendMailBundle::dispatch($userId)
-                ->delay($now->copy()->addMinutes(SendMailBundle::minutes() + intdiv($index, $perMinute)));
+        foreach (array_diff($userIds, $waiting) as $userId) {
+            SendMailBundle::dispatch($userId)->delay($now->copy()->addMinutes(SendMailBundle::minutes()));
         }
     }
 }

@@ -110,18 +110,6 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Mails per minute
-    |--------------------------------------------------------------------------
-    |
-    | Mail bundles to many users at once (e.g. an announcement) are spread so
-    | that at most this many are sent per minute (SMTP provider limit).
-    |
-    */
-
-    'per_minute' => (int) env('MAIL_PER_MINUTE', 30),
-
-    /*
-    |--------------------------------------------------------------------------
     | Mail bundle (FEAT-020)
     |--------------------------------------------------------------------------
     |

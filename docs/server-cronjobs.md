@@ -14,13 +14,18 @@ Welche Jobs es gibt, steht in `src/app/Jobs/`. Ein Beispiel sind die Sammel-Mail
 |---|---|
 | Typ | **Shell-Cronjob** (nicht URL-Cronjob) |
 | Ausführungszeitpunkte | `* * * * *` |
-| Kommando (bei URL-Cronjob heißt das Feld „URL“) | `cd oe-app && flock -n ~/.cronlock-queue php artisan queue:work --stop-when-empty --quiet &>> ~/queue-cron.log` |
+| Kommando (bei URL-Cronjob heißt das Feld „URL“) | `cd oe-app && flock -n ~/.cronlock-queue php artisan queue:work --stop-when-empty --max-jobs=30 --quiet &>> ~/queue-cron.log` |
 | Bemerkung | `Laravel Queue-Worker: arbeitet die fälligen Jobs ab` |
 
 Was die Teile bedeuten:
-- `* * * * *`: jede Minute. Der Worker arbeitet alle fälligen Jobs ab und beendet sich wieder (`--stop-when-empty`).
+- `* * * * *`: jede Minute. Der Worker arbeitet die fälligen Jobs ab und beendet sich wieder (`--stop-when-empty`).
 - `cd oe-app`: Der Cronjob startet bei lima-city im Home-Verzeichnis, die App liegt in `~/oe-app`.
 - `flock -n ~/.cronlock-queue`: Läuft der vorige Durchgang noch, wird dieser übersprungen.
+- `--max-jobs=30`: Nach 30 Jobs beendet sich der Worker, der Rest bleibt für den nächsten Durchgang liegen. Ein Mail-Job verschickt höchstens eine Mail, also gehen höchstens 30 Mails pro Minute raus, unter dem Limit des SMTP-Anbieters. Das gilt nur, solange:
+  - der Cronjob jede Minute läuft. Bei `*/5` wären es 30 pro 5 Minuten.
+  - nur dieser eine Worker läuft. Ein zweiter Cron-Eintrag oder ein `queue:work` von Hand per SSH verdoppelt die Rate.
+
+  Andere Jobs zählen mit. Kommen später welche dazu, gehen die Mails eher langsamer raus, nie schneller.
 - `--quiet &>> ~/queue-cron.log`: Nur Fehler des Workers landen in `~/queue-cron.log`. Fehlgeschlagene Jobs stehen zusätzlich in der Tabelle `failed_jobs` und in `storage/logs/laravel.log`.
 
 Warum kein URL-Cronjob: Der ruft nur eine Webseite auf. Dafür bräuchte die App eine öffentliche, abgesicherte Route, die den Worker startet. Der Shell-Cronjob führt den Befehl direkt aus.

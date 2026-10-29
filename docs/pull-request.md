@@ -66,6 +66,11 @@ Betroffen ist [routes/auth.php:19](src/routes/auth.php#L19).
 Betroffen ist [CollectMail.php:86](src/app/Actions/CollectMail.php#L86).
 - Neu gestartete Jobs aus `handle()` und gleichzeitige Aufrufe (Announcement, neues Bild und Kommentare zugleich) werden nicht mitgezählt. Die Zusage „SMTP-Limit wird nie erreicht“ stimmt also nicht.
 - Laravel 11 hat dafür Bordmittel: `RateLimited`-Job-Middleware mit `Limit::perMinute(30)` statt der eigenen Delay-Rechnung, und `WithoutOverlapping($userId)` statt `Cache::lock`. Das wäre einfacher und korrekt.
+- ✅ **Erledigt, anders als vorgeschlagen:**
+  - Das Limit setzt jetzt der Worker: Der Cronjob läuft jede Minute mit `--max-jobs=30`, ein Job verschickt höchstens eine Mail. Damit gilt das Limit für alle Wege (gleichzeitige Aufrufe, Rückstau vor dem ersten Lauf, neue Jobs aus `handle()`).
+  - Die Verteilung in `collect()` und `MAIL_PER_MINUTE` sind entfernt.
+  - Gegen `RateLimited` entschieden: Ein zurückgestellter Job zählt als Versuch, dafür hätte `$tries` durch `retryUntil()` und `$maxExceptions` ersetzt werden müssen. Das ist mehr Code für dieselbe Wirkung.
+  - `Cache::lock` bleibt, er funktioniert.
 
 ---
 
