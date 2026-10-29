@@ -132,6 +132,22 @@ class MailBundleTest extends TestCase
         $this->assertTrue(Queue::pushed(SendMailBundle::class)->contains(fn ($job) => $job->delay > now()));
     }
 
+    public function test_a_lost_job_does_not_block_the_user_the_next_item_starts_a_new_one(): void
+    {
+        $this->comment($this->ben, 'First');
+        // the job is gone: failed for good or the jobs table was emptied
+        Queue::fake();
+        $this->travel(SendMailBundle::minutes() + SendMailBundle::GRACE_MINUTES + 1)->minutes();
+
+        $this->comment($this->ben, 'Second');
+        Queue::assertPushed(SendMailBundle::class, 1);
+        $this->sendBundles();
+
+        $this->assertCount(1, $this->sentTo($this->anna));
+        $this->assertSame(['First', 'Second'], array_column($this->sentTo($this->anna)->first()->comments[0]['comments'], 'text'));
+        $this->assertDatabaseCount('pending_mails', 0);
+    }
+
     // --- comments ---
 
     public function test_comment_mail_has_name_title_excerpt_and_link(): void

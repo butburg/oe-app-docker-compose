@@ -63,6 +63,7 @@ class CollectMail
     /**
      * Users that had nothing waiting get a bundle job. Jobs of one call are spread over the minutes,
      * at most mail.per_minute per minute, so the SMTP provider's limit is never hit.
+     * Items long overdue have lost their job, so these users get a new one instead of waiting forever.
      *
      * @param int[] $userIds
      */
@@ -72,8 +73,12 @@ class CollectMail
             return;
         }
 
-        $waiting = PendingMail::whereIn('user_id', $userIds)->distinct()->pluck('user_id')->all();
         $now = now();
+        $overdue = $now->copy()->subMinutes(SendMailBundle::minutes() + SendMailBundle::GRACE_MINUTES);
+        $waiting = PendingMail::whereIn('user_id', $userIds)
+            ->groupBy('user_id')
+            ->havingRaw('MIN(created_at) > ?', [$overdue])
+            ->pluck('user_id')->all();
 
         foreach (array_chunk($userIds, 500) as $chunk) {
             PendingMail::insert(array_map(fn ($id) => $item + [

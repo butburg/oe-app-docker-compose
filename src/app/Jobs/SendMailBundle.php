@@ -20,6 +20,16 @@ class SendMailBundle implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable;
 
+    // here and not only on the worker's command line, a worker started with the defaults tries just once
+    public $tries = 3;
+    public $backoff = 60;
+
+    /**
+     * Items still waiting this long after their window are left over from a lost job (failed for good, jobs table
+     * emptied): CollectMail then starts a new one. Covers the spreading over the minutes and the retries.
+     */
+    public const GRACE_MINUTES = 30;
+
     public function __construct(public int $userId)
     {
         $this->afterCommit();
