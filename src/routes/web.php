@@ -35,6 +35,9 @@ Route::middleware('auth', 'verified')->group(function () {
 
     // Profiles
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    // before /profile/{user}, otherwise "notifications" would be taken for a user
+    Route::get('/profile/notifications', [ProfileController::class, 'notifications'])->name('profile.notifications');
+    Route::patch('/profile/notifications', [ProfileController::class, 'updateNotifications'])->name('profile.notifications.update');
     Route::get('/profile/{user}', [ProfileController::class, 'show'])->name('profile.show');
 
 

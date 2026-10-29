@@ -52,6 +52,27 @@ class ProfileController extends Controller
         return Redirect::route('profile.edit');
     }
 
+    /**
+     * Own URL of the "Mail notifications" section, linked from the mails. A guest logs in first and comes back here,
+     * an #anchor alone would get lost on the way through the login.
+     */
+    public function notifications(): RedirectResponse
+    {
+        return redirect()->to(route('profile.edit') . '#notifications');
+    }
+
+    public function updateNotifications(Request $request): RedirectResponse
+    {
+        $settings = array_keys(User::NOTIFICATION_SETTINGS);
+        $validated = $request->validate(array_fill_keys($settings, 'nullable|boolean'));
+
+        $request->user()->forceFill(
+            collect($settings)->mapWithKeys(fn ($setting) => [$setting => (bool) ($validated[$setting] ?? false)])->all()
+        )->save();
+
+        return redirect()->to(route('profile.edit') . '#notifications')->with('status', 'notifications-updated');
+    }
+
     public function updateDescription(ProfileUpdateRequest $request): RedirectResponse
     {
         $user = Auth::user();

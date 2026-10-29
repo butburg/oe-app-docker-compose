@@ -6,6 +6,7 @@ p { margin: 0 0 16px; }
 h1 { color: #ECF7F5; font-size: 20px; margin: 0 0 16px; }
 h2, h3 { color: #ECF7F5; font-size: 16px; margin: 0 0 12px; }
 a { color: #00D9FF; }
+blockquote { border-left: 3px solid #285055; margin: 0 0 16px; padding: 0 0 0 16px; }
 .header { padding: 24px 0 16px; text-align: center; }
 .brand { color: #ECF7F5; font-size: 20px; font-weight: bold; text-decoration: none; }
 .logo { border: 0; }

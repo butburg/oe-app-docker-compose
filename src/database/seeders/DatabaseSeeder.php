@@ -89,7 +89,8 @@ class DatabaseSeeder extends Seeder
                 'published_at' => $entry['published'] ? $date : null,
             ]);
             $post->timestamps = false;
-            $post->forceFill(['created_at' => $date, 'updated_at' => $date])->save();
+            // seeded posts count as announced, the first real publication does not mail them again (FEAT-019)
+            $post->forceFill(['created_at' => $date, 'updated_at' => $date, 'notified_at' => $entry['published'] ? $date : null])->save();
 
             $this->storeImage(['post_id' => $post->id], 'posts', $entry['file'], $sizes, 'posts/images/');
 

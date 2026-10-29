@@ -23,6 +23,7 @@ class Post extends Model {
     // using $casts for date casting
     protected $casts = [
         'published_at' => 'datetime',
+        'notified_at' => 'datetime',
     ];
 
     /**

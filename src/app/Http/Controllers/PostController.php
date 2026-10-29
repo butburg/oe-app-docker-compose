@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Actions\CreateImageVariants;
 use App\Enums\ImageSizeType;
 use App\Http\Requests\Post\StoreUpdateRequest;
+use App\Jobs\SendNewImagesMail;
 use App\Models\Image;
 use App\Models\Post; // Importing the Post model
 use Illuminate\Contracts\View\View;
@@ -278,6 +279,10 @@ class PostController extends Controller
         ]);
 
         if ($isPublished) {
+            // first publication: the other users get a bundled mail later, a republished post never again
+            if ($post->notified_at === null) {
+                SendNewImagesMail::forPublication($post);
+            }
             session()->flash('notif.success', 'Post published successfully!');
             return redirect()->route('posts.index');
         }

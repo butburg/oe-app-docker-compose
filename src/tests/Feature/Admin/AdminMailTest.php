@@ -79,11 +79,9 @@ class AdminMailTest extends TestCase
         Mail::fake();
         $users = User::factory()->count(2)->create();
         $unverified = User::factory()->unverified()->create();
-        // notification switches do not apply to announcements (columns come with FEAT-018/019)
+        // notification switches do not apply to announcements
         $quiet = User::factory()->create();
-        if (\Schema::hasColumn('users', 'notify_comments')) {
-            $quiet->forceFill(['notify_comments' => false, 'notify_new_images' => false])->save();
-        }
+        $quiet->forceFill(array_fill_keys(array_keys(User::NOTIFICATION_SETTINGS), false))->save();
 
         $this->actingAs($this->admin)->post(route('admin.mails.send'), $this->mailData())
             ->assertRedirect(route('admin.mails.index'));

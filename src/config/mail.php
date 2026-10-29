@@ -120,6 +120,9 @@ return [
 
     'per_minute' => (int) env('MAIL_PER_MINUTE', 30),
 
+    // New images mail (FEAT-019): sent when the uploader has published nothing for this many minutes
+    'new_images_quiet_minutes' => (int) env('MAIL_NEW_IMAGES_QUIET_MINUTES', 60),
+
     /*
     |--------------------------------------------------------------------------
     | Markdown Mail Settings

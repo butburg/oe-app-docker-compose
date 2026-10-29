@@ -42,6 +42,21 @@ class User extends Authenticatable implements MustVerifyEmail {
     }
 
     /**
+     * Mail notifications the user can switch off in the profile, all on by default.
+     * Announcements from the admins (FEAT-017) are not part of it, they cannot be switched off.
+     */
+    public const NOTIFICATION_SETTINGS = [
+        'notify_comments' => [
+            'label' => 'Comments on my images',
+            'description' => 'A mail when someone comments on one of your images.',
+        ],
+        'notify_new_images' => [
+            'label' => 'New images',
+            'description' => 'A mail when other users publish new images, several images of one person in one mail.',
+        ],
+    ];
+
+    /**
      * How long the link for a new email from the profile stays valid.
      */
     public const EMAIL_CHANGE_VALID_MINUTES = 60;
@@ -107,6 +122,8 @@ class User extends Authenticatable implements MustVerifyEmail {
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'notify_comments' => 'boolean',
+            'notify_new_images' => 'boolean',
         ];
     }
 }
