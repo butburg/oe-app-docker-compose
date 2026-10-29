@@ -78,6 +78,11 @@ Betroffen ist [CollectMail.php:86](src/app/Actions/CollectMail.php#L86).
 
 **7. Die Migration hängt am App-Model**
 [add_slug_to_posts_table.php:25](src/database/migrations/2026_10_29_000003_add_slug_to_posts_table.php#L25) ruft `Post::uniqueSlug()` auf. Ändert sich das Model später, verhält sich diese alte Migration anders oder bricht. Best Practice ist, die Logik in die Migration zu kopieren.
+- ✅ **Bewusst nicht umgesetzt:**
+  - Die Migration läuft auf Prod genau einmal beim Merge, mit dem Model aus diesem PR. Danach entstehen Slugs nur noch beim Veröffentlichen.
+  - Bei frischen Datenbanken (Tests, lokales Setup) ist `posts` leer, `uniqueSlug()` wird also gar nicht aufgerufen.
+  - Probleme gäbe es nur, wenn ein Dump von vor dieser Migration mit späterem Code migriert wird. Alte Dumps spielen wir nicht ein.
+  - Dasselbe gilt für `ImageVariant::newPublicId()` in [add_public_id_to_image_variants_table.php:22](src/database/migrations/2026_10_29_000007_add_public_id_to_image_variants_table.php#L22).
 
 **8. Im Plain-Text-Teil der Bundle-Mail sind Markdown-Escapes sichtbar**
 Ich habe das im Container gerendert:
