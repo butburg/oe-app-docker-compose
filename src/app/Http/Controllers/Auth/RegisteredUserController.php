@@ -69,7 +69,7 @@ class RegisteredUserController extends Controller
     {
         $pending = $this->currentPending($request);
         if (!$pending) {
-            return redirect()->route('register');
+            return $this->registerAgain();
         }
 
         return view('auth.register-pending', ['email' => $pending->email]);
@@ -82,7 +82,7 @@ class RegisteredUserController extends Controller
     {
         $pending = $this->currentPending($request);
         if (!$pending) {
-            return redirect()->route('register');
+            return $this->registerAgain();
         }
 
         $pending->sendLink();
@@ -97,7 +97,7 @@ class RegisteredUserController extends Controller
     {
         $pending = $this->currentPending($request);
         if (!$pending) {
-            return redirect()->route('register');
+            return $this->registerAgain();
         }
 
         $this->lowercaseEmail($request);
@@ -175,6 +175,15 @@ class RegisteredUserController extends Controller
         if (is_string($request->input('email'))) {
             $request->merge(['email' => Str::lower($request->input('email'))]);
         }
+    }
+
+    /**
+     * The session no longer knows the pending registration, usually because it expired.
+     */
+    private function registerAgain(): RedirectResponse
+    {
+        return redirect()->route('register')
+            ->with('status', 'Your registration session has expired. Please register again.');
     }
 
     private function currentPending(Request $request): ?PendingRegistration

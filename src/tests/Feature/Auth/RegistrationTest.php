@@ -86,6 +86,33 @@ class RegistrationTest extends TestCase
         $this->get(route('register.pending'))->assertRedirect(route('register'));
     }
 
+    public function test_actions_after_expired_session_lead_back_to_register(): void
+    {
+        // A fresh session has no pending registration, just like one that expired
+        $this->post(route('register.pending.resend'))
+            ->assertRedirect(route('register'))
+            ->assertSessionHas('status', 'Your registration session has expired. Please register again.');
+        Mail::assertNothingSent();
+    }
+
+    public function test_expired_csrf_token_redirects_back_instead_of_419(): void
+    {
+        // CSRF is not checked in tests, so a route throws what the check would throw
+        \Illuminate\Support\Facades\Route::post('/_test/expired', function () {
+            throw new \Illuminate\Session\TokenMismatchException();
+        })->middleware('web');
+
+        $this->from(route('register.pending'))
+            ->post('/_test/expired', ['email' => 'new@example.com', 'password' => 'secret'])
+            ->assertRedirect(route('register.pending'))
+            ->assertSessionHas('status', 'Your session has expired. Please try again.')
+            ->assertSessionHasInput('email', 'new@example.com')
+            ->assertSessionMissing('_old_input.password');
+
+        // Requests that expect JSON keep the plain 419
+        $this->postJson('/_test/expired')->assertStatus(419);
+    }
+
     public function test_link_creates_verified_user_and_logs_in(): void
     {
         $this->register();
