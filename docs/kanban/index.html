@@ -804,7 +804,8 @@ ${body}
         } catch { }
       }
       if (scalar.startsWith("'") && scalar.endsWith("'")) return scalar.slice(1, -1).replace(/''/g, "'");
-      return scalar;
+      // YAML comment after an unquoted value, e.g. "status: done # backlog | todo | ..." from template.md
+      return scalar.replace(/\s+#.*$/, '');
     }
 
     // The server reports every save in docs/features (editor, git, this board), so the board stays current
