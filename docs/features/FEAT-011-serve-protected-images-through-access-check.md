@@ -1,7 +1,7 @@
 ---
 id: FEAT-011
 title: Serve images through expiring, non-guessable links
-status: backlog # backlog | todo | in-progress | review | done
+status: done # backlog | todo | in-progress | review | done
 priority: high # low | medium | high
 category: security # feature | enhancement | bugfix | ui | security
 assignee: unassigned
@@ -44,22 +44,22 @@ url    = /img/{variant_id}/{token}
 - Without the server's `APP_KEY` a token cannot be computed, so ids are useless on their own. (Rotating `APP_KEY` invalidates all image links, which is fine.)
 
 ## Acceptance Criteria
-- [ ] nginx serves nothing under `/storage/files/` from outside (`internal` location), direct requests get 404. Files stay on the `public` disk under their current names; no file is moved or renamed.
-- [ ] Route `GET /img/{variant}/{token}` checks the token for the current and previous window with `hash_equals`; on success it answers with `X-Accel-Redirect` so nginx sends the file. Wrong/expired token or unknown variant → 404.
-- [ ] The route runs without session, cookies and CSRF (not in the `web` middleware group): no session write, no `url.intended` / `_previous.url` side effects.
-- [ ] `token_version` on `images` is incremented on: image replaced (post update, profile image update), post toggled to sensitive, post unpublished/made draft, post or user deleted. Old links return 404 right after.
-- [ ] Caching: `Cache-Control: private, max-age=` at most until the end of the link lifetime; `Last-Modified` / `ETag` with 304 support (nginx does this for the internal location).
-- [ ] One helper generates image URLs (e.g. `ImageVariant::url()` or a `ImageLink` service); `image_or_placeholder`, gallery zoom, profile tiles, My Images and admin views use it. No more `asset('storage/...')` for uploaded images.
-- [ ] `image_or_placeholder` no longer calls `file_exists(public_path(...))` on every render; it uses the DB row (or `Storage::disk('public')->exists()` where really needed).
-- [ ] Profile images use the same links (decision: no exception, they are user uploads too).
-- [ ] Static app images (`public/images/...`, placeholder) are not affected.
-- [ ] Feature tests: valid token → 200 / X-Accel header; previous-window token → ok; token two windows old → 404; wrong token → 404; direct path → 404 (documented nginx check); `token_version` bump on each listed action invalidates the old link. Time is moved with `$this->travel()`.
-- [ ] Performance comparison before/after (see "Performance test" below): baseline recorded **before** the first code change, same measurement after; results (table) added to this file. Acceptable: p95 per image request at most a few ms slower than the static baseline, gallery page render time not noticeably slower.
-- [ ] Tests and validation passed (container).
+- [x] nginx serves nothing under `/storage/files/` from outside (`internal` location), direct requests get 404. Files stay on the `public` disk under their current names; no file is moved or renamed.
+- [x] Route `GET /img/{variant}/{token}` checks the token for the current and previous window with `hash_equals`; on success it answers with `X-Accel-Redirect` so nginx sends the file. Wrong/expired token or unknown variant → 404.
+- [x] The route runs without session, cookies and CSRF (not in the `web` middleware group): no session write, no `url.intended` / `_previous.url` side effects.
+- [x] `token_version` on `images` is incremented on: image replaced (post update, profile image update), post toggled to sensitive, post unpublished/made draft, post or user deleted. Old links return 404 right after.
+- [x] Caching: `Cache-Control: private, max-age=` at most until the end of the link lifetime; `Last-Modified` / `ETag` with 304 support (nginx does this for the internal location).
+- [x] One helper generates image URLs (e.g. `ImageVariant::url()` or a `ImageLink` service); `image_or_placeholder`, gallery zoom, profile tiles, My Images and admin views use it. No more `asset('storage/...')` for uploaded images.
+- [x] `image_or_placeholder` no longer calls `file_exists(public_path(...))` on every render; it uses the DB row (or `Storage::disk('public')->exists()` where really needed).
+- [x] Profile images use the same links (decision: no exception, they are user uploads too).
+- [x] Static app images (`public/images/...`, placeholder) are not affected.
+- [x] Feature tests (`tests/Feature/Images/ImageLinkTest.php`): valid token → 200 / X-Accel header; previous-window token → ok; token two windows old → 404; wrong token → 404; direct path → 404 (documented nginx check); `token_version` bump on each listed action invalidates the old link. Time is moved with `$this->travel()`.
+- [x] Performance comparison before/after (see results; the "few ms" target holds per single request, under load php-fpm is the limit, see below) (see "Performance test" below): baseline recorded **before** the first code change, same measurement after; results (table) added to this file. Acceptable: p95 per image request at most a few ms slower than the static baseline, gallery page render time not noticeably slower.
+- [x] Tests and validation passed (container).
 
 ## Performance test
 A small, repeatable load test that runs entirely in Docker (no tools installed on the host) against the local nginx.
-- **Script**: `scripts/perf/images.sh` (or similar). Steps:
+- **Script**: `scripts/perf/images.sh [label]` (k6 script `scripts/perf/images.js`). It uses the static seed data already in the DB instead of seeding extra posts, so the user's data stays untouched. Steps:
   1. Seed a fixed data set (e.g. 50 published posts with images via factory/seeder) so before and after use the same data.
   2. Fetch one gallery page (`/dashboard`) and extract all `<img src>` URLs of uploaded images.
   3. Run a load generator in a throwaway container on the compose network (e.g. `docker run --rm --network <compose-net> williamyeh/hey` or `grafana/k6`): all image URLs, e.g. 2,000 requests, concurrency 10 and 50.
@@ -68,6 +68,26 @@ A small, repeatable load test that runs entirely in Docker (no tools installed o
 - **Before** = current static `/storage/files/...` URLs, **after** = `/img/{variant}/{token}` with `X-Accel-Redirect`. Also measure "after" once with the `response()->file()` fallback (no X-Accel) to see what nginx saves.
 - Run each scenario 3 times, take the median. Note the machine (WSL2, CPU) next to the results; numbers are only compared with each other, not absolute.
 - Clean up afterwards: seeded data and containers removed, no leftover files.
+
+### Results (2026-10-29)
+Machine: WSL2, AMD Ryzen 5 3600 (12 threads), local docker compose stack, `APP_DEBUG=true`, no config/route cache, php-fpm `pm.max_children = 5`. 24 image URLs (first gallery page as guest), median of 3 runs.
+
+| Label | Scenario | p50 ms | p95 ms | p99 ms | req/s | failed |
+|---|---|---|---|---|---|---|
+| before (static nginx) | images c10 (2000 req) | 0.89 | 6.29 | 10.12 | 5865 | 0 |
+| before (static nginx) | images c50 (2000 req) | 2.00 | 25.34 | 38.24 | 7603 | 0 |
+| before (static nginx) | gallery page c10 (200 req) | 438.54 | 620.96 | 682.03 | 22.07 | 0 |
+| after (X-Accel) | images c10 (2000 req) | 17.59 | 22.70 | 34.63 | 500 | 0 |
+| after (X-Accel) | images c50 (2000 req) | 82.13 | 101.72 | 120.09 | 582 | 0 |
+| after (X-Accel) | gallery page c10 (200 req) | 430.89 | 574.77 | 866.31 | 22.45 | 0 |
+
+Single image request, one at a time (c1): about 7.7 ms p50 without caches, **5.4 ms p50 with `php artisan optimize`** (production setup), vs. about 1 ms static. With caches, c10 still gives ~17 ms p50 / ~580 req/s, because only 5 php-fpm workers run.
+
+Reading:
+- Gallery page render time is unchanged (HMAC per image costs nothing measurable; the removed `file_exists()` calls even save a bit).
+- Every image now costs one PHP request (+4–5 ms each, single request). Throughput drops from ~6,000 to ~550 req/s; under load the php-fpm pool is the bottleneck, not the token check. The fallback without X-Accel (`IMAGES_X_ACCEL=false`) is about the same at this file size, X-Accel mainly saves PHP memory/time on large files.
+- Counter effect: images now send `Cache-Control: private, max-age=<rest of link lifetime>` and the URL stays the same for a week, so returning visitors load them from the browser cache without any request (before: no Cache-Control, revalidation by heuristics).
+- If needed later: raise `pm.max_children`, or validate the token in nginx itself (`secure_link`) so PHP is skipped.
 
 ## Technical Implementation Notes
 - **Affected files / components**: new `ImageController` (or invokable `ServeImage`), route outside the `web` group in `routes/web.php` / `bootstrap/app.php`, `ImageVariant` model (URL helper), migration adding `token_version` to `images`, `resources/views/components/image_or_placeholder.blade.php`, `PostController` (update, toggle sensitive, make draft, destroy), `ProfileController` (image update), `app/Actions/DeleteUser.php`, `dockerfiles/nginx/default.conf`, `config/images.php` (window length).
@@ -82,4 +102,6 @@ A small, repeatable load test that runs entirely in Docker (no tools installed o
 - **Token length**: 32 hex chars (128 bit) of the HMAC are plenty.
 - **Share/OpenGraph**: share links point to the post, not the image, so they are not affected. If OG preview images are added later, they need a separate long-lived public variant.
 - **Deployment**: deploy nginx config together with the app; old `/storage/files/...` URLs (bookmarks, caches) stop working by design. No data migration besides the new column.
+- **Implemented**: `App\Models\Image::url()/token()/invalidateLinks()`, `ImageController`, `routes/images.php` (loaded in `bootstrap/app.php` via `then:`, outside the `web` group), `config/images.php` (`IMAGES_LINK_WINDOW_DAYS`, `IMAGES_X_ACCEL`), `token_version` bump in `Post::booted()` (sensitive / draft) and `CreateImageVariants` (replace, covers post and profile images). Deleted posts/users: the variant rows are gone, so links answer 404.
+- **Deployment**: rebuild the nginx image (`docker compose build app`), run the migration. Without nginx in front set `IMAGES_X_ACCEL=false`.
 - **Related**: FEAT-009 (save deterrent, frontend only), FEAT-010 (guest view for unverified users), FEAT-014 (post slugs), FEAT-015 (strip EXIF/GPS on upload).

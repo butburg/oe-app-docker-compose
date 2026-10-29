@@ -40,6 +40,9 @@ class StoreImage
             );
         }
 
+        // Photos often carry the GPS position and camera data, none of it may be published (FEAT-015)
+        $this->stripMetadata($image->core()->native());
+
         $encodedImage = $image->toJpeg(quality: $sizeType->getQuality(), progressive: true);
         Storage::disk('public')->put($filePath, $encodedImage);
 
@@ -48,5 +51,20 @@ class StoreImage
             'width' => $width,
             'height' => $height,
         ];
+    }
+
+    /**
+     * Remove EXIF (incl. GPS), XMP, IPTC and comments, keep only the colour profile so colours do not shift.
+     * Image::read() has already applied the EXIF orientation to the pixels, so nothing turns.
+     */
+    public function stripMetadata(\Imagick $imagick): void
+    {
+        $icc = $imagick->getImageProfiles('icc', true)['icc'] ?? null;
+
+        $imagick->stripImage();
+
+        if ($icc !== null) {
+            $imagick->setImageProfile('icc', $icc);
+        }
     }
 }

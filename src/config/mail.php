@@ -108,4 +108,35 @@ return [
         'name' => env('MAIL_FROM_NAME', 'Example'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Mails per minute
+    |--------------------------------------------------------------------------
+    |
+    | Mails to many users (admin mails, new image mails) are queued and spread
+    | so that at most this many are sent per minute (SMTP provider limit).
+    |
+    */
+
+    'per_minute' => (int) env('MAIL_PER_MINUTE', 30),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Markdown Mail Settings
+    |--------------------------------------------------------------------------
+    |
+    | Weedy Gallery layout for all Markdown mails (FEAT-016): changed components
+    | and the theme live in resources/views/vendor/mail, all others fall back to
+    | the framework.
+    |
+    */
+
+    'markdown' => [
+        'theme' => 'weedy',
+
+        'paths' => [
+            resource_path('views/vendor/mail'),
+        ],
+    ],
+
 ];

@@ -1,12 +1,13 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Mail;
 use App\Http\Middleware\Admin;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\Admin\MailController as AdminMailController;
+use App\Http\Controllers\Dev\MailPreviewController;
 
 Route::get('/', [PostController::class, 'gallery'])
     ->name('dashboard');
@@ -26,6 +27,9 @@ Route::middleware('auth', 'verified')->group(function () {
         Route::get('/admin', [AdminController::class, 'dashboard'])->name('admin.index');
         Route::delete('/admin/users/{user}', [AdminController::class, 'destroyUser'])->name('admin.users.destroy');
         Route::get('/admin/posts', [PostController::class, 'all'])->name('posts.index');
+        Route::get('/admin/mails', [AdminMailController::class, 'index'])->name('admin.mails.index');
+        Route::post('/admin/mails/preview', [AdminMailController::class, 'preview'])->name('admin.mails.preview');
+        Route::post('/admin/mails', [AdminMailController::class, 'send'])->name('admin.mails.send');
         Route::get('/posts/{post}/make-draft', [PostController::class, 'makedraft'])->name('posts.make-draft');
     });
 
@@ -62,15 +66,12 @@ Route::middleware('auth', 'verified')->group(function () {
     // Posts have no show page, the gallery displays them.
     Route::resource('posts', PostController::class)->except('show');
     Route::resource('comments', CommentController::class);
-
-    // Mail
-    #Route::get('/send-test-email', [TestMailController::class, 'sendTestEmail']);
-    Route::get('/send-test-email', function () {
-        Mail::raw('This is a test email', function ($message) {
-            $message->to('recipient@example.com')->subject('Test Email');
-        });
-        return 'Test email sent!';
-    });
 });
+
+// Mail previews with sample data, only on a developer machine (FEAT-016)
+if (app()->environment('local')) {
+    Route::get('/dev/mail', [MailPreviewController::class, 'index'])->name('dev.mail.index');
+    Route::get('/dev/mail/{mail}', [MailPreviewController::class, 'show'])->name('dev.mail');
+}
 
 require __DIR__ . '/auth.php';

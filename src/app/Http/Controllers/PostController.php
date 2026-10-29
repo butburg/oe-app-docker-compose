@@ -151,30 +151,6 @@ class PostController extends Controller
     }
 
     /**
-     * Calculate the gallery page number for a specific post that is PUBLISHED.
-     */
-    public function getPageForPost(Post $post, $perPage = null)
-    {
-        if (!$post->is_published) {
-            throw new \Exception("Cannot calculate page for unpublished post");
-        }
-
-        // Use the configuration value if $perPage is null
-        $perPage = $perPage ?? config('app.posts_per_page');
-
-        // Get the total number of posts before the current post in descending order
-        $postPosition = Post::where('is_published', true)
-            ->where('published_at', '>=', $post->published_at)
-            ->orderBy('published_at', 'desc')
-            ->count();
-
-        // Calculate the page number
-        $page = ceil(($postPosition + 1) / $perPage);
-
-        return $page;
-    }
-
-    /**
      * Show the form for editing the specified resource.
      */
     public function edit(string $id): View|RedirectResponse

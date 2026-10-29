@@ -23,7 +23,7 @@
 <div class="mx-auto py-4 sm:py-5">
     <div class="{{-- grid grid-cols-1 lg:grid-cols-2 gap-4 --}}">
         @foreach ($posts as $post)
-            <div id="post-{{ $post->id }}" x-data x-init="$store.comments.init({{ $post->id }});
+            <div id="{{ $post->anchor() }}" x-data x-init="$store.comments.init({{ $post->id }});
             window.addEventListener('resize', () => $store.comments.updateOnResize({{ $post->id }}))">
 
                 <main class="app-surface mb-4 rounded-none border-x-0 px-2 py-2 sm:mx-1 sm:mb-6 sm:rounded-lg sm:border-x sm:px-6 sm:py-3">

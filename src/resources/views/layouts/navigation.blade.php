@@ -27,6 +27,9 @@
                                 <x-nav-link :href="route('admin.index')" :active="request()->routeIs('admin.index')">
                                     {{ __('Admin') }}
                                 </x-nav-link>
+                                <x-nav-link :href="route('admin.mails.index')" :active="request()->routeIs('admin.mails.*')">
+                                    {{ __('Mails') }}
+                                </x-nav-link>
                             @endif
                         @else
                             <x-nav-link :href="route('verification.notice')" :active="request()->routeIs('verification.notice')">
@@ -120,6 +123,9 @@
                                 @if (Auth::user()->usertype == 'admin')
                                     <x-responsive-nav-link :href="route('admin.index')" :active="request()->routeIs('admin.index')">
                                         {{ __('Admin') }}
+                                    </x-responsive-nav-link>
+                                    <x-responsive-nav-link :href="route('admin.mails.index')" :active="request()->routeIs('admin.mails.*')">
+                                        {{ __('Mails') }}
                                     </x-responsive-nav-link>
                                 @endif
                             @else

@@ -16,6 +16,7 @@ services:
       - ./src/vendor:/var/www/html/vendor:delegated # This mounts vendor locally
     depends_on:
       - php
+      - queue
       - npm
       #- redis
       - mailhog
@@ -34,6 +35,24 @@ services:
       - "9000:9000"
     volumes:
       - ./src:/var/www/html:delegated
+    networks:
+      - laravel
+
+  # Sends the queued mails (FEAT-017/018/019). After code changes: docker compose restart queue
+  queue:
+    build:
+      context: ./dockerfiles
+      dockerfile: php.dockerfile
+      args:
+        - UID=${UID:-1000}
+        - GID=${GID:-1000}
+    restart: unless-stopped
+    volumes:
+      - ./src:/var/www/html:delegated
+    depends_on:
+      - php
+      - mailhog
+    entrypoint: [ 'php', '/var/www/html/artisan', 'queue:work', '--tries=3', '--backoff=60' ]
     networks:
       - laravel
 
