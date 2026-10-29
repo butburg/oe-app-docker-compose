@@ -6,6 +6,23 @@ window.Alpine = Alpine;
 
 Alpine.start();
 
+// After a failed submit the page reloads at the top, so bring the first error into view.
+// Runs after Alpine, so errors in sections Alpine opens on error (modal, change email) count too.
+requestAnimationFrame(() => {
+    const error = [...document.querySelectorAll('[data-form-error]')]
+        .find((element) => element.getClientRects().length > 0);
+
+    if (!error) {
+        return;
+    }
+
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    error.scrollIntoView({ block: 'center', behavior: reduceMotion ? 'auto' : 'smooth' });
+
+    const field = error.parentElement?.querySelector('input:not([type="hidden"]), textarea, select');
+    field?.focus({ preventScroll: true });
+});
+
 document.addEventListener('click', (event) => {
     const shareButton = event.target.closest('.share-button');
 

@@ -5,7 +5,7 @@
             <input name="post_id" type="hidden" value="{{ $post->id }}">
             <x-gallery.form.textarea name="comment" placeholder="Add comment..."></x-gallery.form.textarea>
             @error('comment', 'commentAdd_' . $post->id)
-                <div class="alert alert-danger">{{ $message }}</div>
+                <div class="alert alert-danger" data-form-error role="alert">{{ $message }}</div>
             @enderror
         </x-gallery.form.form>
 
