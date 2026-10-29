@@ -27,12 +27,12 @@ Posts are linked via their numeric id as anchor (`#post-{id}`): in the share but
 - [x] `posts` gets a unique `slug` column, created from the title with `Str::slug($title, '-', 'de')` (lowercase, `-` instead of spaces, umlauts transliterated: `ä` → `ae`, maximum readable length).
 - [x] Duplicates after trimming get a numeric suffix: `sonnenuntergang`, `sonnenuntergang-2`, `sonnenuntergang-3`. Uniqueness enforced by a DB unique index; a race on insert is retried.
 - [x] Titles that give an empty slug (only emojis/special characters) fall back to a short random slug.
-- [x] The slug is set on create and may still change while the post is a draft; it is fixed once the post is published, even if the title changes later. Shared links never break.
+- [x] Drafts have no slug. It is made from the title at the first publication and fixed from then on, even if the title changes later or the post becomes a draft again. Shared links never break, and drafts do not take slugs away from published posts.
 - [x] The post container in the gallery uses the slug as anchor id (`id="{slug}"` or `id="p-{slug}"`; choose one so slugs cannot collide with other element ids on the page).
 - [x] Share button (`share.blade.php`), "view in gallery" links (`posts/index`, `profile/show`) build the URL with the slug anchor.
 - [x] Only the anchor changes: comments, Alpine stores and admin/owner routes (`edit`, `publish`, `make-draft`, `toggle-sensitive`, `destroy`) keep using the id internally.
 - [x] Old links with `#post-{id}` are not supported anymore (no fallback, no hidden second anchor); they open the page without scrolling to a post.
-- [x] Migration fills slugs for existing posts (same duplicate rule, oldest post gets the plain slug).
+- [x] Migration fills slugs for posts that were published once (same duplicate rule, first published post gets the plain slug).
 - [x] Feature tests: slug generation incl. umlauts and duplicates, fixed after publish, share URL and gallery anchor contain the slug and no id. Tests and validation passed (container).
 
 ## Technical Implementation Notes

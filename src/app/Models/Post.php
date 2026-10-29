@@ -32,10 +32,10 @@ class Post extends Model {
     public const SLUG_MAX_LENGTH = 60;
 
     protected static function booted(): void {
-        // The slug follows the title while the post is a draft and is fixed after the first publication,
-        // so shared links never break (FEAT-014)
+        // Drafts have no slug: it is made from the title at the first publication and fixed from then on,
+        // so shared links never break and drafts do not take names away (FEAT-014)
         static::saving(function (Post $post) {
-            if ($post->slug === null || ($post->isDirty('title') && $post->published_at === null)) {
+            if ($post->slug === null && $post->published_at !== null) {
                 $post->slug = static::uniqueSlug($post->title, $post->id);
             }
         });
@@ -59,7 +59,7 @@ class Post extends Model {
             try {
                 return parent::save($options);
             } catch (UniqueConstraintViolationException $e) {
-                if ($attempt >= 3 || !str_contains($e->getMessage(), 'slug')) {
+                if ($attempt >= 3 || $this->slug === null || !str_contains($e->getMessage(), 'slug')) {
                     throw $e;
                 }
                 $this->slug = static::uniqueSlug($this->title, $this->id);

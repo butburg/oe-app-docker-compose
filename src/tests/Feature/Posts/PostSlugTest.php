@@ -16,41 +16,48 @@ class PostSlugTest extends TestCase
         return Post::factory()->create(['title' => $title, 'is_published' => false, 'published_at' => null]);
     }
 
+    private function published(string $title): Post
+    {
+        return Post::factory()->create(['title' => $title, 'is_published' => true, 'published_at' => now()]);
+    }
+
     public function test_slug_is_made_from_the_title_with_umlauts_transliterated(): void
     {
-        $this->assertSame('schoener-sonnenuntergang-am-see', $this->draft('Schöner Sonnenuntergang am See!')->slug);
-        $this->assertSame('strasse-im-uebergang', $this->draft('Straße im Übergang')->slug);
+        $this->assertSame('schoener-sonnenuntergang-am-see', $this->published('Schöner Sonnenuntergang am See!')->slug);
+        $this->assertSame('strasse-im-uebergang', $this->published('Straße im Übergang')->slug);
     }
 
     public function test_duplicates_get_a_numeric_suffix(): void
     {
-        $this->assertSame('sonnenuntergang', $this->draft('Sonnenuntergang')->slug);
-        $this->assertSame('sonnenuntergang-2', $this->draft('sonnenuntergang')->slug);
-        $this->assertSame('sonnenuntergang-3', $this->draft('  SONNENUNTERGANG ')->slug);
+        $this->assertSame('sonnenuntergang', $this->published('Sonnenuntergang')->slug);
+        $this->assertSame('sonnenuntergang-2', $this->published('sonnenuntergang')->slug);
+        $this->assertSame('sonnenuntergang-3', $this->published('  SONNENUNTERGANG ')->slug);
     }
 
     public function test_title_without_letters_gets_a_random_slug(): void
     {
-        $slug = $this->draft('🌅🌅 !!')->slug;
+        $slug = $this->published('🌅🌅 !!')->slug;
 
         $this->assertMatchesRegularExpression('/^[a-z0-9]{8}$/', $slug);
     }
 
     public function test_long_title_is_cut_at_a_word_boundary(): void
     {
-        $slug = $this->draft(str_repeat('wonderful ', 12))->slug;
+        $slug = $this->published(str_repeat('wonderful ', 12))->slug;
 
         $this->assertLessThanOrEqual(Post::SLUG_MAX_LENGTH, strlen($slug));
         $this->assertStringEndsWith('wonderful', $slug);
     }
 
-    public function test_slug_follows_the_title_while_draft_and_is_fixed_after_publication(): void
+    public function test_draft_gets_its_slug_at_the_first_publication_and_keeps_it(): void
     {
         $post = $this->draft('First idea');
+        $this->assertNull($post->slug);
         $post->update(['title' => 'Better idea']);
-        $this->assertSame('better-idea', $post->slug);
+        $this->assertNull($post->fresh()->slug);
 
         $post->update(['is_published' => true, 'published_at' => now()]);
+        $this->assertSame('better-idea', $post->fresh()->slug);
         $post->update(['title' => 'Renamed after publishing']);
         $this->assertSame('better-idea', $post->fresh()->slug);
 
@@ -60,9 +67,27 @@ class PostSlugTest extends TestCase
         $this->assertSame('better-idea', $post->fresh()->slug);
     }
 
+    public function test_drafts_do_not_take_slugs_away(): void
+    {
+        $this->draft('Sunset');
+        $this->draft('Sunset');
+
+        $this->assertSame('sunset', $this->published('Sunset')->slug);
+    }
+
+    public function test_publish_route_gives_the_draft_its_slug(): void
+    {
+        $user = User::factory()->create();
+        $post = Post::factory()->forUser($user)->withImage()->create(['title' => 'Green leaf', 'is_published' => false, 'published_at' => null]);
+
+        $this->actingAs($user)->get(route('posts.publish', $post->id));
+
+        $this->assertSame('green-leaf', $post->fresh()->slug);
+    }
+
     public function test_a_post_keeps_its_own_slug_when_saved_again(): void
     {
-        $post = $this->draft('Same title');
+        $post = $this->published('Same title');
         $post->update(['title' => 'Same title', 'is_sensitive' => true]);
 
         $this->assertSame('same-title', $post->fresh()->slug);

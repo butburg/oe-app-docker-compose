@@ -18,8 +18,9 @@ return new class extends Migration
             $table->string('slug')->nullable()->after('title');
         });
 
+        // Only posts that were published once, drafts get their slug at the first publication.
         // Oldest post first, so it gets the plain slug and newer duplicates get the suffix
-        DB::table('posts')->orderBy('created_at')->orderBy('id')->get(['id', 'title'])
+        DB::table('posts')->whereNotNull('published_at')->orderBy('published_at')->orderBy('id')->get(['id', 'title'])
             ->each(fn ($post) => DB::table('posts')->where('id', $post->id)->update([
                 'slug' => Post::uniqueSlug($post->title, $post->id),
             ]));
