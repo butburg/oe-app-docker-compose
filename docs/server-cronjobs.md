@@ -1,6 +1,6 @@
 # Cronjobs auf dem Server
 
-Die App braucht auf dem Server Cronjobs, die der Hoster ausführt. Die Einträge unten sind für unseren aktuellen Hoster **lima-city**. Bei anderen Hostern heißen die Felder anders, oder der Cronjob kommt per `crontab -e` dazu. Pfade und `flock` können dort ebenfalls abweichen. Was der Befehl tun muss, bleibt gleich.
+Die App braucht auf dem Server Cronjobs, die der Hoster ausführt. Die Einträge unten sind für unseren aktuellen Hoster **lima-city**. Bei anderen Hostern heißen die Felder anders, oder der Cronjob kommt per `crontab -e` dazu. Pfade und `flock` können dort ebenfalls abweichen.
 
 Bei lima-city im Kundenbereich unter **Cronjobs > Cronjob erstellen**. Hilfe: https://www.lima-city.de/hilfe/cronjobs
 
@@ -9,8 +9,6 @@ Bei lima-city im Kundenbereich unter **Cronjobs > Cronjob erstellen**. Hilfe: ht
 Manche Arbeit erledigt die App nicht sofort im Request. Sie legt dafür einen Job in die Queue, also in die Tabelle `jobs`, oft mit „frühestens um X Uhr“. Der Worker holt die fälligen Jobs dort ab und führt sie aus, egal welche es sind. Ohne Worker bleiben alle Jobs liegen. Lokal macht das der `queue`-Container.
 
 Welche Jobs es gibt, steht in `src/app/Jobs/`. Ein Beispiel sind die Sammel-Mails (Kommentare, neue Bilder, Ankündigungen), die erst nach einer Wartezeit gebündelt rausgehen.
-
-Erst nach dem Deploy von Branch 05 anlegen.
 
 | Feld | Eintrag |
 |---|---|
