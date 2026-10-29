@@ -19,7 +19,7 @@
 @isset($notice)
 {{ $notice }}
 @else
-You get this mail because this address was used on [{{ config('app.name') }}]({{ config('app.url') }}).
+You get this mail because you have an account on [{{ config('app.name') }}]({{ config('app.url') }}).
 @endisset
 </x-mail::footer>
 </x-slot:footer>

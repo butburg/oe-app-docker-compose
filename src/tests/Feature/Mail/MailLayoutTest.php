@@ -5,6 +5,7 @@ namespace Tests\Feature\Mail;
 use App\Mail\AccountAlreadyExists;
 use App\Mail\ConfirmNewEmail;
 use App\Mail\ConfirmRegistration;
+use App\Mail\MailAssets;
 use Illuminate\Mail\Mailable;
 use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
@@ -29,18 +30,54 @@ class MailLayoutTest extends TestCase
         $mail = $make();
         $html = $mail->render();
 
-        $this->assertStringContainsString(asset('images/mail/logo.png'), $html);
+        $this->assertStringContainsString('src="cid:weedy-logo.png"', $html);
         $this->assertStringContainsString('width="48" height="48"', $html);
         // two-part wordmark as text, first word in the accent colour
         $this->assertMatchesRegularExpression('/<span class="accent" style="[^"]*color: #A5E04D;[^"]*">Weedy<\/span> Gallery/', $html);
-        $this->assertStringContainsString('font-family: Figtree, sans-serif', $html);
+        $this->assertStringContainsString('font-family: Figtree, Arial, Helvetica, sans-serif', $html);
         $this->assertStringContainsString('bgcolor="#071D20"', $html);
-        $this->assertStringContainsString('You get this mail because this address was used on', $html);
+        $this->assertStringContainsString($mail instanceof AccountAlreadyExists
+            ? 'You get this mail because you have an account on'
+            : 'You get this mail because this address was entered on', $html);
 
         $this->assertStringNotContainsString('laravel.com/img/notification-logo.png', $html);
         $this->assertStringNotContainsString('All rights reserved', $html);
         $this->assertStringNotContainsString('-apple-system', $html);
         $this->assertStringNotContainsString('@import', $html);
+    }
+
+    /**
+     * @dataProvider mails
+     */
+    public function test_mail_loads_nothing_from_the_internet(callable $make): void
+    {
+        $html = $make()->render();
+
+        // the font is inside the mail, the logo is attached
+        $this->assertStringContainsString("font-family: 'Figtree'", $html);
+        $this->assertStringContainsString('src: url(data:font/woff2;base64,', $html);
+        $this->assertDoesNotMatchRegularExpression('/(src|background)=["\']https?:/i', $html);
+        $this->assertDoesNotMatchRegularExpression('/<link[^>]+https?:/i', $html);
+        $this->assertDoesNotMatchRegularExpression('/url\(["\']?https?:/i', $html);
+    }
+
+    public function test_sent_mail_has_the_logo_attached_inline(): void
+    {
+        Mail::to('anna@example.test')->send(new ConfirmRegistration('Anna', 'https://example.test/confirm'));
+        $message = Mail::mailer()->getSymfonyTransport()->messages()->last()->getOriginalMessage();
+
+        $logo = collect($message->getAttachments())->first(fn ($part) => $part->getFilename() === 'weedy-logo.png');
+        $this->assertNotNull($logo);
+        $this->assertSame('inline', $logo->getDisposition());
+        $this->assertSame(file_get_contents(MailAssets::logoPath()), $logo->getBody());
+    }
+
+    public function test_browser_preview_shows_the_logo_from_the_server(): void
+    {
+        $html = MailAssets::forBrowser((new ConfirmRegistration('Anna', 'https://example.test/confirm'))->render());
+
+        $this->assertStringContainsString('src="' . asset('images/mail/logo.png') . '"', $html);
+        $this->assertStringNotContainsString('cid:', $html);
     }
 
     /**
@@ -52,7 +89,7 @@ class MailLayoutTest extends TestCase
         $text = Mail::mailer()->getSymfonyTransport()->messages()->last()->getOriginalMessage()->getTextBody();
 
         $this->assertStringContainsString('Weedy Gallery: ' . config('app.url'), $text);
-        $this->assertStringContainsString('You get this mail because this address was used on Weedy Gallery', $text);
+        $this->assertMatchesRegularExpression('/You get this mail because (you have an account on|this address was entered on) \[?Weedy Gallery/', $text);
         $this->assertStringNotContainsString('<span', $text);
     }
 
@@ -68,7 +105,7 @@ class MailLayoutTest extends TestCase
     {
         $html = (new ConfirmRegistration('Anna', 'https://example.test/confirm'))->render();
 
-        // the default Laravel theme gave 9,374 bytes for this mail
-        $this->assertLessThan(5500, strlen($html));
+        // the default Laravel theme gave 9,374 bytes for this mail; the embedded font (about 27 KB) is not counted
+        $this->assertLessThan(5500, strlen($html) - strlen(MailAssets::fontCss()));
     }
 }

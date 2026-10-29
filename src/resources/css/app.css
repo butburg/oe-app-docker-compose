@@ -1,3 +1,12 @@
+/* Figtree from our own server, no font CDN. One variable font file for all weights, Latin subset (resources/fonts/README.md) */
+@font-face {
+    font-family: 'Figtree';
+    font-style: normal;
+    font-weight: 300 900;
+    font-display: swap;
+    src: url('../fonts/figtree-latin-wght-normal.woff2') format('woff2');
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

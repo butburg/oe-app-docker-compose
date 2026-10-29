@@ -1,12 +1,16 @@
 /* Weedy Gallery mail theme (FEAT-016). Inlined into every element, so keep it short. */
 body, .wrapper { background-color: #071D20; margin: 0; padding: 0; width: 100%; }
-body, td, p, a, h1, h2, h3 { font-family: Figtree, sans-serif; }
+body, td, p, a, h1, h2, h3 { font-family: Figtree, Arial, Helvetica, sans-serif; }
 body, td, p { color: #ECF7F5; font-size: 16px; line-height: 1.5; }
 p { margin: 0 0 16px; }
 h1 { color: #ECF7F5; font-size: 20px; margin: 0 0 16px; }
 h2, h3 { color: #ECF7F5; font-size: 16px; margin: 0 0 12px; }
 a { color: #00D9FF; }
+hr.divider { border: 0; border-top: 1px solid #285055; margin: 24px 0; }
 blockquote { border-left: 3px solid #285055; margin: 0 0 16px; padding: 0 0 0 16px; }
+/* keeps the box away from the screen edge on phones */
+.wrapper-cell { padding: 0 12px 24px; }
+ul, ol { margin: 0 0 16px; padding-left: 20px; }
 .header { padding: 24px 0 16px; text-align: center; }
 .brand { color: #ECF7F5; font-size: 20px; font-weight: bold; text-decoration: none; }
 .logo { border: 0; }

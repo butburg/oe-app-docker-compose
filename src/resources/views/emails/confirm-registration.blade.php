@@ -11,4 +11,8 @@ The link works once and expires in {{ $minutes }} minutes. If you did not sign u
 
 Thanks,<br>
 {{ config('app.name') }}
+
+<x-slot:notice>
+You get this mail because this address was entered on [{{ config('app.name') }}]({{ config('app.url') }}).
+</x-slot:notice>
 </x-mail::message>

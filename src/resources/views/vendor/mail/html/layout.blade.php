@@ -8,8 +8,12 @@
 <meta name="color-scheme" content="dark">
 <meta name="supported-color-schemes" content="dark">
 <style>
+{{-- Figtree like the website, inside the mail: nothing is loaded from the internet. Gmail and Outlook use Arial --}}
+{!! App\Mail\MailAssets::fontCss() !!}
+
 @media only screen and (max-width: 600px) {
 .inner-body, .footer { width: 100% !important; }
+.content-cell { padding: 24px 20px !important; }
 }
 </style>
 </head>
@@ -17,7 +21,7 @@
 {{-- background also as attribute on the wrapper table: some clients drop the body styles --}}
 <table class="wrapper" width="100%" bgcolor="#071D20" cellpadding="0" cellspacing="0" role="presentation">
 <tr>
-<td align="center">
+<td class="wrapper-cell" align="center">
 <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
 {{ $header ?? '' }}
 

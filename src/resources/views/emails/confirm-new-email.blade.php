@@ -11,4 +11,8 @@ The link expires in {{ $minutes }} minutes. Until you open it, your old email ad
 
 Thanks,<br>
 {{ config('app.name') }}
+
+<x-slot:notice>
+You get this mail because this address was entered on [{{ config('app.name') }}]({{ config('app.url') }}).
+</x-slot:notice>
 </x-mail::message>

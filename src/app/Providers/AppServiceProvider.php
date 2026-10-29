@@ -2,7 +2,10 @@
 
 namespace App\Providers;
 
+use App\Mail\MailAssets;
+use Illuminate\Mail\Events\MessageSending;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Database\Eloquent\Model;
 
@@ -31,5 +34,8 @@ class AppServiceProvider extends ServiceProvider
         // and an email change in the profile keeps the old email verified until the new one is confirmed
         // (User::requestEmailChange). Someone with a pending registration has no account yet, so they are a guest.
         Blade::if('verified', fn () => (bool) auth()->user()?->hasVerifiedEmail());
+
+        // the mail logo is attached to the mail, not loaded from the server (FEAT-016)
+        Event::listen(MessageSending::class, [MailAssets::class, 'embedLogo']);
     }
 }

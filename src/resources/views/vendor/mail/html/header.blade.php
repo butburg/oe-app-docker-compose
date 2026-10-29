@@ -6,7 +6,7 @@
 <tr>
 <td class="header">
 <a href="{{ $url }}" class="brand">
-<img src="{{ asset('images/mail/logo.png') }}" class="logo" width="48" height="48" alt="{{ config('app.name') }}">
+<img src="{{ App\Mail\MailAssets::LOGO_CID }}" class="logo" width="48" height="48" alt="{{ config('app.name') }}">
 <br>
 <span class="accent">{{ $first }}</span>@if ($rest !== '') {{ $rest }}@endif
 </a>
