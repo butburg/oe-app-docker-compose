@@ -1,12 +1,12 @@
 <x-app-layout>
     <x-slot name="header">
-        <x-header2>Mail to users</x-header2>
+        <x-header2>Announcements</x-header2>
     </x-slot>
 
     <div class="mx-auto max-w-3xl space-y-6 px-4 py-6 text-c-text sm:px-6 lg:px-8">
         <section class="app-surface p-4 sm:p-6">
             <header>
-                <h3 class="text-lg font-semibold">Write a mail</h3>
+                <h3 class="text-lg font-semibold">Make an announcement</h3>
                 <p class="mt-1 text-sm leading-6 text-c-muted">
                     Announcements go to everyone in the group, also to users who switched off notification mails,
                     and cannot be unsubscribed. Keep them rare. Every user gets their own mail.
@@ -14,7 +14,7 @@
             </header>
 
             <form method="POST" action="{{ route('admin.mails.preview') }}" class="mt-6 space-y-6"
-                x-data="{ group: @js(old('group', 'all')) }">
+                x-data="{ group: @js(old('group', 'verified')) }">
                 @csrf
                 <div>
                     <x-input-label for="subject" value="Subject" />
@@ -29,6 +29,12 @@
                         class="app-field mt-1 font-mono text-sm">{{ old('body') }}</textarea>
                     <p class="mt-1 text-xs text-c-muted">Markdown: <code># Heading</code>, <code>**bold**</code>,
                         <code>[link](https://…)</code>, lists with <code>-</code>. HTML is shown as text.</p>
+                    <p class="mt-1 text-xs text-c-muted">Placeholders, filled for each recipient (also in the subject):</p>
+                    <ul class="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-xs text-c-muted">
+                        @foreach ($placeholders as $placeholder => $meaning)
+                            <li><code class="text-c-text">{{ $placeholder }}</code> {{ $meaning }}</li>
+                        @endforeach
+                    </ul>
                     <x-input-error class="mt-2" :messages="$errors->get('body')" />
                 </div>
 
@@ -52,7 +58,7 @@
                             class="mt-1 block w-full" :value="old('recipient')" x-bind:required="group === 'user'" />
                         <datalist id="verified-users">
                             @foreach ($users as $user)
-                                <option value="{{ $user->email }}">{{ $user->name }}</option>
+                                <option value="{{ $user->email }}">{{ $user->name }}{{ $user->email_verified_at ? '' : ' (unverified)' }}</option>
                             @endforeach
                         </datalist>
                     </div>

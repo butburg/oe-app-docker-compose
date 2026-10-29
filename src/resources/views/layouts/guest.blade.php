@@ -51,8 +51,19 @@
                 <x-login-link class="app-button-secondary mt-4 w-full" email="user-viele-bilder@user.com" />
                 {{-- logs in the first admin, or creates one if there is none --}}
                 <x-login-link class="app-button-secondary mt-2 w-full" :user-attributes="['usertype' => 'admin']" label="Developer Login (Admin)" />
-                {{-- seeded unverified user (needs db:seed, otherwise the link creates a verified one), shows the guest view with the verify hint --}}
-                <x-login-link class="app-button-secondary mt-2 w-full" email="user-unverified@user.com" label="Developer Login (Unverified)" />
+                {{-- always an unverified account, shows the guest view with the verify hint: the seeded one if it is
+                     still unverified, otherwise any unverified one, otherwise the link creates a new unverified user --}}
+                @php
+                    $unverified = \App\Models\User::whereNull('email_verified_at')
+                        ->orderByRaw("email = 'user-unverified@user.com' desc")
+                        ->orderBy('id')
+                        ->first();
+                @endphp
+                @if ($unverified)
+                    <x-login-link class="app-button-secondary mt-2 w-full" :key="$unverified->id" label="Developer Login (Unverified)" />
+                @else
+                    <x-login-link class="app-button-secondary mt-2 w-full" :user-attributes="['email_verified_at' => null]" label="Developer Login (Unverified)" />
+                @endif
             @endif
 
             <div class="app-surface-accent mt-6 p-4 sm:p-6">

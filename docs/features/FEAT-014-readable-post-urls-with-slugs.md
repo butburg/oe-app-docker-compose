@@ -16,7 +16,7 @@ tags:
 # Readable post anchors with slugs
 
 ## Overview
-Links to a post use an anchor made from its title instead of its id: `/dashboard?page=3#schoener-sonnenuntergang` instead of `/dashboard?page=3#post-42`. Shared links and bookmarks show something a person can recognise, and they no longer reveal post ids (and so the number of posts).
+Links to a post use an anchor made from its title instead of its id: `/?page=3#post-schoener-sonnenuntergang` instead of `/dashboard?page=3#post-42`. Shared links and bookmarks show something a person can recognise, and they no longer reveal post ids (and so the number of posts).
 
 There is no page for a single post; posts stay in the gallery. Only the anchors and the links pointing to them change.
 
@@ -38,6 +38,6 @@ Posts are linked via their numeric id as anchor (`#post-{id}`): in the share but
 ## Technical Implementation Notes
 - **Affected files / components**: migration (`slug` column + backfill), `app/Models/Post.php` (slug on `creating`/`updating`), `resources/views/components/gallery/gallery.blade.php` (anchor id), `resources/views/components/gallery/share.blade.php`, `resources/views/posts/index.blade.php`, `resources/views/profile/show.blade.php`, `database/factories/PostFactory.php`.
 - **Dependencies or constraints**: own ~15 lines in the model are enough; `spatie/laravel-sluggable` is not needed.
-- **Implemented**: anchor is `id="p-{slug}"` (`Post::anchor()`), links via `Post::galleryUrl()`; slug logic in `Post::uniqueSlug()` (max. 60 characters, cut at a word boundary), set in `Post::booted()` on `saving`, fixed once `published_at` is set (also after making it a draft again); a unique-index race is retried in `Post::save()`. `PostController::getPageForPost()` moved to `Post::galleryPage()`; it was one page off for the last post on a page (`ceil((position + 1) / perPage)`), now `ceil(position / perPage)`. Tests: `tests/Feature/Posts/PostSlugTest.php`.
+- **Implemented**: anchor is `id="post-{slug}"` (`Post::anchor()`, changed from `p-` on request; old `#post-{id}` links are still not supported, a slug that is only digits could look like one), links via `Post::galleryUrl()`; slug logic in `Post::uniqueSlug()` (max. 60 characters, cut at a word boundary), set in `Post::booted()` on `saving`, fixed once `published_at` is set (also after making it a draft again); a unique-index race is retried in `Post::save()`. `PostController::getPageForPost()` moved to `Post::galleryPage()`; it was one page off for the last post on a page (`ceil((position + 1) / perPage)`), now `ceil(position / perPage)`. Tests: `tests/Feature/Posts/PostSlugTest.php`.
 - **Known limitation**: the link still contains `?page=N`, computed when the link is created. When new posts are published, the post moves to a later page and an old shared link opens the wrong page. Not part of this feature; a possible follow-up is `/dashboard?post={slug}`, where the dashboard computes the current page itself and redirects.
 - **Related**: FEAT-011 (image links are separate from post links and expire; post links stay permanent).

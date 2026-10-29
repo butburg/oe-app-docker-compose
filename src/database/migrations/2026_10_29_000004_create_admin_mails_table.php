@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
             $table->string('subject');
             $table->text('body');
-            // all | admins | user
+            // verified | everyone | user
             $table->string('group');
             $table->string('recipient_email')->nullable();
             $table->unsignedInteger('recipient_count');

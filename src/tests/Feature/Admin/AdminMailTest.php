@@ -28,7 +28,7 @@ class AdminMailTest extends TestCase
         return array_merge([
             'subject' => 'Maintenance',
             'body' => "# Hello\n\nThe gallery is **offline** on Sunday.",
-            'group' => 'all',
+            'group' => 'verified',
             'send_token' => (string) Str::uuid(),
         ], $overrides);
     }
@@ -55,7 +55,12 @@ class AdminMailTest extends TestCase
             ->assertOk()
             ->assertSee('All verified users')
             ->assertSee('(3 users)')
-            ->assertSee('(1 user)');
+            ->assertSee('All users including unverified')
+            ->assertSee('(4 users)')
+            ->assertDontSee('Admins only')
+            ->assertSee('{name}')
+            ->assertSee('{comments}')
+            ->assertSee('{website}');
     }
 
     public function test_preview_renders_the_mail_and_the_recipient_count(): void
@@ -88,31 +93,78 @@ class AdminMailTest extends TestCase
         }
         Mail::assertNotQueued(AdminMessage::class, fn ($mail) => $mail->hasTo($unverified->email));
         Mail::assertQueuedCount(4);
-        $this->assertDatabaseHas('admin_mails', ['subject' => 'Maintenance', 'group' => 'all', 'recipient_count' => 4, 'user_id' => $this->admin->id]);
+        $this->assertDatabaseHas('admin_mails', ['subject' => 'Maintenance', 'group' => 'verified', 'recipient_count' => 4, 'user_id' => $this->admin->id]);
     }
 
-    public function test_admins_group_and_single_user(): void
+    public function test_everyone_group_includes_unverified_users_and_single_user_can_be_unverified(): void
     {
         Mail::fake();
-        $user = User::factory()->create(['email' => 'anna@example.test']);
-        $otherAdmin = User::factory()->create(['usertype' => 'admin']);
+        $verified = User::factory()->create();
+        $unverified = User::factory()->unverified()->create(['email' => 'old@example.test']);
 
-        $this->actingAs($this->admin)->post(route('admin.mails.send'), $this->mailData(['group' => 'admins']));
-        Mail::assertQueuedCount(2);
-        Mail::assertQueued(AdminMessage::class, fn ($mail) => $mail->hasTo($otherAdmin->email));
-        Mail::assertNotQueued(AdminMessage::class, fn ($mail) => $mail->hasTo($user->email));
-
-        $this->actingAs($this->admin)->post(route('admin.mails.send'), $this->mailData(['group' => 'user', 'recipient' => 'anna@example.test']));
+        $this->actingAs($this->admin)->post(route('admin.mails.send'), $this->mailData(['group' => 'everyone']));
         Mail::assertQueuedCount(3);
-        Mail::assertQueued(AdminMessage::class, fn ($mail) => $mail->hasTo('anna@example.test'));
+        Mail::assertQueued(AdminMessage::class, fn ($mail) => $mail->hasTo($unverified->email));
+        Mail::assertQueued(AdminMessage::class, fn ($mail) => $mail->hasTo($verified->email));
+
+        $this->actingAs($this->admin)->post(route('admin.mails.send'), $this->mailData(['group' => 'user', 'recipient' => 'old@example.test']));
+        Mail::assertQueuedCount(4);
+        $this->assertDatabaseHas('admin_mails', ['group' => 'user', 'recipient_email' => 'old@example.test', 'recipient_count' => 1]);
     }
 
-    public function test_single_user_must_be_a_verified_user(): void
+    public function test_admins_group_does_not_exist_anymore(): void
+    {
+        $this->actingAs($this->admin)->post(route('admin.mails.send'), $this->mailData(['group' => 'admins']))
+            ->assertSessionHasErrors('group');
+    }
+
+    public function test_placeholders_are_filled_per_recipient_and_escaped(): void
     {
         Mail::fake();
-        User::factory()->unverified()->create(['email' => 'new@example.test']);
+        $anna = User::factory()->create(['name' => 'Anna <b>', 'email' => 'anna@example.test']);
+        \App\Models\Post::factory()->count(2)->forUser($anna)->create();
+        \App\Models\Comment::create(['user_id' => $anna->id, 'post_id' => \App\Models\Post::first()->id, 'comment' => 'Nice']);
 
-        $this->actingAs($this->admin)->post(route('admin.mails.send'), $this->mailData(['group' => 'user', 'recipient' => 'new@example.test']))
+        $this->actingAs($this->admin)->post(route('admin.mails.send'), $this->mailData([
+            'group' => 'user', 'recipient' => 'anna@example.test',
+            'subject' => 'News for {name}',
+            'body' => "Hi **{name}** ({email}), you have {posts} images and {comments} comments.",
+        ]));
+
+        Mail::assertQueued(AdminMessage::class, function (AdminMessage $mail) {
+            $html = $mail->render();
+
+            return $mail->envelope()->subject === 'News for Anna <b>'
+                && str_contains($html, '<strong>Anna &lt;b&gt;</strong> (anna@example.test), you have 2 images and 1 comments.')
+                && !str_contains($html, '{name}');
+        });
+    }
+
+    public function test_website_placeholder_becomes_a_link(): void
+    {
+        config(['app.url' => 'https://gallery.example.test']);
+        $mail = new AdminMessage('See {website}', "Visit {website} or [the gallery]({website}).");
+        $html = $mail->render();
+
+        $this->assertSame('See https://gallery.example.test', $mail->envelope()->subject);
+        $this->assertStringContainsString('<a href="https://gallery.example.test"', $html);
+        $this->assertStringContainsString('>the gallery</a>', $html);
+        $this->assertStringNotContainsString('{website}', $html);
+    }
+
+    public function test_preview_fills_placeholders_with_the_admins_data(): void
+    {
+        $this->actingAs($this->admin)->post(route('admin.mails.preview'), $this->mailData(['body' => 'Hello {email}']))
+            ->assertOk()
+            ->assertSee('Hello admin@example.test')
+            ->assertSee('Placeholders are filled with your own data');
+    }
+
+    public function test_single_user_must_exist(): void
+    {
+        Mail::fake();
+
+        $this->actingAs($this->admin)->post(route('admin.mails.send'), $this->mailData(['group' => 'user', 'recipient' => 'nobody@example.test']))
             ->assertSessionHasErrors('recipient');
         $this->actingAs($this->admin)->post(route('admin.mails.send'), $this->mailData(['group' => 'user']))
             ->assertSessionHasErrors('recipient');
@@ -173,7 +225,8 @@ class AdminMailTest extends TestCase
         $this->assertStringContainsString('&lt;a href="https://evil.test"&gt;x&lt;/a&gt;', $html);
         $this->assertStringNotContainsString('<a href="https://evil.test"', $html);
         $this->assertStringNotContainsString('javascript:', $html);
-        $this->assertStringContainsString('These mails cannot be switched off.', $html);
+        // same footer as all other mails, no settings link
+        $this->assertStringContainsString('You get this mail because this address was used on', $html);
         $this->assertStringNotContainsString('mail settings', $html);
     }
 
@@ -188,12 +241,23 @@ class AdminMailTest extends TestCase
     public function test_sent_mails_are_listed(): void
     {
         AdminMail::create([
-            'user_id' => $this->admin->id, 'subject' => 'Old news', 'body' => 'x', 'group' => 'all',
+            'user_id' => $this->admin->id, 'subject' => 'Old news', 'body' => 'x', 'group' => 'verified',
             'recipient_count' => 7, 'send_token' => (string) Str::uuid(),
         ]);
 
         $this->actingAs($this->admin)->get(route('admin.mails.index'))
             ->assertSee('Old news')
             ->assertSee('7 users');
+    }
+
+    public function test_navigation_shows_users_announcements_and_the_admin_label(): void
+    {
+        $this->actingAs($this->admin)->get(route('admin.mails.index'))
+            ->assertSeeInOrder(['Users', 'Announcements'])
+            ->assertSee('<span class="text-c-accent">Admin</span>', false);
+
+        $this->actingAs(User::factory()->create())->get(route('dashboard'))
+            ->assertDontSee('Announcements')
+            ->assertDontSee('<span class="text-c-accent">Admin</span>', false);
     }
 }

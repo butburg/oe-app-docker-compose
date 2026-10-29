@@ -25,10 +25,10 @@
                             </x-nav-link>
                             @if (Auth::user()->usertype == 'admin')
                                 <x-nav-link :href="route('admin.index')" :active="request()->routeIs('admin.index')">
-                                    {{ __('Admin') }}
+                                    {{ __('Users') }}
                                 </x-nav-link>
                                 <x-nav-link :href="route('admin.mails.index')" :active="request()->routeIs('admin.mails.*')">
-                                    {{ __('Mails') }}
+                                    {{ __('Announcements') }}
                                 </x-nav-link>
                             @endif
                         @else
@@ -122,10 +122,10 @@
                                 </x-responsive-nav-link>
                                 @if (Auth::user()->usertype == 'admin')
                                     <x-responsive-nav-link :href="route('admin.index')" :active="request()->routeIs('admin.index')">
-                                        {{ __('Admin') }}
+                                        {{ __('Users') }}
                                     </x-responsive-nav-link>
                                     <x-responsive-nav-link :href="route('admin.mails.index')" :active="request()->routeIs('admin.mails.*')">
-                                        {{ __('Mails') }}
+                                        {{ __('Announcements') }}
                                     </x-responsive-nav-link>
                                 @endif
                             @else
@@ -147,6 +147,9 @@
                             <p class="mt-1 truncate border-t border-c-line px-3 pb-1 pt-2 text-xs text-c-quiet"
                                 title="{{ Auth::user()->name }}">
                                 {{ Str::limit(Auth::user()->name, config('app.truncate_name'), '...') }}
+                                @if (Auth::user()->usertype == 'admin')
+                                    <span class="block text-c-accent">{{ __('Admin') }}</span>
+                                @endif
                             </p>
                         </x-slot>
                     </x-dropdown>
@@ -157,8 +160,11 @@
                     @unless (request()->routeIs('posts.create', 'posts.edit'))
                         <x-create-post-button />
                     @endunless
-                    <span class="hidden max-w-40 truncate text-xs text-c-quiet xl:inline" title="{{ Auth::user()->name }}">
-                        {{ Str::limit(Auth::user()->name, config('app.truncate_name'), '...') }}
+                    <span class="hidden max-w-40 flex-col text-xs leading-tight text-c-quiet xl:flex" title="{{ Auth::user()->name }}">
+                        <span class="truncate">{{ Str::limit(Auth::user()->name, config('app.truncate_name'), '...') }}</span>
+                        @if (Auth::user()->usertype == 'admin')
+                            <span class="text-c-accent">{{ __('Admin') }}</span>
+                        @endif
                     </span>
                     <form class="flex self-stretch" method="POST" action="{{ route('logout') }}">
                         @csrf

@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <x-header2>Admin Dashboard</x-header2>
+        <x-header2>Users</x-header2>
     </x-slot>
 
 

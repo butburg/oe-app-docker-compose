@@ -1,7 +1,7 @@
 ---
 id: FEAT-018
 title: Mail the uploader when their image gets a comment
-status: backlog # backlog | todo | in-progress | review | done
+status: in-progress # backlog | todo | in-progress | review | done
 priority: medium # low | medium | high
 category: feature # feature | enhancement | bugfix | ui | security
 assignee: unassigned

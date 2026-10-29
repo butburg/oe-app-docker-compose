@@ -76,8 +76,8 @@ class PostSlugTest extends TestCase
 
         $this->get(route('dashboard'))
             ->assertOk()
-            ->assertSee('id="p-mondschein-ueber-koeln"', false)
-            ->assertSee('data-share-url="' . route('dashboard', ['page' => 1]) . '#p-mondschein-ueber-koeln"', false)
+            ->assertSee('id="post-mondschein-ueber-koeln"', false)
+            ->assertSee('data-share-url="' . route('dashboard', ['page' => 1]) . '#post-mondschein-ueber-koeln"', false)
             ->assertDontSee('#post-' . $post->id, false)
             ->assertDontSee('id="post-' . $post->id . '"', false);
     }
@@ -89,8 +89,8 @@ class PostSlugTest extends TestCase
             'title' => 'Blue door', 'is_published' => true, 'is_sensitive' => false, 'published_at' => now(),
         ]);
 
-        $this->actingAs($user)->get(route('posts.index'))->assertSee('#p-blue-door', false);
-        $this->actingAs($user)->get(route('profile.show', $user))->assertSee('#p-blue-door', false);
+        $this->actingAs($user)->get(route('posts.index'))->assertSee('#post-blue-door', false);
+        $this->actingAs($user)->get(route('profile.show', $user))->assertSee('#post-blue-door', false);
     }
 
     public function test_gallery_page_of_a_post_is_computed_from_its_position(): void

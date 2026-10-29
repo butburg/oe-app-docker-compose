@@ -23,8 +23,8 @@ use Illuminate\View\View;
 class MailController extends Controller
 {
     public const GROUPS = [
-        'all' => 'All verified users',
-        'admins' => 'Admins only',
+        'verified' => 'All verified users',
+        'everyone' => 'All users including unverified',
         'user' => 'A single user',
     ];
 
@@ -33,11 +33,12 @@ class MailController extends Controller
         return view('admin.mails.index', [
             'groups' => self::GROUPS,
             'counts' => [
-                'all' => $this->recipients('all')->count(),
-                'admins' => $this->recipients('admins')->count(),
+                'verified' => $this->recipients('verified')->count(),
+                'everyone' => $this->recipients('everyone')->count(),
                 'user' => 1,
             ],
-            'users' => User::whereNotNull('email_verified_at')->orderBy('name')->get(['name', 'email']),
+            'placeholders' => AdminMessage::PLACEHOLDERS,
+            'users' => User::orderBy('name')->get(['name', 'email', 'email_verified_at']),
             'sent' => AdminMail::with('user')->latest()->take(20)->get(),
             'failedJobs' => DB::table('failed_jobs')->count(),
         ]);
@@ -53,7 +54,8 @@ class MailController extends Controller
         }
 
         $data = $this->validated($request);
-        $mail = new AdminMessage($data['subject'], $data['body']);
+        // preview and test mail show the placeholders filled with the admin's own data
+        $mail = AdminMessage::forUser($data['subject'], $data['body'], $request->user());
 
         if ($request->input('action') === 'test') {
             Mail::to($request->user())->send($mail);
@@ -91,7 +93,7 @@ class MailController extends Controller
             'send_token' => $request->input('send_token'),
         ]);
 
-        $queueMails->handle($recipients, fn () => new AdminMessage($log->subject, $log->body));
+        $queueMails->handle($recipients, fn (User $user) => AdminMessage::forUser($log->subject, $log->body, $user));
 
         session()->flash('notif.success', "Mail queued for {$log->recipient_count} " . Str::plural('user', $log->recipient_count) . '.');
         return redirect()->route('admin.mails.index');
@@ -103,26 +105,24 @@ class MailController extends Controller
             'subject' => 'required|string|max:150',
             'body' => 'required|string|max:10000',
             'group' => ['required', Rule::in(array_keys(self::GROUPS))],
-            'recipient' => [
-                'nullable', 'required_if:group,user', 'email',
-                Rule::exists('users', 'email')->whereNotNull('email_verified_at'),
-            ],
+            'recipient' => ['nullable', 'required_if:group,user', 'email', Rule::exists('users', 'email')],
         ], [
-            'recipient.exists' => 'There is no verified user with this email.',
+            'recipient.exists' => 'There is no user with this email.',
         ]);
     }
 
     /**
-     * Only verified users get mails. The notification switches of the profile are ignored on purpose.
+     * The notification switches of the profile are ignored on purpose.
+     * Unverified users (old accounts from before FEAT-013) only get mails when chosen explicitly.
      */
     private function recipients(string $group, ?string $email = null): Builder
     {
-        $query = User::whereNotNull('email_verified_at')->orderBy('id');
+        $query = User::orderBy('id');
 
         return match ($group) {
-            'admins' => $query->where('usertype', 'admin'),
+            'everyone' => $query,
             'user' => $query->where('email', $email),
-            default => $query,
+            default => $query->whereNotNull('email_verified_at'),
         };
     }
 }

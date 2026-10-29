@@ -28,7 +28,7 @@ The mails (`ConfirmRegistration`, `ConfirmNewEmail`, `AccountAlreadyExists`) alr
 - [x] Own theme `resources/views/vendor/mail/html/themes/weedy.css`, set in `config/mail.php` (`markdown.theme`). Only the rules that are actually used (body, wrapper, header, content, button, footer, links, headings, paragraph). Target: well under the default theme's size.
 - [x] Font: exactly one web font name and one fallback: `font-family: Figtree, sans-serif;`. No `@import` / `<link>` of web fonts (most clients ignore them, and they add size).
 - [x] Colours from the site tokens in `resources/css/app.css` as hex values: background `#071D20`, surface `#0D292D`, text `#ECF7F5`, muted `#A9C3C2`, line `#285055`, primary `#00D9FF` (buttons/links), accent `#A5E04D` (wordmark). Button text in background colour on primary, as `app-button-primary`.
-- [ ] Readable in light and dark mail clients (Gmail web, Gmail app, Outlook, Apple Mail): dark background set on the wrapper table, not only on `body`; contrast checked. **Done in code** (`bgcolor` on body, wrapper, card and button cell, `color-scheme: dark`); **not yet checked in real clients**, only in Chrome and MailHog. Open: send one test mail to a Gmail and an Outlook account.
+- [x] ~~Readable in light and dark mail clients~~ Decision (2026-10-29): no separate light/dark variant, the dark layout is the default for all clients. Dark background is set as `bgcolor` on body, wrapper, card and button cell, plus `color-scheme: dark`.
 - [x] Plain-text part stays useful (Markdown mails already generate it; check wordmark/footer text there).
 - [x] All existing mails use the new layout without changes to their content files.
 - [x] Mail size before/after noted for one mail (e.g. `ConfirmRegistration`, HTML bytes from MailHog).

@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <x-header2>Mail preview</x-header2>
+        <x-header2>Announcement preview</x-header2>
     </x-slot>
 
     @php
@@ -17,8 +17,9 @@
                     ({{ $count }} {{ Str::plural('user', $count) }})</dd>
             </dl>
 
+            <p class="mt-4 text-xs text-c-muted">Placeholders are filled with your own data here and in the test mail.</p>
             <iframe title="Mail preview" srcdoc="{{ $html }}" sandbox
-                class="mt-4 h-[32rem] w-full rounded-md border border-c-line bg-c-background"></iframe>
+                class="mt-2 h-[32rem] w-full rounded-md border border-c-line bg-c-background"></iframe>
 
             <div class="mt-4 flex flex-wrap items-center gap-3">
                 {{-- Back to the form or a test to the own address: same fields again --}}

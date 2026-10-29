@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
@@ -17,23 +18,55 @@ class AdminMessage extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public function __construct(public string $mailSubject, public string $body)
+    /**
+     * Placeholders the admin can use in subject and text, filled per recipient.
+     */
+    public const PLACEHOLDERS = [
+        '{name}' => 'name of the user',
+        '{email}' => 'email of the user',
+        '{posts}' => 'number of their images',
+        '{comments}' => 'number of their comments',
+        '{website}' => 'link to the gallery',
+    ];
+
+    /**
+     * @param array<string, string> $values placeholder => value for this recipient, see forUser()
+     */
+    public function __construct(public string $mailSubject, public string $body, public array $values = [])
     {
+    }
+
+    /**
+     * The mail for one recipient, with the placeholders filled with their data.
+     */
+    public static function forUser(string $subject, string $body, User $user): self
+    {
+        return new self($subject, $body, [
+            '{name}' => $user->name,
+            '{email}' => $user->email,
+            '{posts}' => (string) $user->posts()->count(),
+            '{comments}' => (string) $user->comments()->count(),
+        ]);
     }
 
     public function envelope(): Envelope
     {
-        return new Envelope(subject: $this->mailSubject);
+        return new Envelope(subject: strtr($this->mailSubject, $this->values + ['{website}' => config('app.url')]));
     }
 
     public function content(): Content
     {
+        // {website} comes from the config, not from a user: filled before the Markdown step, so a bare
+        // {website} and [text]({website}) both become links
+        $body = str_replace('{website}', config('app.url'), $this->body);
+
+        // Markdown from the admin form, raw HTML is shown as text and unsafe links are dropped.
+        // User placeholders are filled after the Markdown step and escaped, so a name cannot add formatting or HTML.
+        $html = Str::markdown($body, ['html_input' => 'escape', 'allow_unsafe_links' => false]);
+
         return new Content(
             markdown: 'emails.admin-message',
-            with: [
-                // Markdown from the admin form, raw HTML is shown as text and unsafe links are dropped
-                'html' => Str::markdown($this->body, ['html_input' => 'escape', 'allow_unsafe_links' => false]),
-            ],
+            with: ['html' => strtr($html, array_map('e', $this->values))],
         );
     }
 }

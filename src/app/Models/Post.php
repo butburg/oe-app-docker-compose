@@ -96,7 +96,7 @@ class Post extends Model {
      * Element id of the post in the gallery. The prefix keeps slugs apart from other ids on the page.
      */
     public function anchor(): string {
-        return "p-{$this->slug}";
+        return "post-{$this->slug}";
     }
 
     /**
@@ -111,7 +111,7 @@ class Post extends Model {
     }
 
     /**
-     * Link to the post in the gallery, e.g. /?page=2#p-schoener-tag
+     * Link to the post in the gallery, e.g. /?page=2#post-schoener-tag
      */
     public function galleryUrl(): string {
         return route('dashboard', ['page' => $this->galleryPage()]) . '#' . $this->anchor();

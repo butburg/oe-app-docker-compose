@@ -14,7 +14,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('posts', function (Blueprint $table) {
-            // Readable anchor of the post in the gallery (FEAT-014), e.g. #p-schoener-sonnenuntergang
+            // Readable anchor of the post in the gallery (FEAT-014), e.g. #post-schoener-sonnenuntergang
             $table->string('slug')->nullable()->after('title');
         });
 

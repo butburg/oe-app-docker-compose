@@ -25,7 +25,7 @@ class MailPreviewController extends Controller
             'confirm-registration' => fn () => new ConfirmRegistration('Anna', url('/register/confirm/' . Str::random(40))),
             'confirm-new-email' => fn () => new ConfirmNewEmail('Anna', url('/profile/email/confirm/1/' . sha1('x')), User::EMAIL_CHANGE_VALID_MINUTES),
             'account-already-exists' => fn () => new AccountAlreadyExists(),
-            'admin-message' => fn () => new AdminMessage('Maintenance on Sunday', "# Short maintenance on Sunday\n\nThe gallery is **offline from 8 to 9 am** while we update the server.\n\n- Your images and comments stay as they are.\n- Please log in again afterwards.\n\nQuestions? Just answer this mail."),
+            'admin-message' => fn () => new AdminMessage('Maintenance on Sunday', "# Hi {name},\n\nthe gallery is **offline from 8 to 9 am** while we update the server.\n\n- Your images and comments stay as they are.\n- Please log in again afterwards.\n\nYou have {posts} images and {comments} comments, all safe. See you on {website}!", ['{name}' => 'Anna', '{email}' => 'anna@example.test', '{posts}' => '12', '{comments}' => '34']),
         ];
     }
 
