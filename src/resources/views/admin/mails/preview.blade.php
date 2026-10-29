@@ -44,6 +44,10 @@
                     </x-primary-button>
                 </form>
             </div>
+            {{-- FEAT-020: announcements wait for the mail bundle like all other mails, the test mail does not --}}
+            <p class="mt-3 text-sm text-c-muted">
+                Each user gets it with their next mail bundle, at the latest in {{ \App\Jobs\SendMailBundle::minutes() }} minutes.
+            </p>
         </section>
     </div>
 </x-app-layout>

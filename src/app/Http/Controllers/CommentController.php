@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Comment\StoreRequest;
 use App\Http\Requests\Comment\UpdateRequest;
-use App\Jobs\SendNewCommentMail;
+use App\Actions\CollectMail;
 use App\Models\Comment;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\RedirectResponse;
@@ -41,8 +41,8 @@ class CommentController extends Controller
         $comment = Comment::create($validated);
 
         if($comment) {
-            // the post owner gets a mail, queued and checked again when it is sent
-            SendNewCommentMail::dispatch($comment->id);
+            // the post owner gets it with their next mail bundle, checked again when it is sent
+            app(CollectMail::class)->comment($comment);
 
             session()->flash('notif.success', 'Comment created successfully!');
             return redirect()->back();

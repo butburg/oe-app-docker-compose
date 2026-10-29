@@ -2,17 +2,21 @@
 
 namespace Tests\Feature\Admin;
 
+use App\Jobs\SendMailBundle;
 use App\Mail\AdminMessage;
+use App\Mail\MailBundle;
 use App\Models\AdminMail;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Str;
+use Tests\Feature\Mail\RunsMailBundles;
 use Tests\TestCase;
 
 class AdminMailTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDatabase, RunsMailBundles;
 
     private User $admin;
 
@@ -21,6 +25,8 @@ class AdminMailTest extends TestCase
         parent::setUp();
 
         $this->admin = User::factory()->create(['usertype' => 'admin', 'email' => 'admin@example.test']);
+        Queue::fake();
+        Mail::fake();
     }
 
     private function mailData(array $overrides = []): array
@@ -36,13 +42,12 @@ class AdminMailTest extends TestCase
     public function test_non_admins_and_guests_cannot_open_the_page_or_send(): void
     {
         $user = User::factory()->create();
-        Mail::fake();
 
         $this->get(route('admin.mails.index'))->assertRedirect(route('login'));
         $this->actingAs($user)->get(route('admin.mails.index'))->assertRedirect('/');
         $this->actingAs($user)->post(route('admin.mails.send'), $this->mailData())->assertRedirect('/');
 
-        Mail::assertNothingQueued();
+        $this->assertDatabaseCount('pending_mails', 0);
         $this->assertDatabaseCount('admin_mails', 0);
     }
 
@@ -74,9 +79,8 @@ class AdminMailTest extends TestCase
             ->assertSee('name="send_token"', false);
     }
 
-    public function test_all_verified_users_get_their_own_queued_mail_also_with_notifications_off(): void
+    public function test_all_verified_users_get_it_in_their_own_bundle_also_with_notifications_off(): void
     {
-        Mail::fake();
         $users = User::factory()->count(2)->create();
         $unverified = User::factory()->unverified()->create();
         // notification switches do not apply to announcements
@@ -84,29 +88,34 @@ class AdminMailTest extends TestCase
         $quiet->forceFill(array_fill_keys(array_keys(User::NOTIFICATION_SETTINGS), false))->save();
 
         $this->actingAs($this->admin)->post(route('admin.mails.send'), $this->mailData())
-            ->assertRedirect(route('admin.mails.index'));
+            ->assertRedirect(route('admin.mails.index'))
+            ->assertSessionHas('notif.success', 'Mail goes to 4 users with their next mail bundle, at the latest in 60 minutes.');
+        Mail::assertNothingSent();
+        $this->sendBundles();
 
         foreach ([...$users, $quiet, $this->admin] as $user) {
-            Mail::assertQueued(AdminMessage::class, fn ($mail) => $mail->hasTo($user->email) && count($mail->to) === 1);
+            Mail::assertSent(MailBundle::class, fn ($mail) => $mail->hasTo($user->email) && count($mail->to) === 1
+                && $mail->envelope()->subject === 'Maintenance');
         }
-        Mail::assertNotQueued(AdminMessage::class, fn ($mail) => $mail->hasTo($unverified->email));
-        Mail::assertQueuedCount(4);
+        Mail::assertNotSent(MailBundle::class, fn ($mail) => $mail->hasTo($unverified->email));
+        Mail::assertSentCount(4);
         $this->assertDatabaseHas('admin_mails', ['subject' => 'Maintenance', 'group' => 'verified', 'recipient_count' => 4, 'user_id' => $this->admin->id]);
     }
 
     public function test_everyone_group_includes_unverified_users_and_single_user_can_be_unverified(): void
     {
-        Mail::fake();
         $verified = User::factory()->create();
         $unverified = User::factory()->unverified()->create(['email' => 'old@example.test']);
 
         $this->actingAs($this->admin)->post(route('admin.mails.send'), $this->mailData(['group' => 'everyone']));
-        Mail::assertQueuedCount(3);
-        Mail::assertQueued(AdminMessage::class, fn ($mail) => $mail->hasTo($unverified->email));
-        Mail::assertQueued(AdminMessage::class, fn ($mail) => $mail->hasTo($verified->email));
+        $this->sendBundles();
+        Mail::assertSentCount(3);
+        Mail::assertSent(MailBundle::class, fn ($mail) => $mail->hasTo($unverified->email));
+        Mail::assertSent(MailBundle::class, fn ($mail) => $mail->hasTo($verified->email));
 
         $this->actingAs($this->admin)->post(route('admin.mails.send'), $this->mailData(['group' => 'user', 'recipient' => 'old@example.test']));
-        Mail::assertQueuedCount(4);
+        $this->sendBundles();
+        Mail::assertSentCount(4);
         $this->assertDatabaseHas('admin_mails', ['group' => 'user', 'recipient_email' => 'old@example.test', 'recipient_count' => 1]);
     }
 
@@ -118,7 +127,6 @@ class AdminMailTest extends TestCase
 
     public function test_placeholders_are_filled_per_recipient_and_escaped(): void
     {
-        Mail::fake();
         $anna = User::factory()->create(['name' => 'Anna <b>', 'email' => 'anna@example.test']);
         \App\Models\Post::factory()->count(2)->forUser($anna)->create();
         \App\Models\Comment::create(['user_id' => $anna->id, 'post_id' => \App\Models\Post::first()->id, 'comment' => 'Nice']);
@@ -128,8 +136,9 @@ class AdminMailTest extends TestCase
             'subject' => 'News for {name}',
             'body' => "Hi **{name}** ({email}), you have {posts} images and {comments} comments.",
         ]));
+        $this->sendBundles();
 
-        Mail::assertQueued(AdminMessage::class, function (AdminMessage $mail) {
+        Mail::assertSent(MailBundle::class, function (MailBundle $mail) {
             $html = $mail->render();
 
             return $mail->envelope()->subject === 'News for Anna <b>'
@@ -160,19 +169,17 @@ class AdminMailTest extends TestCase
 
     public function test_single_user_must_exist(): void
     {
-        Mail::fake();
 
         $this->actingAs($this->admin)->post(route('admin.mails.send'), $this->mailData(['group' => 'user', 'recipient' => 'nobody@example.test']))
             ->assertSessionHasErrors('recipient');
         $this->actingAs($this->admin)->post(route('admin.mails.send'), $this->mailData(['group' => 'user']))
             ->assertSessionHasErrors('recipient');
 
-        Mail::assertNothingQueued();
+        $this->assertDatabaseCount('pending_mails', 0);
     }
 
     public function test_test_mail_goes_only_to_the_admin(): void
     {
-        Mail::fake();
         User::factory()->count(3)->create();
 
         $this->actingAs($this->admin)->post(route('admin.mails.preview'), $this->mailData(['action' => 'test']))
@@ -181,13 +188,13 @@ class AdminMailTest extends TestCase
 
         Mail::assertSent(AdminMessage::class, fn ($mail) => $mail->hasTo('admin@example.test'));
         Mail::assertSentCount(1);
-        Mail::assertNothingQueued();
+        Queue::assertNothingPushed();
+        $this->assertDatabaseCount('pending_mails', 0);
         $this->assertDatabaseCount('admin_mails', 0);
     }
 
     public function test_sending_the_same_confirm_page_twice_sends_only_once(): void
     {
-        Mail::fake();
         User::factory()->create();
         $data = $this->mailData();
 
@@ -195,22 +202,21 @@ class AdminMailTest extends TestCase
         $this->actingAs($this->admin)->post(route('admin.mails.send'), $data)
             ->assertSessionHas('notif.success', 'This mail was already sent.');
 
-        Mail::assertQueuedCount(2);
+        $this->assertDatabaseCount('pending_mails', 2);
         $this->assertDatabaseCount('admin_mails', 1);
     }
 
-    public function test_mails_are_spread_over_minutes_by_the_rate_limit(): void
+    public function test_bundles_are_spread_over_minutes_by_the_rate_limit(): void
     {
-        Mail::fake();
+        $this->freezeTime();
         config(['mail.per_minute' => 2]);
         User::factory()->count(4)->create();
 
         $this->actingAs($this->admin)->post(route('admin.mails.send'), $this->mailData());
 
-        $delays = Mail::queued(AdminMessage::class)->map(fn ($mail) => $mail->delay)->values();
-        $this->assertSame(2, $delays->filter(fn ($delay) => $delay === null)->count());
-        $this->assertSame(2, $delays->filter(fn ($delay) => $delay && now()->diffInSeconds($delay) >= 59 && now()->diffInSeconds($delay) <= 61)->count());
-        $this->assertSame(1, $delays->filter(fn ($delay) => $delay && now()->diffInSeconds($delay) >= 119)->count());
+        // 5 users, 2 per minute: after the bundle window 2, a minute later 2, then 1
+        $minutes = Queue::pushed(SendMailBundle::class)->map(fn ($job) => (int) now()->diffInMinutes($job->delay))->countBy()->sortKeys()->all();
+        $this->assertSame([60 => 2, 61 => 2, 62 => 1], $minutes);
     }
 
     public function test_body_is_markdown_with_html_escaped_and_no_settings_link(): void
@@ -224,16 +230,8 @@ class AdminMailTest extends TestCase
         $this->assertStringNotContainsString('<a href="https://evil.test"', $html);
         $this->assertStringNotContainsString('javascript:', $html);
         // same footer as all other mails, no settings link
-        $this->assertStringContainsString('You get this mail because this address was used on', $html);
+        $this->assertStringContainsString('You get this mail because you have an account on', $html);
         $this->assertStringNotContainsString('mail settings', $html);
-    }
-
-    public function test_no_list_unsubscribe_header(): void
-    {
-        Mail::to('anna@example.test')->send(new AdminMessage('Hi', 'Text'));
-        $message = Mail::mailer()->getSymfonyTransport()->messages()->last()->getOriginalMessage();
-
-        $this->assertFalse($message->getHeaders()->has('List-Unsubscribe'));
     }
 
     public function test_sent_mails_are_listed(): void

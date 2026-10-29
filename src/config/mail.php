@@ -113,15 +113,25 @@ return [
     | Mails per minute
     |--------------------------------------------------------------------------
     |
-    | Mails to many users (admin mails, new image mails) are queued and spread
-    | so that at most this many are sent per minute (SMTP provider limit).
+    | Mail bundles to many users at once (e.g. an announcement) are spread so
+    | that at most this many are sent per minute (SMTP provider limit).
     |
     */
 
     'per_minute' => (int) env('MAIL_PER_MINUTE', 30),
 
-    // New images mail (FEAT-019): sent when the uploader has published nothing for this many minutes
-    'new_images_quiet_minutes' => (int) env('MAIL_NEW_IMAGES_QUIET_MINUTES', 60),
+    /*
+    |--------------------------------------------------------------------------
+    | Mail bundle (FEAT-020)
+    |--------------------------------------------------------------------------
+    |
+    | Announcements, comment and new image mails to a user are collected and
+    | sent as one mail: the first item starts the clock, after this many
+    | minutes everything collected goes out together.
+    |
+    */
+
+    'bundle_minutes' => (int) env('MAIL_BUNDLE_MINUTES', 60),
 
     /*
     |--------------------------------------------------------------------------

@@ -11,8 +11,8 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Str;
 
 /**
- * Announcement from the admins (FEAT-017). Goes to everyone in the chosen group, the notification
- * switches do not apply and it has no settings link: it may contain security-relevant information.
+ * Announcement from the admins (FEAT-017), used for the preview and "Send test to me". Sent to users as part of
+ * their mail bundle (FEAT-020). The notification switches do not apply: it may contain security-relevant information.
  */
 class AdminMessage extends Mailable
 {
@@ -51,10 +51,29 @@ class AdminMessage extends Mailable
 
     public function envelope(): Envelope
     {
-        return new Envelope(subject: strtr($this->mailSubject, $this->values + ['{website}' => config('app.url')]));
+        return new Envelope(subject: $this->subjectText());
     }
 
     public function content(): Content
+    {
+        return new Content(
+            markdown: 'emails.admin-message',
+            with: ['html' => $this->bodyHtml()],
+        );
+    }
+
+    /**
+     * Subject with the placeholders filled, also used as part of the mail bundle subject (FEAT-020).
+     */
+    public function subjectText(): string
+    {
+        return strtr($this->mailSubject, $this->values + ['{website}' => config('app.url')]);
+    }
+
+    /**
+     * Text as HTML with the placeholders filled, also used in the mail bundle (FEAT-020).
+     */
+    public function bodyHtml(): string
     {
         // {website} comes from the config, not from a user: filled before the Markdown step, so a bare
         // {website} and [text]({website}) both become links
@@ -64,9 +83,6 @@ class AdminMessage extends Mailable
         // User placeholders are filled after the Markdown step and escaped, so a name cannot add formatting or HTML.
         $html = Str::markdown($body, ['html_input' => 'escape', 'allow_unsafe_links' => false]);
 
-        return new Content(
-            markdown: 'emails.admin-message',
-            with: ['html' => strtr($html, array_map('e', $this->values))],
-        );
+        return strtr($html, array_map('e', $this->values));
     }
 }

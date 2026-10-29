@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Actions\QueueMails;
+use App\Actions\CollectMail;
 use App\Http\Controllers\Controller;
+use App\Jobs\SendMailBundle;
 use App\Mail\AdminMessage;
+use App\Mail\MailAssets;
 use App\Models\AdminMail;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
@@ -18,7 +20,7 @@ use Illuminate\View\View;
 
 /**
  * Admins write a mail, preview it in the mail layout and send it to a group of users (FEAT-017).
- * Write → Preview (with "Send test to me") → Confirm "Send to N users?" → queued, one mail per user.
+ * Write → Preview (with "Send test to me") → Confirm "Send to N users?" → part of each user's next mail bundle (FEAT-020).
  */
 class MailController extends Controller
 {
@@ -66,13 +68,13 @@ class MailController extends Controller
             'data' => $data,
             'groupLabel' => self::GROUPS[$data['group']],
             'count' => $this->recipients($data['group'], $data['recipient'] ?? null)->count(),
-            'html' => $mail->render(),
+            'html' => MailAssets::forBrowser($mail->render()),
             // a new token per preview, sending the same confirm page twice sends only once
             'sendToken' => (string) Str::uuid(),
         ]);
     }
 
-    public function send(Request $request, QueueMails $queueMails): RedirectResponse
+    public function send(Request $request, CollectMail $collectMail): RedirectResponse
     {
         $data = $this->validated($request);
         $request->validate(['send_token' => 'required|uuid']);
@@ -93,9 +95,10 @@ class MailController extends Controller
             'send_token' => $request->input('send_token'),
         ]);
 
-        $queueMails->handle($recipients, fn (User $user) => AdminMessage::forUser($log->subject, $log->body, $user));
+        $collectMail->announcement($log, $recipients);
 
-        session()->flash('notif.success', "Mail queued for {$log->recipient_count} " . Str::plural('user', $log->recipient_count) . '.');
+        session()->flash('notif.success', "Mail goes to {$log->recipient_count} " . Str::plural('user', $log->recipient_count)
+            . ' with their next mail bundle, at the latest in ' . SendMailBundle::minutes() . ' minutes.');
         return redirect()->route('admin.mails.index');
     }
 

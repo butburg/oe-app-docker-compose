@@ -5,6 +5,7 @@
         </h2>
         <p class="mt-1 text-sm leading-6 text-c-muted">
             {{ __('Choose which mails you want to get. Important announcements from the admins always arrive.') }}
+            {{ __('Everything is collected and sent together in one mail, at most one mail per :minutes minutes.', ['minutes' => \App\Jobs\SendMailBundle::minutes()]) }}
         </p>
     </header>
 

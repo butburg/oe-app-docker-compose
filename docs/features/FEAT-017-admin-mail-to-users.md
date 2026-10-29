@@ -30,12 +30,13 @@ There is no way to send mails to users. The app only sends auth mails (registrat
 - [x] Every sent mail action is stored (`admin_mails` table: admin, subject, body, group, recipient count, created_at) and listed on the page; failed jobs are visible (`failed_jobs`).
 - [x] Body is Markdown and escaped: no raw HTML from the form ends up in the mail.
 - [x] Admin mails are announcements: they ignore the notification switches from FEAT-018/019 and cannot be unsubscribed, because they may contain security-relevant information. No "Change mail settings" link and no `List-Unsubscribe` header.
-- [x] Mail footer: same footer as all other mails ("You get this mail because this address was used on Weedy Gallery."), no settings link. (Changed 2026-10-29: no extra "Important message …" note.)
+- [x] Mail footer: same footer as all other mails ("You get this mail because you have an account on Weedy Gallery."), no settings link. (Changed 2026-10-29: no extra "Important message …" note.)
 - [x] Placeholders in subject and text, filled per recipient: `{name}`, `{email}`, `{posts}`, `{comments}`, `{website}`; listed under the text box. User values are inserted after the Markdown step and escaped; `{website}` (`APP_URL`) before it, so `{website}` and `[text]({website})` become links. Preview and test mail use the admin's own data.
 - [x] Navigation for admins: "Users" (was "Admin", the user overview) and "Announcements"; page title "Announcements" / "Make an announcement". Admins see "Admin" under their name in the navigation.
 - [x] Feature tests (`tests/Feature/Admin/AdminMailTest.php`): non-admins are redirected to `/` like on all admin pages (existing `Admin` middleware, not 403/404), recipient groups resolve correctly, users with both switches off still get the mail, no settings link in the mail, test mail goes only to the admin, mails are queued per recipient (`Mail::fake()`), body is escaped. Tests and validation passed (container).
 
 ## Technical Implementation Notes
+- **Changed by FEAT-020**: these mails are no longer sent on their own but collected in the user's mail bundle (`CollectMail`, `SendMailBundle`, `MailBundle`); the classes named below were replaced.
 - **Affected files / components**: new `Admin\MailController`, routes in the admin group (`routes/web.php`), Blade view under `resources/views/admin/`, new mailable `AdminMessage` (Markdown, uses the FEAT-016 layout), migration `admin_mails`, link in the admin navigation; remove `TestMailController` and its commented route.
 - **Queue worker**: needs a running `queue:work` (see FEAT-018, which adds the worker service to `docker-compose.yml`).
 - **Decision**: the switches in the profile only cover mails about posts (FEAT-019) and comments (FEAT-018). Announcements always go to everyone in the chosen group; keep them rare.

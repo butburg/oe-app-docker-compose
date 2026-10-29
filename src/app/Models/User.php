@@ -48,11 +48,11 @@ class User extends Authenticatable implements MustVerifyEmail {
     public const NOTIFICATION_SETTINGS = [
         'notify_comments' => [
             'label' => 'Comments on my images',
-            'description' => 'A mail when someone comments on one of your images.',
+            'description' => 'When someone comments on one of your images.',
         ],
         'notify_new_images' => [
             'label' => 'New images',
-            'description' => 'A mail when other users publish new images, several images of one person in one mail.',
+            'description' => 'When other users publish new images.',
         ],
     ];
 
