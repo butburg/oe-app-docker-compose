@@ -28,7 +28,7 @@ Outlook Safe Links, Defender and some mail gateways open links in incoming mails
 - [x] An invalid or expired link still shows the "link does not work" page on GET.
 - [x] Email change: `GET profile/email/confirm/{user}/{hash}` (signed) only shows a page with the new email and a "Confirm my new email" button, the `POST` to the same signed URL switches the email.
 - [x] A link that was already used says "Your email is already changed to …" instead of "was not changed".
-- [x] Both pages use the same button (`x-glow-button`).
+- [x] The registration page uses the gradient button (`x-glow-button`), the email change page the normal primary button.
 - [x] Tests and validation passed (container, 174 tests).
 
 ## Technical Implementation Notes

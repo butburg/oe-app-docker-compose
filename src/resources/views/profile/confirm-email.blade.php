@@ -8,6 +8,6 @@
 
     <form class="mt-6" method="POST" action="{{ $action }}">
         @csrf
-        <x-glow-button>{{ __('Confirm my new email') }}</x-glow-button>
+        <x-primary-button class="w-full">{{ __('Confirm my new email') }}</x-primary-button>
     </form>
 </x-guest-layout>
