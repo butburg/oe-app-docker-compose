@@ -35,7 +35,7 @@ class Image extends Model
         $variant = $this->variants->firstWhere('size_type', $sizeType);
 
         return $variant ? route('images.show', [
-            'variant' => $variant->id,
+            'variant' => $variant->public_id,
             'token' => self::token($variant->id, $this->token_version ?? 0, self::currentWindow()),
         ]) : null;
     }

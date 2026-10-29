@@ -16,7 +16,7 @@ tags:
 # Serve images through expiring, non-guessable links
 
 ## Overview
-Images are no longer reachable under their file path. Every `<img>` points to `/img/{variant}/{token}`, where the token is an HMAC that changes by itself every week. The files stay where they are on the `public` disk and keep their names; only the links change. Someone who only knows or guesses an id gets 404, and a saved image link stops working after at most two weeks.
+Images are no longer reachable under their file path. Every `<img>` points to `/img/{public_id}/{token}`, where the token is an HMAC that changes by itself every week. The files stay where they are on the `public` disk and keep their names; only the links change. Someone who only knows or guesses an id gets 404, and a saved image link stops working after at most two weeks.
 
 The access check stays where it already is: on the pages (gallery, profile, My Images, FEAT-010). Whoever may not see a post never gets its page, so never gets a valid token.
 
@@ -34,7 +34,7 @@ An expiring link gives most of the benefit: no guessing, no permanent links. Acc
 ```
 window = floor(unix_time / 604800)          // current week number
 token  = hmac_sha256(APP_KEY, "{variant_id}|{window}|{token_version}")  // shortened, e.g. 32 hex chars
-url    = /img/{variant_id}/{token}
+url    = /img/{public_id}/{token}       // public_id: random 16 hex chars per variant, so links do not reveal how many images exist
 ```
 - **Generating:** when a page is rendered, the token for the current week is computed. Nothing is stored.
 - **Checking:** the route recomputes the token for the current and the previous week and compares (`hash_equals`). If neither matches → 404.
@@ -44,16 +44,16 @@ url    = /img/{variant_id}/{token}
 - Without the server's `APP_KEY` a token cannot be computed, so ids are useless on their own. (Rotating `APP_KEY` invalidates all image links, which is fine.)
 
 ## Acceptance Criteria
-- [x] nginx serves nothing under `/storage/files/` from outside (`internal` location), direct requests get 404. Files stay on the `public` disk under their current names; no file is moved or renamed.
-- [x] Route `GET /img/{variant}/{token}` checks the token for the current and previous window with `hash_equals`; on success it answers with `X-Accel-Redirect` so nginx sends the file. Wrong/expired token or unknown variant → 404.
+- [ ] Direct requests to `/storage/files/...` get 404. **Open:** the nginx `internal` location only existed locally, production (lima-city) has no own nginx config, so it was removed. Files are still on the `public` disk and reachable under their counting names; moving them to the private disk follows separately.
+- [x] Route `GET /img/{public_id}/{token}` (random `image_variants.public_id` instead of the counting id) checks the token for the current and previous window with `hash_equals`; on success PHP sends the file (`response()->file()`). Wrong/expired token or unknown variant → 404.
 - [x] The route runs without session, cookies and CSRF (not in the `web` middleware group): no session write, no `url.intended` / `_previous.url` side effects.
 - [x] `token_version` on `images` is incremented on: image replaced (post update, profile image update), post toggled to sensitive, post unpublished/made draft, post or user deleted. Old links return 404 right after.
-- [x] Caching: `Cache-Control: private, max-age=` at most until the end of the link lifetime; `Last-Modified` / `ETag` with 304 support (nginx does this for the internal location).
+- [x] Caching: `Cache-Control: private, max-age=` at most until the end of the link lifetime; `Last-Modified` with 304 support (`BinaryFileResponse`).
 - [x] One helper generates image URLs (e.g. `ImageVariant::url()` or a `ImageLink` service); `image_or_placeholder`, gallery zoom, profile tiles, My Images and admin views use it. No more `asset('storage/...')` for uploaded images.
 - [x] `image_or_placeholder` no longer calls `file_exists(public_path(...))` on every render; it uses the DB row (or `Storage::disk('public')->exists()` where really needed).
 - [x] Profile images use the same links (decision: no exception, they are user uploads too).
 - [x] Static app images (`public/images/...`, placeholder) are not affected.
-- [x] Feature tests (`tests/Feature/Images/ImageLinkTest.php`): valid token → 200 / X-Accel header; previous-window token → ok; token two windows old → 404; wrong token → 404; direct path → 404 (documented nginx check); `token_version` bump on each listed action invalidates the old link. Time is moved with `$this->travel()`.
+- [x] Feature tests (`tests/Feature/Images/ImageLinkTest.php`): valid token → 200 with the file; previous-window token → ok; token two windows old → 404; wrong token → 404; `token_version` bump on each listed action invalidates the old link. Time is moved with `$this->travel()`.
 - [x] Performance comparison before/after (see results; the "few ms" target holds per single request, under load php-fpm is the limit, see below) (see "Performance test" below): baseline recorded **before** the first code change, same measurement after; results (table) added to this file. Acceptable: p95 per image request at most a few ms slower than the static baseline, gallery page render time not noticeably slower.
 - [x] Tests and validation passed (container).
 
@@ -90,18 +90,10 @@ Reading:
 - If needed later: raise `pm.max_children`, or validate the token in nginx itself (`secure_link`) so PHP is skipped.
 
 ## Technical Implementation Notes
-- **Affected files / components**: new `ImageController` (or invokable `ServeImage`), route outside the `web` group in `routes/web.php` / `bootstrap/app.php`, `ImageVariant` model (URL helper), migration adding `token_version` to `images`, `resources/views/components/image_or_placeholder.blade.php`, `PostController` (update, toggle sensitive, make draft, destroy), `ProfileController` (image update), `app/Actions/DeleteUser.php`, `dockerfiles/nginx/default.conf`, `config/images.php` (window length).
-- **nginx**:
-  ```nginx
-  location ^~ /storage/files/ {
-      internal;
-      alias /var/www/html/storage/app/public/files/;
-  }
-  ```
-  The controller sends `X-Accel-Redirect: /storage/files/{path}` plus `Content-Type` and `Cache-Control`. PHP only checks the token, nginx streams the file. The local `php artisan serve` dev setup (if used) has no nginx, so fall back to `response()->file()` when not behind nginx (config flag).
+- **Affected files / components**: new `ImageController` (or invokable `ServeImage`), route outside the `web` group in `routes/web.php` / `bootstrap/app.php`, `ImageVariant` model (URL helper), migration adding `token_version` to `images`, migration adding `public_id` to `image_variants`, `resources/views/components/image_or_placeholder.blade.php`, `PostController` (update, toggle sensitive, make draft, destroy), `ProfileController` (image update), `app/Actions/DeleteUser.php`, `config/images.php` (window length).
+- **File delivery**: PHP checks the token and sends the file with `response()->file()` plus `Content-Type` and `Cache-Control: private`. An nginx `X-Accel-Redirect` variant was built first and removed again: production runs on lima-city without an own nginx config, and at our file sizes it was not faster (see performance test).
 - **Token length**: 32 hex chars (128 bit) of the HMAC are plenty.
 - **Share/OpenGraph**: share links point to the post, not the image, so they are not affected. If OG preview images are added later, they need a separate long-lived public variant.
-- **Deployment**: deploy nginx config together with the app; old `/storage/files/...` URLs (bookmarks, caches) stop working by design. No data migration besides the new column.
-- **Implemented**: `App\Models\Image::url()/token()/invalidateLinks()`, `ImageController`, `routes/images.php` (loaded in `bootstrap/app.php` via `then:`, outside the `web` group), `config/images.php` (`IMAGES_LINK_WINDOW_DAYS`, `IMAGES_X_ACCEL`), `token_version` bump in `Post::booted()` (sensitive / draft) and `CreateImageVariants` (replace, covers post and profile images). Deleted posts/users: the variant rows are gone, so links answer 404.
-- **Deployment**: rebuild the nginx image (`docker compose build app`), run the migration. Without nginx in front set `IMAGES_X_ACCEL=false`.
+- **Implemented**: `App\Models\Image::url()/token()/invalidateLinks()`, `ImageController`, `routes/images.php` (loaded in `bootstrap/app.php` via `then:`, outside the `web` group), `config/images.php` (`IMAGES_LINK_WINDOW_DAYS`), `token_version` bump in `Post::booted()` (sensitive / draft) and `CreateImageVariants` (replace, covers post and profile images). Deleted posts/users: the variant rows are gone, so links answer 404.
+- **Deployment**: run the migrations (done by the GitHub deploy workflow).
 - **Related**: FEAT-009 (save deterrent, frontend only), FEAT-010 (guest view for unverified users), FEAT-014 (post slugs), FEAT-015 (strip EXIF/GPS on upload).

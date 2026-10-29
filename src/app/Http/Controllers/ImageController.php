@@ -15,7 +15,7 @@ class ImageController extends Controller
 {
     public function show(string $variant, string $token): Response
     {
-        $variant = ctype_digit($variant) ? ImageVariant::with('image')->find($variant) : null;
+        $variant = ImageVariant::with('image')->firstWhere('public_id', $variant);
         abort_if(!$variant || !$variant->image, 404);
 
         // Accept the token of the current and the previous window, so a page opened
@@ -33,14 +33,10 @@ class ImageController extends Controller
             'Cache-Control' => "private, max-age={$maxAge}",
         ];
 
-        if (config('images.x_accel')) {
-            // nginx sends the file from its internal location /storage/files/
-            return response('', 200, $headers + ['X-Accel-Redirect' => '/storage/' . $variant->path]);
-        }
-
         $disk = Storage::disk('public');
         abort_unless($disk->exists($variant->path), 404);
 
-        return response()->file($disk->path($variant->path), $headers);
+        // file() marks the response as public by default, a proxy must not keep the image
+        return response()->file($disk->path($variant->path), $headers)->setPrivate();
     }
 }

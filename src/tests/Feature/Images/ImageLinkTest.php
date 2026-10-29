@@ -21,12 +21,20 @@ class ImageLinkTest extends TestCase
     {
         parent::setUp();
 
+        Storage::fake('public');
         $this->owner = User::factory()->create();
         $this->post = Post::factory()->forUser($this->owner)->withImage()->create([
             'is_published' => true,
             'is_sensitive' => false,
             'published_at' => now(),
         ]);
+        $this->storeFiles($this->post->image);
+    }
+
+    // The factory only creates the DB rows, the controller needs the files to send them
+    private function storeFiles(Image $image): void
+    {
+        $image->variants->each(fn ($variant) => Storage::disk('public')->put($variant->path, 'jpeg-bytes'));
     }
 
     private function image(): Image
@@ -39,16 +47,14 @@ class ImageLinkTest extends TestCase
         return parse_url($url, PHP_URL_PATH);
     }
 
-    public function test_valid_link_is_answered_with_x_accel_redirect(): void
+    public function test_valid_link_sends_the_file(): void
     {
-        $image = $this->image();
-        $variant = $image->variants->firstWhere('size_type', 'm');
+        $response = $this->get($this->path($this->image()->url('m')));
 
-        $this->get($this->path($image->url('m')))
-            ->assertOk()
-            ->assertHeader('X-Accel-Redirect', '/storage/' . $variant->path)
+        $response->assertOk()
             ->assertHeader('Content-Type', 'image/jpeg')
             ->assertHeaderMissing('Set-Cookie');
+        $this->assertSame('jpeg-bytes', file_get_contents($response->baseResponse->getFile()->getPathname()));
     }
 
     public function test_cache_lifetime_ends_when_the_link_expires(): void
@@ -85,11 +91,13 @@ class ImageLinkTest extends TestCase
     {
         $variant = $this->image()->variants->first();
 
-        $this->get("/img/{$variant->id}/" . str_repeat('a', 32))->assertNotFound();
-        $this->get('/img/999999/' . Image::token(999999, 0, Image::currentWindow()))->assertNotFound();
+        $this->get("/img/{$variant->public_id}/" . str_repeat('a', 32))->assertNotFound();
+        $this->get('/img/' . str_repeat('0', 16) . '/' . Image::token(999999, 0, Image::currentWindow()))->assertNotFound();
+        // the counting id does not work in the link
+        $this->get("/img/{$variant->id}/" . Image::token($variant->id, 0, Image::currentWindow()))->assertNotFound();
         // a valid token of another variant does not open this one
         $other = $this->image()->variants->last();
-        $this->get("/img/{$variant->id}/" . Image::token($other->id, 0, Image::currentWindow()))->assertNotFound();
+        $this->get("/img/{$variant->public_id}/" . Image::token($other->id, 0, Image::currentWindow()))->assertNotFound();
     }
 
     public function test_making_the_post_sensitive_invalidates_old_links(): void
@@ -114,8 +122,8 @@ class ImageLinkTest extends TestCase
 
     public function test_replacing_the_image_invalidates_old_links(): void
     {
-        Storage::fake('public');
         $draft = Post::factory()->forUser($this->owner)->withImage()->create(['is_published' => false, 'is_sensitive' => false]);
+        $this->storeFiles($draft->image);
         $url = $this->path($draft->image->url('s'));
         $this->get($url)->assertOk();
 
@@ -127,27 +135,38 @@ class ImageLinkTest extends TestCase
         $this->get($this->path($draft->fresh()->image->url('s')))->assertOk();
     }
 
+    public function test_link_has_a_random_id_and_not_the_counting_id(): void
+    {
+        $variant = $this->image()->variants->firstWhere('size_type', 's');
+
+        $this->assertMatchesRegularExpression('#^/img/[0-9a-f]{16}/[0-9a-f]{32}$#', $this->path($this->image()->url('s')));
+        $this->assertStringStartsWith("/img/{$variant->public_id}/", $this->path($this->image()->url('s')));
+    }
+
+    public function test_replacing_the_profile_image_invalidates_old_links(): void
+    {
+        $this->actingAs($this->owner)->patch(route('profile.updateImage'), [
+            'profile_image' => UploadedFile::fake()->image('a.jpg', 120, 120),
+        ]);
+        $url = $this->path($this->owner->fresh()->image->url('s'));
+        $this->get($url)->assertOk();
+
+        // fresh user: the first request cached "no profile image" on $this->owner
+        $this->actingAs($this->owner->fresh())->patch(route('profile.updateImage'), [
+            'profile_image' => UploadedFile::fake()->image('b.jpg', 120, 120),
+        ]);
+
+        $this->get($url)->assertNotFound();
+        $this->get($this->path($this->owner->fresh()->image->url('s')))->assertOk();
+    }
+
     public function test_deleted_post_links_are_not_found(): void
     {
-        Storage::fake('public');
         $url = $this->path($this->image()->url('s'));
 
         $this->actingAs($this->owner)->delete(route('posts.destroy', $this->post->id));
 
         $this->get($url)->assertNotFound();
-    }
-
-    public function test_fallback_without_nginx_sends_the_file(): void
-    {
-        Storage::fake('public');
-        config(['images.x_accel' => false]);
-        $image = $this->image();
-        Storage::disk('public')->put($image->variants->firstWhere('size_type', 's')->path, 'jpeg-bytes');
-
-        $response = $this->get($this->path($image->url('s')));
-
-        $response->assertOk()->assertHeaderMissing('X-Accel-Redirect');
-        $this->assertSame('jpeg-bytes', file_get_contents($response->baseResponse->getFile()->getPathname()));
     }
 
     public function test_gallery_shows_image_links_and_no_storage_paths(): void
