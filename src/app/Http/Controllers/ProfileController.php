@@ -75,13 +75,68 @@ class ProfileController extends Controller
             return Redirect::back()->withErrors(['email' => 'That\'s your email already :P']);
         }
 
-        // Handle email verification reset 
-        $user->email_verified_at = null;
-        $user->email = $email;
+        // Only noted as pending, the current email stays active and verified until the link is opened
+        $user->requestEmailChange($email);
+
+        session()->flash('notif.success', 'We sent a link to ' . $email . '. Your current email stays active until you open it.');
+        return Redirect::route('profile.edit');
+    }
+
+    /**
+     * Send the link for the pending email again.
+     */
+    public function resendEmailChange(Request $request): RedirectResponse
+    {
+        $user = $request->user();
+        if ($user->pending_email) {
+            $user->sendEmailChangeLink();
+            session()->flash('notif.success', 'We sent the link to ' . $user->pending_email . ' again.');
+        }
+
+        return Redirect::route('profile.edit');
+    }
+
+    /**
+     * Drop the pending email, its link stops working and the current email stays.
+     */
+    public function cancelEmailChange(Request $request): RedirectResponse
+    {
+        $user = $request->user();
+        $user->pending_email = null;
         $user->save();
 
-        session()->flash('notif.success', 'Your mail updated successfully!');
+        session()->flash('notif.success', 'The email change was cancelled, you keep ' . $user->email . '.');
         return Redirect::route('profile.edit');
+    }
+
+    /**
+     * Switch to the pending email from the link in the mail. Needs no login, the signed link
+     * is the proof, so it also works on another device.
+     */
+    public function confirmEmailChange(Request $request, User $user, string $hash): RedirectResponse
+    {
+        $target = Auth::check() ? Redirect::route('profile.edit') : Redirect::route('login');
+
+        if (!$user->pending_email || !hash_equals(sha1($user->pending_email), $hash)) {
+            return $target->withErrors(['email' => 'This link does not work any more. Your email was not changed.']);
+        }
+
+        // Someone may have registered the address in the meantime
+        if (User::where('email', $user->pending_email)->exists()) {
+            $user->pending_email = null;
+            $user->save();
+            return $target->withErrors(['email' => 'This email is used by another account by now. Your email was not changed.']);
+        }
+
+        $user->forceFill([
+            'email' => $user->pending_email,
+            'pending_email' => null,
+            'email_verified_at' => now(),
+        ])->save();
+
+        $message = 'Your email was changed to ' . $user->email . '.';
+        // Logged in: banner in the app layout, otherwise the status line on the login page
+        return Auth::check() ? $target->with('notif.success', $message) : $target->with('status', $message);
     }
 
     /**
@@ -141,6 +196,18 @@ class ProfileController extends Controller
     }
 
     /**
+     * Delete the account from the verify page, the profile is closed to unverified users.
+     */
+    public function destroyUnverified(Request $request, DeleteUser $deleteUser): RedirectResponse
+    {
+        if ($request->user()->hasVerifiedEmail()) {
+            return Redirect::route('profile.edit');
+        }
+
+        return $this->destroy($request, $deleteUser);
+    }
+
+    /**
      * Delete the user's account.
      */
     public function destroy(Request $request, DeleteUser $deleteUser): RedirectResponse
@@ -160,6 +227,7 @@ class ProfileController extends Controller
 
             $request->session()->invalidate();
             $request->session()->regenerateToken();
+            session()->flash('notif.success', 'Your account was deleted.');
             return Redirect::to('/');
         } catch (\Exception $e) {
             // Log the error

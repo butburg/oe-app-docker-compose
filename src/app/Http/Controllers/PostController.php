@@ -73,7 +73,8 @@ class PostController extends Controller
         $search = trim((string) $request->query('q', ''));
         $query = Post::where('is_published', true);
 
-        if (!Auth::check()) {
+        // Unverified users see the same as guests (who is unverified: see @verified in AppServiceProvider)
+        if (!Auth::user()?->hasVerifiedEmail()) {
             $query->where('is_sensitive', false);
         }
 

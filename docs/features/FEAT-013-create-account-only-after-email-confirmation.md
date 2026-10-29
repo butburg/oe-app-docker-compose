@@ -1,7 +1,7 @@
 ---
 id: FEAT-013
 title: Create the account only after the email is confirmed
-status: backlog # backlog | todo | in-progress | review | done
+status: review # backlog | todo | in-progress | review | done
 priority: high # low | medium | high
 category: feature # feature | enhancement | bugfix | ui | security
 assignee: unassigned
@@ -33,17 +33,19 @@ Today registration creates the user immediately, logs them in and redirects to t
 ## Acceptance Criteria
 - [ ] `POST /register` creates no row in `users` and does not log in; it stores a pending registration (name, email, hashed password, token hash, expiry) and sends one mail.
 - [ ] The "Check your email" page offers change email, resend and abort, as described above. Resend and change email are throttled.
-- [ ] The link is single-use and expires (e.g. 24 h). Opening it creates the user verified, logs them in, deletes the pending registration and redirects to the gallery.
+- [ ] The link is single-use and expires after 60 minutes (`PendingRegistration::VALID_MINUTES`). Opening it creates the user verified, logs them in, deletes the pending registration and redirects to the gallery.
 - [ ] Expired, used or aborted links show a friendly page with a link back to register.
 - [ ] A second registration for the same email replaces the pending one (the old link becomes invalid). Registering an email that already has an account does not reveal that fact (same "check your email" page; optionally send a "you already have an account" mail instead).
-- [ ] Expired pending registrations are deleted by a scheduled prune (`model:prune` or a command).
+- [ ] Expired pending registrations are deleted without a cron job or queue worker: every new registration first deletes all expired ones (`PendingRegistration::deleteExpired()`). Until then their links are rejected anyway.
 - [ ] If the user is logged out between submit and click, the link still works (it does not depend on the session).
-- [ ] The `verified` middleware and the existing verify page stay for users who change their email in the profile (FEAT-010, FEAT-012).
+- [ ] The `verified` middleware and the existing verify page stay for old unverified accounts (FEAT-010, FEAT-012). An email change in the profile uses a pending email with its own link instead and keeps the user verified.
 - [ ] Feature tests for: submit creates no user; link creates a verified user and logs in; expired/used/aborted link; change email invalidates the old link; resend throttle; no account enumeration. Tests and validation passed (container).
 
 ## Technical Implementation Notes
-- **Affected files / components**: `app/Http/Controllers/Auth/RegisteredUserController.php`, new `PendingRegistration` model + migration, new mail/notification, `routes/auth.php`, `resources/views/auth/register.blade.php`, new "check your email" view, `tests/Feature/Auth/RegistrationTest.php`, scheduler (`routes/console.php`).
+- **Affected files / components**: `app/Http/Controllers/Auth/RegisteredUserController.php`, new `PendingRegistration` model + migration, new mail/notification, `routes/auth.php`, `resources/views/auth/register.blade.php`, new "check your email" view, `tests/Feature/Auth/RegistrationTest.php`.
 - **Security**: store only a hash of the token (like `password_reset_tokens`); compare with `hash_equals`. The pending state lives in the database (keyed by token), not only in the session, so the link works in the new tab and on another device.
 - **Abort/change/resend** need to know which pending registration belongs to the current tab: keep its id in the session after submit.
 - **Name/email uniqueness**: check `users` on submit and again on confirm (someone else may have confirmed the same email in between).
 - **Related**: FEAT-010, FEAT-012; replaces the current "Thanks for signing up" verify-email screen for new registrations.
+- **Check your email page**: uses `<x-guest-layout focused>`, which shows only the logo without a link, so the only way on is confirm, change email or abort. The footer (About, Impressum) stays, the Impressum must be reachable from every page.
+- **Local development**: there is no auto-verify any more. The seeded accounts admin, none and many (`DatabaseSeeder`, factory default `email_verified_at = now()`) and the admin dev login link are verified, `user-unverified@user.com` is seeded unverified on purpose (FEAT-010); every other account confirms its email via the mail in MailHog, like on the server.

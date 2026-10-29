@@ -1,7 +1,7 @@
 ---
 id: FEAT-012
 title: Cancel registration from the verify page
-status: backlog # backlog | todo | in-progress | review | done
+status: review # backlog | todo | in-progress | review | done
 priority: medium # low | medium | high
 category: feature # feature | enhancement | bugfix | ui | security
 assignee: unassigned
@@ -20,7 +20,7 @@ An unverified user can delete their account directly from the "verify your email
 ## Problem Statement
 `profile.destroy` sits behind `verified`, so an unverified user cannot delete their account at all; they can only log out. The account stays in the database forever (an admin has to remove it, see the admin delete button). Someone who typed a wrong email or changed their mind has no way out.
 
-Once FEAT-013 is done, new registrations no longer create unverified accounts. This feature is still needed for existing unverified accounts and for users who changed their email in the profile and are unverified again; for them the action should read "Delete account" rather than "Cancel registration".
+Once FEAT-013 is done, new registrations no longer create unverified accounts. This feature is still needed for existing unverified accounts; for them the action reads "Delete account" rather than "Cancel registration". An email change in the profile no longer makes a user unverified (the old email stays until the new one is confirmed, see FEAT-010), so those users never land here.
 
 ## Acceptance Criteria
 - [ ] The verify page shows a "Cancel registration / delete account" action next to "Resend" and "Log out".

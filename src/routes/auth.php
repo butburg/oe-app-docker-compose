@@ -9,6 +9,7 @@ use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
@@ -16,6 +17,25 @@ Route::middleware('guest')->group(function () {
                 ->name('register');
 
     Route::post('register', [RegisteredUserController::class, 'store']);
+
+    // Until the link in the mail is opened, the registration is only pending
+    Route::get('register/pending', [RegisteredUserController::class, 'pending'])
+                ->name('register.pending');
+
+    Route::post('register/pending/resend', [RegisteredUserController::class, 'resend'])
+                ->middleware('throttle:3,1')
+                ->name('register.pending.resend');
+
+    Route::patch('register/pending/email', [RegisteredUserController::class, 'updateEmail'])
+                ->middleware('throttle:3,1')
+                ->name('register.pending.email');
+
+    Route::delete('register/pending', [RegisteredUserController::class, 'destroy'])
+                ->name('register.pending.destroy');
+
+    Route::get('register/confirm/{token}', [RegisteredUserController::class, 'confirm'])
+                ->middleware('throttle:6,1')
+                ->name('register.confirm');
 
     Route::get('login', [AuthenticatedSessionController::class, 'create'])
                 ->name('login');
@@ -42,6 +62,9 @@ Route::middleware('auth')->group(function () {
     Route::get('verify-email/{id}/{hash}', VerifyEmailController::class)
                 ->middleware(['signed', 'throttle:6,1'])
                 ->name('verification.verify');
+
+    Route::delete('verify-email/account', [ProfileController::class, 'destroyUnverified'])
+                ->name('verification.account.destroy');
 
     Route::post('email/verification-notification', [EmailVerificationNotificationController::class, 'store'])
                 ->middleware('throttle:6,1')

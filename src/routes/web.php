@@ -14,6 +14,11 @@ Route::get('/', [PostController::class, 'gallery'])
 Route::view('/about', 'about')->name('about');
 Route::view('/impressum', 'impressum')->name('impressum');
 
+// Link from the mail after an email change in the profile, works without being logged in
+Route::get('/profile/email/confirm/{user}/{hash}', [ProfileController::class, 'confirmEmailChange'])
+    ->middleware(['signed', 'throttle:6,1'])
+    ->name('profile.email.confirm');
+
 Route::middleware('auth', 'verified')->group(function () {
 
     // Admin
@@ -34,7 +39,13 @@ Route::middleware('auth', 'verified')->group(function () {
     Route::patch('/profile/update-description', [ProfileController::class, 'updateDescription'])
         ->name('profile.updateDescription');
     Route::patch('/profile/update-email', [ProfileController::class, 'updateEmail'])
+        ->middleware('throttle:3,1')
         ->name('profile.updateEmail');
+    Route::post('/profile/email/resend', [ProfileController::class, 'resendEmailChange'])
+        ->middleware('throttle:3,1')
+        ->name('profile.email.resend');
+    Route::delete('/profile/email/pending', [ProfileController::class, 'cancelEmailChange'])
+        ->name('profile.email.cancel');
     Route::patch('/profile/update-image', [ProfileController::class, 'updateImage'])
         ->name('profile.updateImage');
 

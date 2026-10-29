@@ -41,26 +41,6 @@ class ProfileTest extends TestCase
         $this->assertSame('Old Name', $user->previous_name);
     }
 
-    public function test_email_can_be_updated_and_needs_new_verification(): void
-    {
-        $user = User::factory()->create();
-
-        $response = $this
-            ->actingAs($user)
-            ->patch(route('profile.updateEmail'), [
-                'email' => 'test@example.com',
-            ]);
-
-        $response
-            ->assertSessionHasNoErrors()
-            ->assertRedirect('/profile');
-
-        $user->refresh();
-
-        $this->assertSame('test@example.com', $user->email);
-        $this->assertNull($user->email_verified_at);
-    }
-
     public function test_email_verification_status_is_unchanged_when_the_email_address_is_unchanged(): void
     {
         $user = User::factory()->create();

@@ -16,17 +16,23 @@
                         <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" accent>
                             <x-app-wordmark />
                         </x-nav-link>
-                        <x-nav-link :href="route('posts.index')" :active="request()->routeIs('posts.index')">
-                            {{ __('My Images') }}
-                        </x-nav-link>
-                        <x-nav-link :href="route('profile.edit')" :active="request()->routeIs('profile.edit')">
-                            {{ __('Profile') }}
-                        </x-nav-link>
-                        @if (Auth::user()->usertype == 'admin')
-                            <x-nav-link :href="route('admin.index')" :active="request()->routeIs('admin.index')">
-                                {{ __('Admin') }}
+                        @verified
+                            <x-nav-link :href="route('posts.index')" :active="request()->routeIs('posts.index')">
+                                {{ __('My Images') }}
                             </x-nav-link>
-                        @endif
+                            <x-nav-link :href="route('profile.edit')" :active="request()->routeIs('profile.edit')">
+                                {{ __('Profile') }}
+                            </x-nav-link>
+                            @if (Auth::user()->usertype == 'admin')
+                                <x-nav-link :href="route('admin.index')" :active="request()->routeIs('admin.index')">
+                                    {{ __('Admin') }}
+                                </x-nav-link>
+                            @endif
+                        @else
+                            <x-nav-link :href="route('verification.notice')" :active="request()->routeIs('verification.notice')">
+                                {{ __('Verify email') }}
+                            </x-nav-link>
+                        @endverified
                     </div>
                 @else
                     {{-- left nav links logged out --}}
@@ -104,17 +110,23 @@
                             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" accent>
                                 <x-app-wordmark />
                             </x-responsive-nav-link>
-                            <x-responsive-nav-link :href="route('posts.index')" :active="request()->routeIs('posts.index')">
-                                {{ __('My Images') }}
-                            </x-responsive-nav-link>
-                            <x-responsive-nav-link :href="route('profile.edit')" :active="request()->routeIs('profile.edit')">
-                                {{ __('Profile') }}
-                            </x-responsive-nav-link>
-                            @if (Auth::user()->usertype == 'admin')
-                                <x-responsive-nav-link :href="route('admin.index')" :active="request()->routeIs('admin.index')">
-                                    {{ __('Admin') }}
+                            @verified
+                                <x-responsive-nav-link :href="route('posts.index')" :active="request()->routeIs('posts.index')">
+                                    {{ __('My Images') }}
                                 </x-responsive-nav-link>
-                            @endif
+                                <x-responsive-nav-link :href="route('profile.edit')" :active="request()->routeIs('profile.edit')">
+                                    {{ __('Profile') }}
+                                </x-responsive-nav-link>
+                                @if (Auth::user()->usertype == 'admin')
+                                    <x-responsive-nav-link :href="route('admin.index')" :active="request()->routeIs('admin.index')">
+                                        {{ __('Admin') }}
+                                    </x-responsive-nav-link>
+                                @endif
+                            @else
+                                <x-responsive-nav-link :href="route('verification.notice')" :active="request()->routeIs('verification.notice')">
+                                    {{ __('Verify email') }}
+                                </x-responsive-nav-link>
+                            @endverified
 
                             <!-- Authentication -->
                             <form method="POST" action="{{ route('logout') }}">

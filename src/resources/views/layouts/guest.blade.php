@@ -32,17 +32,28 @@
 
 <body class="bg-c-background font-sans text-c-text antialiased">
     <div class="min-h-screen">
-        @include('layouts.navigation')
+        @if ($focused ?? false)
+            {{-- only one step left (confirm, change or abort), so no links that leave the page --}}
+            <nav class="border-b border-c-line bg-c-surface text-c-text">
+                <div class="mx-auto flex h-16 max-w-screen-2xl items-center px-4 sm:px-6 lg:px-8">
+                    <x-application-logo class="h-10 w-10" />
+                </div>
+            </nav>
+        @else
+            @include('layouts.navigation')
+        @endif
         <main class="mx-auto w-full max-w-lg px-4 py-8 sm:py-12">
             <div class="app-surface p-4 sm:p-6">
                 {{ $slot }}
             </div>
-            @env('local')
+            @if (app()->environment('local') && !($focused ?? false))
                 {{-- seeded user with drafts and published posts, see database/seeders/data/posts.json --}}
                 <x-login-link class="app-button-secondary mt-4 w-full" email="user-viele-bilder@user.com" />
                 {{-- logs in the first admin, or creates one if there is none --}}
                 <x-login-link class="app-button-secondary mt-2 w-full" :user-attributes="['usertype' => 'admin']" label="Developer Login (Admin)" />
-            @endenv
+                {{-- seeded unverified user (needs db:seed, otherwise the link creates a verified one), shows the guest view with the verify hint --}}
+                <x-login-link class="app-button-secondary mt-2 w-full" email="user-unverified@user.com" label="Developer Login (Unverified)" />
+            @endif
 
             <div class="app-surface-accent mt-6 p-4 sm:p-6">
                 <div class="text-center">

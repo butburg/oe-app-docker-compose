@@ -114,17 +114,25 @@
                             <div id="comments-{{ $post->id }}" class="mt-4 max-h-64 space-y-4 overflow-auto px-3 text-sm leading-6 text-c-text sm:px-0 md:max-h-[420px] md:flex-grow"
                                 x-show="$store.comments.visibility[{{ $post->id }}]">
                                 <!-- Comments Section (conditionally visible) -->
-                                @auth
+                                @verified
                                     <x-gallery.comment.show-comments :post="$post" />
                                 @else
                                     <div class="rounded-md border border-c-line bg-c-surface-raised p-3 text-c-muted">
                                         <p>
-                                            <a class="rounded-sm text-sm text-c-primary underline hover:text-c-text focus:outline-none focus-visible:ring-2 focus-visible:ring-c-primary"
-                                                href="{{ route('login') }}">
-                                                Log in</a> to view and post comments.
+                                            {{-- logged in but unverified: only old accounts from before FEAT-013,
+                                                a pending registration is still a guest (see @verified in AppServiceProvider) --}}
+                                            @auth
+                                                <a class="rounded-sm text-sm text-c-primary underline hover:text-c-text focus:outline-none focus-visible:ring-2 focus-visible:ring-c-primary"
+                                                    href="{{ route('verification.notice') }}">
+                                                    Verify your email</a> to view and post comments.
+                                            @else
+                                                <a class="rounded-sm text-sm text-c-primary underline hover:text-c-text focus:outline-none focus-visible:ring-2 focus-visible:ring-c-primary"
+                                                    href="{{ route('login') }}">
+                                                    Log in</a> to view and post comments.
+                                            @endauth
                                         </p>
                                     </div>
-                                @endauth
+                                @endverified
 
                             </div>
                         </div>

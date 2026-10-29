@@ -2,8 +2,7 @@
     <div class="app-surface overflow-hidden">
         <div class="p-4 text-c-text sm:p-6">
             <div class="mb-4 text-sm leading-6 text-c-muted">
-                {{ __('Thanks for signing up! Before getting started, could you verify your email address :email by clicking on
-                                the link we just emailed to you? If you didn\'t receive the email, we will gladly send you another.',['email' => Auth::user()->email]) }}
+                {{ __('Please verify your email address :email by clicking on the link we emailed to you. Until then you see the gallery like a guest. If you didn\'t receive the email, we will gladly send you another.', ['email' => Auth::user()->email]) }}
             </div>
 
             @if (session('status') == 'verification-link-sent')
@@ -32,6 +31,10 @@
                         {{ __('Log Out') }}
                     </button>
                 </form>
+            </div>
+
+            <div class="mt-8 border-t border-c-line pt-6">
+                @include('profile.partials.delete-user-form', ['action' => route('verification.account.destroy')])
             </div>
         </div>
     </div>

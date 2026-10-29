@@ -14,7 +14,7 @@
         Account') }}</x-danger-button>
 
     <x-modal name="confirm-user-deletion" :show="$errors->userDeletion->isNotEmpty()" focusable>
-        <form class="p-6" method="post" action="{{ route('profile.destroy') }}">
+        <form class="p-6" method="post" action="{{ $action ?? route('profile.destroy') }}">
             @csrf
             @method('delete')
 

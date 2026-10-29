@@ -1,7 +1,7 @@
 ---
 id: FEAT-010
 title: Unverified users see only the guest view, with a hint to verify
-status: todo # backlog | todo | in-progress | review | done
+status: review # backlog | todo | in-progress | review | done
 priority: high # low | medium | high
 category: security # feature | enhancement | bugfix | ui | security
 assignee: unassigned
@@ -24,7 +24,14 @@ Registration logs the user in and redirects to the gallery (`RegisteredUserContr
 - `gallery.blade.php` shows comments inside `@auth`.
 - `add-comment-form.blade.php` shows the form for `Auth::check()`; submitting it then redirects to the verify page.
 
-So anyone can see protected images and all comments right after signing up with any email address, without ever verifying it. Users who change their email in the profile also become unverified again (`email_verified_at = null`), so this case stays relevant even after FEAT-013.
+So anyone can see protected images and all comments right after signing up with any email address, without ever verifying it. Old accounts that were never verified still exist, so this case stays relevant even after FEAT-013. (Originally an email change in the profile also made users unverified; that now uses a pending email instead, see below.)
+
+## Who is logged in but unverified?
+Since FEAT-013 this is rare, which is why the "Verify your email" hint is hard to see in the browser:
+- Someone with a **pending registration** (submitted the form, not clicked the mail link yet) has **no account**. They are a guest and see "Log in to view and post comments".
+- **Logged in and unverified** only happens for accounts that were already unverified before FEAT-013.
+- An **email change in the profile does not make the user unverified**: the new address is stored as `pending_email` and gets a confirmation link (60 minutes). The old email stays active and verified until the link is opened, so a mistyped address never locks anyone out; the profile shows the pending address with "Resend link" and "Cancel email change" (`User::requestEmailChange`, `ProfileController::confirmEmailChange`).
+- To see it locally: use the seeded unverified account `user-unverified@user.com` ("Developer Login (Unverified)" on the login page).
 
 ## Acceptance Criteria
 - [ ] Gallery: unverified users get the same post list as guests (no `is_sensitive` posts), also with search.

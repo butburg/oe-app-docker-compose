@@ -7,8 +7,11 @@ use Illuminate\Auth\Passwords\CanResetPassword;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use App\Mail\ConfirmNewEmail;
 use App\Models\Session;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\URL;
 
 
 class User extends Authenticatable implements MustVerifyEmail {
@@ -36,6 +39,33 @@ class User extends Authenticatable implements MustVerifyEmail {
     // Define a custom hasOne relationship to the sessions table
     public function session() {
         return $this->hasOne(Session::class, 'user_id', 'id');
+    }
+
+    /**
+     * How long the link for a new email from the profile stays valid.
+     */
+    public const EMAIL_CHANGE_VALID_MINUTES = 60;
+
+    /**
+     * Mail a link to the new email. The current email stays active until the link is opened,
+     * so a mistyped address never locks the user out.
+     */
+    public function requestEmailChange(string $email): void {
+        $this->pending_email = $email;
+        $this->save();
+
+        $this->sendEmailChangeLink();
+    }
+
+    public function sendEmailChangeLink(): void {
+        $url = URL::temporarySignedRoute(
+            'profile.email.confirm',
+            now()->addMinutes(self::EMAIL_CHANGE_VALID_MINUTES),
+            // The hash ties the link to this pending email, a newer request makes it invalid
+            ['user' => $this->id, 'hash' => sha1($this->pending_email)]
+        );
+
+        Mail::to($this->pending_email)->send(new ConfirmNewEmail($this->name, $url, self::EMAIL_CHANGE_VALID_MINUTES));
     }
 
     public function getPostsCountAttribute(): int {

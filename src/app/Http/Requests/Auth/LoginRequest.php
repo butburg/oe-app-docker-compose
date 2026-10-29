@@ -18,6 +18,15 @@ class LoginRequest extends FormRequest {
     }
 
     /**
+     * Emails are stored lowercase, so the input is lowercased before the lookup.
+     */
+    protected function prepareForValidation(): void {
+        if (is_string($this->input('email'))) {
+            $this->merge(['email' => Str::lower($this->input('email'))]);
+        }
+    }
+
+    /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string, \Illuminate\Contracts\Validation\Rule|array|string>
@@ -43,15 +52,6 @@ class LoginRequest extends FormRequest {
             throw ValidationException::withMessages([
                 'email' => trans('auth.failed'),
             ]);
-        }
-
-        // Automatically mark the email as verified in development environments
-        $user = Auth::user();
-
-        if (app()->environment('local', 'development') && !$user->hasVerifiedEmail()) {
-            $user->markEmailAsVerified();
-            // Flash a session message to notify the user
-            session()->flash('notif.success', 'Your email has been automatically verified for development purposes.');
         }
 
         RateLimiter::clear($this->throttleKey());

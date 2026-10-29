@@ -38,26 +38,36 @@
             <x-text-input class="mt-1 block w-full" id="email" name="email" type="email" :value="old('email', $user->email)"
                 required autocomplete="email" maxlength="120" />
             <x-input-error class="mt-2" :messages="$errors->get('email')" />
-            @if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && !$user->hasVerifiedEmail())
-                <div>
-                    <p class="mt-2 text-sm text-c-muted">
-                        {{ __('Your email address is unverified.') }}
-                        <button
-                            class="rounded-sm text-sm text-c-primary underline underline-offset-4 hover:text-c-text focus:outline-none focus-visible:ring-2 focus-visible:ring-c-primary"
-                            form="send-verification">
-                            {{ __('Click here to re-send the verification email.') }}
-                        </button>
-                    </p>
-                    @if (session('status') === 'verification-link-sent')
-                        <p class="mt-2 text-sm font-medium text-c-accent" role="status" aria-live="polite">
-                            {{ __('A new verification link has been sent to your email address.') }}
-                        </p>
-                    @endif
-                </div>
-            @endif
         </div>
         <div class="flex items-center gap-4">
             <x-primary-button>{{ __('Update Email') }}</x-primary-button>
         </div>
     </form>
+
+    {{-- A new email waits for its link, the current one stays active until then --}}
+    @if ($user->pending_email)
+        <div class="mt-4 rounded-md border border-c-line bg-c-surface-raised p-3 text-sm text-c-muted">
+            <p>
+                {{ __('Waiting for confirmation of') }} <strong class="text-c-text">{{ $user->pending_email }}</strong>.
+                {{ __('Until you open the link in that mail, you keep using :email.', ['email' => $user->email]) }}
+            </p>
+            <div class="mt-3 flex flex-wrap items-center gap-4">
+                <form method="POST" action="{{ route('profile.email.resend') }}">
+                    @csrf
+                    <button type="submit"
+                        class="rounded-sm text-sm text-c-primary underline underline-offset-4 hover:text-c-text focus:outline-none focus-visible:ring-2 focus-visible:ring-c-primary">
+                        {{ __('Resend link') }}
+                    </button>
+                </form>
+                <form method="POST" action="{{ route('profile.email.cancel') }}">
+                    @csrf
+                    @method('delete')
+                    <button type="submit"
+                        class="rounded-sm text-sm text-c-muted underline underline-offset-4 hover:text-c-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-c-primary">
+                        {{ __('Cancel email change') }}
+                    </button>
+                </form>
+            </div>
+        </div>
+    @endif
 </section>

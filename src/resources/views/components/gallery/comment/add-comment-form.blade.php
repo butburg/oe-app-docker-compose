@@ -1,5 +1,5 @@
 {{-- Add Comment Form --}}
-@if (Auth::check())
+@verified
     <div class="mt-3 flex items-center gap-2" @click="showComments = true">
         <x-gallery.form.form action="{{ route('comments.store') }}" method="POST" :formId="'commentAdd_' . $post->id">
             <input name="post_id" type="hidden" value="{{ $post->id }}">
@@ -24,4 +24,4 @@
             </svg>
         </x-text-button>
     </div>
-@endif
+@endverified
