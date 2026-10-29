@@ -33,9 +33,12 @@ Route::middleware('guest')->group(function () {
     Route::delete('register/pending', [RegisteredUserController::class, 'destroy'])
                 ->name('register.pending.destroy');
 
-    Route::get('register/confirm/{token}', [RegisteredUserController::class, 'confirm'])
+    Route::get('register/confirm/{token}', [RegisteredUserController::class, 'showConfirm'])
                 ->middleware('throttle:6,1')
                 ->name('register.confirm');
+
+    Route::post('register/confirm/{token}', [RegisteredUserController::class, 'confirm'])
+                ->middleware('throttle:6,1');
 
     Route::get('login', [AuthenticatedSessionController::class, 'create'])
                 ->name('login');

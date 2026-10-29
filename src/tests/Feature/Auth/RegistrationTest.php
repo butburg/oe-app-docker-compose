@@ -120,7 +120,12 @@ class RegistrationTest extends TestCase
 
         // A fresh session, like a new tab or another device
         $this->flushSession();
-        $response = $this->get($link);
+        // Opening the link only shows the button, like a mail scanner would see it
+        $this->get($link)->assertOk()->assertSee('Hi Test User')->assertSee('Activate my account');
+        $this->assertDatabaseCount('users', 0);
+        $this->assertGuest();
+
+        $response = $this->post($link);
 
         $response->assertRedirect(route('dashboard', absolute: false));
         $user = User::where('email', 'test@example.com')->firstOrFail();
@@ -139,7 +144,7 @@ class RegistrationTest extends TestCase
     {
         $this->register();
         $link = $this->linkSentTo('test@example.com');
-        $this->get($link);
+        $this->post($link);
         $this->post('/logout');
 
         $this->get($link)->assertOk()->assertSee('This link does not work');
@@ -189,7 +194,7 @@ class RegistrationTest extends TestCase
 
         $this->get($oldLink)->assertSee('This link does not work');
 
-        $this->get($this->linkSentTo('test@example.com'))->assertRedirect(route('dashboard', absolute: false));
+        $this->post($this->linkSentTo('test@example.com'))->assertRedirect(route('dashboard', absolute: false));
         $this->assertDatabaseHas('users', ['email' => 'test@example.com']);
         $this->assertDatabaseMissing('users', ['email' => 'typo@exmaple.com']);
     }
@@ -215,7 +220,7 @@ class RegistrationTest extends TestCase
 
         $this->assertDatabaseCount('pending_registrations', 1);
         $this->get($firstLink)->assertSee('This link does not work');
-        $this->get($this->linkSentTo('test@example.com'));
+        $this->post($this->linkSentTo('test@example.com'));
         $this->assertDatabaseHas('users', ['email' => 'test@example.com', 'name' => 'Other Name']);
     }
 
@@ -238,7 +243,7 @@ class RegistrationTest extends TestCase
 
         User::factory()->create(['email' => 'test@example.com']);
 
-        $this->get($link)->assertOk()->assertSee('already taken');
+        $this->post($link)->assertOk()->assertSee('already taken');
         $this->assertGuest();
         $this->assertDatabaseCount('users', 1);
     }

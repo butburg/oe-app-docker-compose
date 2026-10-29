@@ -125,7 +125,21 @@ class RegisteredUserController extends Controller
     }
 
     /**
-     * Create the account from the link in the mail. Works in any tab or device,
+     * The link in the mail only shows a button. Mail scanners open links on their own,
+     * a GET that created the account would use up the link before the user clicks it.
+     */
+    public function showConfirm(string $token): View
+    {
+        $pending = PendingRegistration::findByToken($token);
+        if (!$pending) {
+            return view('auth.register-link-invalid');
+        }
+
+        return view('auth.register-confirm', ['pending' => $pending, 'token' => $token]);
+    }
+
+    /**
+     * Create the account from the button on the link page. Works in any tab or device,
      * since everything needed is stored with the token, not in the session.
      */
     public function confirm(Request $request, string $token): View|RedirectResponse
@@ -162,7 +176,7 @@ class RegisteredUserController extends Controller
         Auth::login($user);
         $request->session()->regenerate();
         $request->session()->forget(self::SESSION_KEY);
-        session()->flash('notif.success', 'Welcome, ' . $user->name . '! Your account is ready.');
+        session()->flash('notif.success', 'Welcome, ' . $user->name . '! Your account is ready to grow.');
 
         return redirect(route('dashboard', absolute: false));
     }
