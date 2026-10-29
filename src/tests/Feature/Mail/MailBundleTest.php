@@ -204,6 +204,30 @@ class MailBundleTest extends TestCase
         $this->assertStringContainsString('[Click here](https://evil.test)', $html);
     }
 
+    public function test_blank_lines_in_a_comment_cannot_leave_the_quote(): void
+    {
+        $this->comment($this->ben, "first\n\nBIG\n===\n\n    code block");
+        $this->sendBundles();
+
+        $html = $this->sentTo($this->anna)->first()->render();
+        $this->assertStringNotContainsString('<h1>BIG', $html);
+        $this->assertStringNotContainsString('<pre>', $html);
+        $this->assertMatchesRegularExpression('/<blockquote[^>]*>\s*<p[^>]*>first BIG === code block<\/p>/', $html);
+    }
+
+    public function test_text_part_shows_user_text_without_backslashes(): void
+    {
+        $this->post->update(['title' => 'Glandieu (1)']);
+        $this->ben->update(['name' => 'Test-User']);
+        $this->comment($this->ben, 'Wow! *great* <b>x</b> & more.');
+        $this->sendBundles();
+
+        $mail = $this->sentTo($this->anna)->first();
+        $mail->assertSeeInText('**Test-User** commented on **Glandieu (1)**:', false);
+        $mail->assertSeeInText('> Wow! *great* <b>x</b> & more.', false);
+        $mail->assertDontSeeInText('\\', false);
+    }
+
     // --- new images ---
 
     public function test_new_images_go_to_other_verified_users_with_the_switch_on(): void
