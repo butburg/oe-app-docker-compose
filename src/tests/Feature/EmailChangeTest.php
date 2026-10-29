@@ -84,6 +84,20 @@ class EmailChangeTest extends TestCase
         $this->assertAuthenticatedAs($this->user);
     }
 
+    public function test_second_click_after_a_mail_scanner_says_the_email_is_changed(): void
+    {
+        $this->requestChange();
+        $link = $this->linkSentTo('new@example.com');
+        $this->post('/logout');
+
+        // The scanner opens the link first, then the user clicks it
+        $this->get($link);
+        $this->get($link)
+            ->assertRedirect(route('login'))
+            ->assertSessionHasNoErrors()
+            ->assertSessionHas('status', 'Your email is already changed to new@example.com.');
+    }
+
     public function test_cancel_keeps_the_old_email_and_kills_the_link(): void
     {
         $this->requestChange();

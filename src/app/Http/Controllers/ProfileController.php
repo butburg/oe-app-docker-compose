@@ -138,6 +138,12 @@ class ProfileController extends Controller
     {
         $target = Auth::check() ? Redirect::route('profile.edit') : Redirect::route('login');
 
+        // Already switched by an earlier click, e.g. a mail scanner that opened the link first
+        if (hash_equals(sha1($user->email), $hash)) {
+            $message = 'Your email is already changed to ' . $user->email . '.';
+            return Auth::check() ? $target->with('notif.success', $message) : $target->with('status', $message);
+        }
+
         if (!$user->pending_email || !hash_equals(sha1($user->pending_email), $hash)) {
             return $target->withErrors(['email' => 'This link does not work any more. Your email was not changed.']);
         }

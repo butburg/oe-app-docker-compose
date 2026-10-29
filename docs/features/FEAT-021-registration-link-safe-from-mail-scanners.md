@@ -30,6 +30,6 @@ Outlook Safe Links, Defender and some mail gateways open links in incoming mails
 
 ## Technical Implementation Notes
 - **Affected files / components**: `RegisteredUserController::showConfirm()` (new) and `confirm()` (now POST), `routes/auth.php`, `resources/views/auth/register-confirm.blade.php`, `tests/Feature/Auth/RegistrationTest.php`.
-- **Not changed**: the email change link (`profile.email.confirm`) is still a GET; a second click after a scanner shows the wrong "was not changed" message (review point 3, separate fix).
+- **Email change link** (`profile.email.confirm`): stays a GET, the change itself is harmless when a scanner does it. A second click whose hash matches the current email now says "Your email is already changed to …" instead of "was not changed" (`ProfileController::confirmEmailChange()`, `tests/Feature/EmailChangeTest.php`).
 - **Screenshots**: `docs/features/screenshots/FEAT-021-activate-account.png`, `FEAT-021-activate-account-mobile.png`.
 - **Related**: FEAT-013.

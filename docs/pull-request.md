@@ -35,7 +35,8 @@ Outlook Safe Links, Defender und manche Gmail-Prefetcher rufen Links aus Mails a
 - [RegisteredUserController.php:131](src/app/Http/Controllers/Auth/RegisteredUserController.php#L131): Der Scanner legt per GET das Konto an und loggt sich in *seiner* Session ein. Klickt der User danach selbst, sieht er „Link ungültig“, obwohl sein Konto schon existiert.
 - [ProfileController.php:142](src/app/Http/Controllers/ProfileController.php#L142): Hier gilt dasselbe. Beim zweiten Klick steht da „Your email was not changed“, obwohl die E-Mail längst geändert ist. Die Meldung ist schlicht falsch.
 - **Fix:** Per GET nur eine Seite mit Button zeigen, die eigentliche Aktion per POST ausführen. Für die E-Mail-Änderung zusätzlich prüfen: Wenn `sha1($user->email) === $hash`, die Erfolgsmeldung zeigen.
-- ✅ **Registrierung erledigt (FEAT-021):** Der Link zeigt eine Willkommensseite mit Button, erst der POST legt das Konto an. Die E-Mail-Änderung ist noch offen.
+- ✅ **Registrierung erledigt (FEAT-021):** Der Link zeigt eine Willkommensseite mit Button, erst der POST legt das Konto an.
+- ✅ **E-Mail-Änderung erledigt:** Passt der Hash im Link schon zur aktuellen E-Mail, kommt „Your email is already changed to …“ statt der falschen Fehlermeldung.
 
 **4. `POST /register` hat kein Throttle**
 Betroffen ist [routes/auth.php:19](src/routes/auth.php#L19).
