@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Actions\DeleteUser;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -55,6 +56,24 @@ class ProfileTest extends TestCase
             ->assertRedirect('/profile');
 
         $this->assertNotNull($user->refresh()->email_verified_at);
+    }
+
+    public function test_failed_deletion_keeps_the_account_and_says_so_on_the_login_page(): void
+    {
+        $user = User::factory()->create();
+        // Let the deletion itself fail, e.g. a database error inside the transaction
+        $this->mock(DeleteUser::class)->shouldReceive('handle')->andThrow(new \RuntimeException('database gone'));
+
+        $this->actingAs($user)
+            ->delete('/profile', ['password' => 'password'])
+            ->assertRedirect(route('login'))
+            ->assertSessionHas('status', 'Your account could not be deleted. Please log in and try again.');
+
+        // Logged out before the deletion, but the account is still there
+        $this->assertGuest();
+        $this->assertModelExists($user);
+        // The message really shows up on the login page, not only in the session
+        $this->get(route('login'))->assertSee('Your account could not be deleted');
     }
 
     public function test_user_can_delete_their_account(): void

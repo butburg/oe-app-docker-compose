@@ -233,8 +233,10 @@ class ProfileController extends Controller
             // Log the error
             Log::error('User deletion failed: ' . $e->getMessage());
 
-            // Optionally, redirect back with an error message
-            return back()->withErrors(['error' => 'There was an issue deleting your account.']);
+            // The user is logged out already but the account still exists (transaction),
+            // so say so on the login page instead of a back() that ends there without a message
+            return Redirect::route('login')
+                ->with('status', 'Your account could not be deleted. Please log in and try again.');
         }
     }
 }
