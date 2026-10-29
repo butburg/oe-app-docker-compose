@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Mail;
 /**
  * Sends everything collected for one user in one mail (FEAT-020): CollectMail dispatches this job with a delay of
  * mail.bundle_minutes when the first item of a user arrives. Needs a worker (locally the queue container, on the
- * server a lima-city cron job), not the sync queue: that ignores the delay.
+ * server a cron job at the hoster), not the sync queue: that ignores the delay.
  */
 class SendMailBundle implements ShouldQueue
 {

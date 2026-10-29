@@ -1,6 +1,8 @@
-# Cronjobs auf dem Server (lima-city)
+# Cronjobs auf dem Server
 
-Angelegt im lima-city-Kundenbereich unter **Cronjobs > Cronjob erstellen**. Hilfe: https://www.lima-city.de/hilfe/cronjobs
+Die App braucht auf dem Server Cronjobs, die der Hoster ausführt. Die Einträge unten sind für unseren aktuellen Hoster **lima-city**. Bei anderen Hostern heißen die Felder anders, oder der Cronjob kommt per `crontab -e` dazu. Pfade und `flock` können dort ebenfalls abweichen. Was der Befehl tun muss, bleibt gleich.
+
+Bei lima-city im Kundenbereich unter **Cronjobs > Cronjob erstellen**. Hilfe: https://www.lima-city.de/hilfe/cronjobs
 
 ## Queue-Worker (Sammel-Mails)
 
@@ -17,7 +19,7 @@ Erst nach dem Deploy von Branch 05 anlegen.
 
 Was die Teile bedeuten:
 - `* * * * *`: jede Minute. Der Worker schaut nach, welche Mails fällig sind, verschickt sie und beendet sich wieder (`--stop-when-empty`).
-- `cd oe-app`: Der Cronjob startet im Home-Verzeichnis, die App liegt in `~/oe-app`.
+- `cd oe-app`: Der Cronjob startet bei lima-city im Home-Verzeichnis, die App liegt in `~/oe-app`.
 - `flock -n ~/.cronlock-queue`: Läuft der vorige Durchgang noch, wird dieser übersprungen.
 - `--quiet &>> ~/queue-cron.log`: Nur Fehler landen in `~/queue-cron.log`. Fehlgeschlagene Mails stehen zusätzlich in der Tabelle `failed_jobs` und in `storage/logs/laravel.log`.
 

@@ -10,7 +10,7 @@ docs/
 ├── CHANGELOG.md            # Version history and changelog
 ├── LaravelRemember.md      # Personal learnings and Laravel knowledge base
 ├── commands_list.txt       # Cheat sheet of frequently used docker/artisan commands
-├── server-cronjobs.md      # Cron jobs to set up on the lima-city server (queue worker)
+├── server-cronjobs.md      # Cron jobs to set up at the hoster (queue worker)
 ├── features/               # Individual feature specification files
 │   ├── README.md           # Instructions for writing feature files
 │   ├── template.md         # Template for new features
