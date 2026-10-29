@@ -93,6 +93,10 @@ line2
 ```
 - [EscapesMarkdown.php:11](src/app/Mail/Concerns/EscapesMarkdown.php#L11) escapt auch für den Text-Teil, obwohl der nie als Markdown geparst wird.
 - Zeilenumbrüche im Kommentar werden nicht behandelt. Mehrzeilige Kommentare rutschen aus dem Blockquote. Mit `===` oder 4 Leerzeichen Einrückung lässt sich in der HTML-Mail trotzdem Formatierung erzeugen, Links aber nicht.
+- ✅ **Erledigt:**
+  - Die Screenshots zeigten nur den HTML-Teil. Der Text-Teil wird nicht als Markdown geparst, deshalb blieben dort die Backslashes stehen, auch in Namen und Titeln.
+  - `plainText()` macht aus HTML- und Markdown-Zeichen jetzt Entities statt Backslashes. Markdown zeigt sie als normalen Text, der Text-Teil dekodiert sie.
+  - Zeilenumbrüche im User-Text werden zu Leerzeichen, damit nichts mehr aus dem Zitat fällt. Die Formatierung über Leerzeilen (`===`, Einrückung) geht damit nicht mehr.
 
 **9. Eigenes `Post::save()` für die Slug-Race**
 Betroffen ist [Post.php:57](src/app/Models/Post.php#L57).
