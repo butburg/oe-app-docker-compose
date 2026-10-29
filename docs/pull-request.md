@@ -25,6 +25,10 @@ Betroffen ist [SendMailBundle.php:36-49](src/app/Jobs/SendMailBundle.php#L36-L49
 - `$due->isFuture()` ist wahr, also dispatcht der Job sich selbst noch einmal, synchron und innerhalb des noch gehaltenen `Cache::lock`.
 - Der innere Aufruf wartet 10 s auf den Lock, dann kommt eine `LockTimeoutException`. Der Kommentar- bzw. Publish-Request endet mit 500.
 - **Fix:** Mindestens in `.env.example` und im TODO deutlich davor warnen, oder bei `sync` gezielt abbrechen.
+- ✅ **Erledigt, ohne Codeänderung:**
+  - `sync` wird nicht genutzt. Auf dem Server startet ein lima-Shell-Cronjob jede Minute `queue:work --stop-when-empty`, wie der `queue`-Container lokal. Die Anleitung steht in [TODO.md](TODO.md) und in der README.
+  - In `.env.example` und im Docblock von `SendMailBundle` steht der Hinweis „nicht `sync`“.
+  - Bewusst kein Schutz für `sync` im Job, denn wir gehen von funktionierender Infrastruktur aus.
 
 **3. GET-Bestätigungslinks werden von Mail-Scannern „verbraucht“**
 Outlook Safe Links, Defender und manche Gmail-Prefetcher rufen Links aus Mails automatisch auf.

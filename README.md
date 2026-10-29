@@ -42,7 +42,7 @@ Bringing up the Docker Compose network with `app` instead of just using `up`, en
 - **php** - `:9000`
 - **redis** - `:6379`
 - **mailhog** - `:8025`
-- **queue** - sends the queued mails (`queue:work --tries=3`), restarts with the stack. After code changes run `docker-compose restart queue`, the worker keeps the old code in memory. Failed mails: `docker-compose run --rm artisan queue:failed`.
+- **queue** - sends the queued mails (`queue:work --tries=3`), restarts with the stack. After code changes run `docker-compose restart queue`, the worker keeps the old code in memory. Failed mails: `docker-compose run --rm artisan queue:failed`. On the server a lima-city shell cron job (`* * * * *`) does this instead: `cd oe-app && flock -n ~/.cronlock-queue php artisan queue:work --stop-when-empty --quiet &>> ~/queue-cron.log`.
 
 Three additional containers are included that handle Composer, NPM, and Artisan commands *without* having to have these platforms installed on your local computer. Use the following command examples from your project root, modifying them to fit your particular use case.
 
