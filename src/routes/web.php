@@ -16,9 +16,11 @@ Route::view('/about', 'about')->name('about');
 Route::view('/impressum', 'impressum')->name('impressum');
 
 // Link from the mail after an email change in the profile, works without being logged in
-Route::get('/profile/email/confirm/{user}/{hash}', [ProfileController::class, 'confirmEmailChange'])
+Route::get('/profile/email/confirm/{user}/{hash}', [ProfileController::class, 'showEmailChange'])
     ->middleware(['signed', 'throttle:6,1'])
     ->name('profile.email.confirm');
+Route::post('/profile/email/confirm/{user}/{hash}', [ProfileController::class, 'confirmEmailChange'])
+    ->middleware(['signed', 'throttle:6,1']);
 
 Route::middleware('auth', 'verified')->group(function () {
 

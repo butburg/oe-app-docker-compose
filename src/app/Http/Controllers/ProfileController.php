@@ -131,14 +131,28 @@ class ProfileController extends Controller
     }
 
     /**
-     * Switch to the pending email from the link in the mail. Needs no login, the signed link
-     * is the proof, so it also works on another device.
+     * The link in the mail only shows a button, so a mail scanner that opens it confirms nothing.
+     */
+    public function showEmailChange(Request $request, User $user, string $hash): View|RedirectResponse
+    {
+        if ($user->pending_email && hash_equals(sha1($user->pending_email), $hash)) {
+            // The signed query string is kept, the POST goes through the same signature check
+            return view('profile.confirm-email', ['user' => $user, 'action' => $request->fullUrl()]);
+        }
+
+        // Nothing to confirm: confirmEmailChange only answers with the matching message
+        return $this->confirmEmailChange($request, $user, $hash);
+    }
+
+    /**
+     * Switch to the pending email from the button on the link page. Needs no login, the signed
+     * link is the proof, so it also works on another device.
      */
     public function confirmEmailChange(Request $request, User $user, string $hash): RedirectResponse
     {
         $target = Auth::check() ? Redirect::route('profile.edit') : Redirect::route('login');
 
-        // Already switched by an earlier click, e.g. a mail scanner that opened the link first
+        // Already switched by an earlier click on the link
         if (hash_equals(sha1($user->email), $hash)) {
             $message = 'Your email is already changed to ' . $user->email . '.';
             return Auth::check() ? $target->with('notif.success', $message) : $target->with('status', $message);

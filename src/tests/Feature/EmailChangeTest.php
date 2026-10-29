@@ -73,7 +73,7 @@ class EmailChangeTest extends TestCase
 
         // Opened on another device without being logged in
         $this->post('/logout');
-        $this->get($link)->assertRedirect(route('login'))->assertSessionHas('status');
+        $this->post($link)->assertRedirect(route('login'))->assertSessionHas('status');
 
         $this->user->refresh();
         $this->assertSame('new@example.com', $this->user->email);
@@ -84,14 +84,17 @@ class EmailChangeTest extends TestCase
         $this->assertAuthenticatedAs($this->user);
     }
 
-    public function test_second_click_after_a_mail_scanner_says_the_email_is_changed(): void
+    public function test_opening_the_link_only_shows_the_button_and_a_used_link_says_changed(): void
     {
         $this->requestChange();
         $link = $this->linkSentTo('new@example.com');
         $this->post('/logout');
 
-        // The scanner opens the link first, then the user clicks it
-        $this->get($link);
+        // A mail scanner opening the link only gets the page with the button
+        $this->get($link)->assertOk()->assertSee('new@example.com')->assertSee('Confirm my new email');
+        $this->assertSame('old@example.com', $this->user->refresh()->email);
+
+        $this->post($link);
         $this->get($link)
             ->assertRedirect(route('login'))
             ->assertSessionHasNoErrors()
@@ -119,7 +122,7 @@ class EmailChangeTest extends TestCase
         $this->get($typoLink)->assertSessionHasErrors('email');
         $this->assertSame('old@example.com', $this->user->refresh()->email);
 
-        $this->get($this->linkSentTo('new@example.com'));
+        $this->post($this->linkSentTo('new@example.com'));
         $this->assertSame('new@example.com', $this->user->refresh()->email);
     }
 
@@ -151,7 +154,7 @@ class EmailChangeTest extends TestCase
         $link = $this->linkSentTo('new@example.com');
         User::factory()->create(['email' => 'new@example.com']);
 
-        $this->get($link)->assertSessionHasErrors('email');
+        $this->post($link)->assertSessionHasErrors('email');
 
         $this->user->refresh();
         $this->assertSame('old@example.com', $this->user->email);

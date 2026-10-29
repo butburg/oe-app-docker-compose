@@ -1,6 +1,6 @@
 ---
 id: FEAT-021
-title: Registration link safe from mail scanners
+title: Registration and email change links safe from mail scanners
 status: done # backlog | todo | in-progress | review | done
 priority: high # low | medium | high
 category: bugfix # feature | enhancement | bugfix | ui | security
@@ -13,10 +13,10 @@ tags:
   - mail
 ---
 
-# Registration link safe from mail scanners
+# Registration and email change links safe from mail scanners
 
 ## Overview
-The link in the registration mail only opens a welcome page with an "Activate my account" button. The account is created when the user clicks the button.
+The links in the registration mail and in the email change mail only open a page with a button. The account is created, or the new email confirmed, when the user clicks it.
 
 ## Problem Statement
 Outlook Safe Links, Defender and some mail gateways open links in incoming mails on their own. Since FEAT-013 the GET on `register/confirm/{token}` created the account and used up the link. The scanner got the account and the login, and the user then saw "This link does not work (any more)" although the account existed (review of PR #5, point 3).
@@ -26,10 +26,13 @@ Outlook Safe Links, Defender and some mail gateways open links in incoming mails
 - [x] `POST register/confirm/{token}` creates the account and logs in, as before.
 - [x] The page welcomes the user by name and uses the site colours: the button has a gradient frame in primary, secondary and accent and fills on hover.
 - [x] An invalid or expired link still shows the "link does not work" page on GET.
-- [x] Tests and validation passed (container, 173 tests).
+- [x] Email change: `GET profile/email/confirm/{user}/{hash}` (signed) only shows a page with the new email and a "Confirm my new email" button, the `POST` to the same signed URL switches the email.
+- [x] A link that was already used says "Your email is already changed to …" instead of "was not changed".
+- [x] Both pages use the same button (`x-glow-button`).
+- [x] Tests and validation passed (container, 174 tests).
 
 ## Technical Implementation Notes
 - **Affected files / components**: `RegisteredUserController::showConfirm()` (new) and `confirm()` (now POST), `routes/auth.php`, `resources/views/auth/register-confirm.blade.php`, `tests/Feature/Auth/RegistrationTest.php`.
-- **Email change link** (`profile.email.confirm`): stays a GET, the change itself is harmless when a scanner does it. A second click whose hash matches the current email now says "Your email is already changed to …" instead of "was not changed" (`ProfileController::confirmEmailChange()`, `tests/Feature/EmailChangeTest.php`).
-- **Screenshots**: `docs/features/screenshots/FEAT-021-activate-account.png`, `FEAT-021-activate-account-mobile.png`.
+- **Email change**: `ProfileController::showEmailChange()` (new) shows the page only while the link matches the pending email, otherwise it hands over to `confirmEmailChange()`, which then only answers with the matching message. The form posts to `$request->fullUrl()`, so the `signed` middleware checks the same signature on the POST. Tests: `tests/Feature/EmailChangeTest.php`.
+- **Screenshots**: `docs/features/screenshots/FEAT-021-activate-account.png`, `FEAT-021-activate-account-mobile.png`, `FEAT-021-confirm-new-email.png`.
 - **Related**: FEAT-013.
