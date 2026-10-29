@@ -12,6 +12,12 @@ Betroffen sind [CollectMail.php:75](src/app/Actions/CollectMail.php#L75) und [Se
 - Wenn der Job endgültig scheitert, bleiben seine Einträge liegen. Danach bekommt der User keinen Job mehr. Das passiert bei einem SMTP-Fehler nach den Retries, bei einem geleerten `jobs`-Table oder wenn der Worker nie lief und die Jobs verworfen werden.
 - Der Fall ist wahrscheinlich: `--tries=3 --backoff=60` steht nur im docker-compose-Entrypoint. Ein Worker auf lima-city mit dem Standard `--tries=1` sperrt den User schon nach einem einzigen SMTP-Aussetzer.
 - **Fix:** `public $tries = 3; public $backoff = 60;` direkt in die Job-Klasse schreiben. Dazu eine `failed()`-Methode, die die Einträge löscht oder neu dispatcht. Oder auf `ShouldBeUnique` mit `uniqueId() = userId` umstellen und immer dispatchen, statt die `$waiting`-Logik zu nutzen.
+- ✅ **Erledigt (de6122c):**
+  - `$tries = 3` und `$backoff = 60` stehen jetzt in der Job-Klasse.
+  - `collect()` zählt einen User nur noch als wartend, solange sein ältester Eintrag nicht älter ist als `bundle_minutes + GRACE_MINUTES` (30). Ist er überfällig, startet der nächste Eintrag einen neuen Job, und das liegengebliebene Bundle geht mit raus.
+  - Bewusst nicht umgesetzt:
+    - `failed()` löscht keine Einträge, weil dabei Mails still verloren gingen.
+    - Es gibt keinen Sweep für User, die nach einem Fehlschlag gar keinen neuen Eintrag bekommen. Wir gehen von funktionierenden Servern aus, das ist ein Einzelfall, und `queue:retry all` hilft dann von Hand.
 
 **2. Mit `QUEUE_CONNECTION=sync` bricht das Kommentieren und Veröffentlichen**
 Betroffen ist [SendMailBundle.php:36-49](src/app/Jobs/SendMailBundle.php#L36-L49). Die PR-Beschreibung sagt selbst „kein Worker auf dem Server“. Auf `sync` umzustellen wäre der naheliegende schnelle Workaround, und dann passiert Folgendes:
