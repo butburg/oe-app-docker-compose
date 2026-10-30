@@ -6,230 +6,239 @@ resources\views\layouts\app.blade.php view --}}
         <x-header2>My Images</x-header2>
     </x-slot>
 
+    @php
+        $tabClass = 'flex flex-1 items-center justify-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-c-primary sm:flex-none sm:px-6';
+        $activeTab = 'border-c-primary text-c-text';
+        $otherTab = 'border-transparent text-c-muted hover:text-c-text';
+        $countClass = 'rounded-full px-2 py-0.5 text-xs';
+    @endphp
+
     <div class="mx-auto max-w-7xl px-4 py-6 text-c-text sm:px-6 lg:px-8">
-        <!-- Drafts -->
+        {{-- one list at a time by using tabs, many drafts would push the view of published posts far down, makes less information per page. --}}
+        <div class="app-surface overflow-hidden">
+            <nav class="flex border-b border-c-line" aria-label="My Images">
+                <a class="{{ $tabClass }} {{ $tab === 'drafts' ? $activeTab : $otherTab }}"
+                    href="{{ route('posts.index', ['tab' => 'drafts']) }}"
+                    @if ($tab === 'drafts') aria-current="page" @endif>
+                    <span class="sm:hidden">Drafts</span>
+                    <span class="hidden sm:inline">Not yet published</span>
+                    <span class="{{ $countClass }} {{ $tab === 'drafts' ? 'bg-c-primary/15 text-c-primary' : 'bg-c-surface-raised' }}">{{ $draftPosts->total() }}</span>
+                </a>
+                <a class="{{ $tabClass }} {{ $tab === 'published' ? $activeTab : $otherTab }}"
+                    href="{{ route('posts.index', ['tab' => 'published']) }}"
+                    @if ($tab === 'published') aria-current="page" @endif>
+                    Published
+                    <span class="{{ $countClass }} {{ $tab === 'published' ? 'bg-c-primary/15 text-c-primary' : 'bg-c-surface-raised' }}">{{ $publishedPosts->total() }}</span>
+                </a>
+            </nav>
 
-        <div class="app-surface mb-4 overflow-hidden p-4 sm:p-6">
+            <div class="p-4 sm:p-6">
+                @if ($tab === 'drafts')
+                    {{-- the short warning stays visible, the details open on click --}}
+                    <details class="group mb-4 rounded-md border border-c-line bg-c-surface-raised text-sm text-c-muted">
+                        <summary class="flex cursor-pointer list-none items-start gap-3 p-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-c-primary sm:px-4 [&::-webkit-details-marker]:hidden">
+                            <svg class="mt-[2px] h-4 w-4 flex-shrink-0" aria-hidden="true"
+                                xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                                <path
+                                    d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
+                            </svg>
+                            <span class="flex-1">
+                                🔒 <span class="font-semibold text-c-text">Once published, your post cannot be edited.</span>
+                                Think carefully before you publish!
+                            </span>
+                            <svg class="mt-[2px] h-4 w-4 flex-shrink-0 transition-transform group-open:rotate-180" aria-hidden="true"
+                                xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                <path d="m6 9 6 6 6-6" />
+                            </svg>
+                        </summary>
+                        <ul class="list-inside list-disc px-3 pb-3 sm:px-4 sm:pl-11">
+                            <li>You have the option to <span class="font-semibold">hide</span> or <span
+                                    class="font-semibold">delete</span> your post at any time.</li>
+                            <li>Deleting a post will also remove all associated comments.</li>
+                            <li>If you need to make urgent changes to a published post, please contact an admin.</li>
+                        </ul>
+                    </details>
 
-            <!-- Title for draft posts -->
-            <h3 class="mb-4 text-lg font-semibold leading-tight">Not yet
-                published</h3>
+                    {{ $draftPosts->appends(['tab' => 'drafts'])->links() }}
 
-            <!-- Box with Infos -->
-            <div class="mb-4 flex rounded-md border border-c-line bg-c-surface-raised p-3 text-sm text-c-muted sm:p-4" role="alert">
-                <svg class="me-3 mt-[2px] inline h-4 w-4 flex-shrink-0" aria-hidden="true"
-                    xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                    <path
-                        d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
-                </svg>
-                <span class="sr-only">Info</span>
-                <div>
-                    <span class="font-medium">Important Information Before You
-                        Publish:</span>
-                    <ul class="mt-1.5 list-inside list-disc">
-                        <li>Once published, your post <span class="font-semibold">cannot be edited</span>.
-                        </li>
-                        <li>You have the option to <span class="font-semibold">hide</span> or <span
-                                class="font-semibold">delete</span> your post at
-                            any time.</li>
-                        <li>Deleting a post will also remove all associated
-                            comments.</li>
-                        <li>If you need to make urgent changes to a published
-                            post, please contact an admin.</li>
-                    </ul>
+                    <div>
+                        @forelse ($draftPosts as $post)
+                            <div class="flex flex-col items-center border-t border-c-line/50 py-4 first:border-t-0 md:flex-row md:items-center">
+                                <!-- draft Image -->
 
-                    <p class="mt-2"><span class=""></span>🔒 <span class="font-semibold">Think carefully before
-                            you publish!</span> Make
-                        sure everything is exactly how you want it, as you won’t
-                        be able to make changes after it goes
-                        live.</p>
-                </div>
-            </div>
+                                <div class="flex flex-grow">
+                                    <div class="flex-shrink-0">
+                                        <x-image_or_placeholder alt_title="Draft of {{ $post->title }}"
+                                            style="h-24 w-24 rounded-md bg-c-surface-raised object-contain" :image="$post->image" size_type="s"
+                                            :zoomable="true" />
+                                    </div>
+                                    <!-- Display draft details -->
+                                    <div class="ml-4 min-w-0 max-w-md break-words">
+                                        <span class="text-lg font-semibold text-c-text">{{ $post->title }}</span>
 
-            <!-- Pagination links top -->
-            <div class="mt-4">
-                {{ $draftPosts->links() }}
-            </div>
+                                        <small class="flex items-center gap-x-1 text-c-muted">
+                                            Created: {{ $post->created_at->diffForHumans() }}
+                                            @if ($post->is_sensitive)
+                                                | <span class="flex" title="Protected image">
+                                                    <x-icons.lock class="mx-1 h-3.5 w-3.5" aria-hidden="true" />
+                                                </span>
+                                            @endif
+                                        </small>
 
-            <!-- Section to display draft posts as flex-->
-            @forelse ($draftPosts as $post)
-                <div class="flex flex-col items-center border-b py-4 md:flex-row md:items-center">
-                    <!-- draft Image -->
-
-                    <div class="flex flex-grow">
-                        <div class="flex-shrink-0">
-                            <x-image_or_placeholder alt_title="Draft of {{ $post->title }}"
-                                style="h-24 w-24 rounded-md bg-c-surface-raised object-contain" :image="$post->image" size_type="l"
-                                :zoomable="true" />
-                        </div>
-                        <!-- Display draft details -->
-                        <div class="ml-4">
-                            <span class="text-lg font-semibold text-c-text">{{ $post->title }}</span>
-
-                            <small class="flex items-center gap-x-1 text-c-muted">
-                                Created: {{ $post->created_at->diffForHumans() }}
-                                @if ($post->is_sensitive)
-                                    | <span class="flex" title="Protected image">
-                                        <x-icons.lock class="mx-1 h-3.5 w-3.5" aria-hidden="true" />
-                                    </span>
-                                @endif
-                            </small>
-
-                            @if ($post->created_at->diffForHumans() !== $post->updated_at->diffForHumans())
-                                <small class="block text-c-muted">Last update:
-                                    {{ $post->updated_at->diffForHumans() }}</small>
-                            @endif
+                                        @if ($post->created_at->diffForHumans() !== $post->updated_at->diffForHumans())
+                                            <small class="block text-c-muted">Last update:
+                                                {{ $post->updated_at->diffForHumans() }}</small>
+                                        @endif
 
 
-                        </div>
-                    </div>
+                                    </div>
+                                </div>
 
-                    <!-- Actions for the draft -->
-                    <div class="mt-4 flex flex-wrap justify-center gap-3">
-                        <!-- Link to publish post -->
-                        <a class="app-button-bar border-c-accent hover:bg-c-accent"
-                            href="{{ route('posts.publish', $post->id) }}">
-                            Publish <span aria-hidden="true">▽</span>
-                        </a>
-                        <!-- Link to edit post -->
-                        <a class="app-button-bar border-amber-400 hover:bg-amber-400"
-                            href="{{ route('posts.edit', $post->id) }}">Edit <span aria-hidden="true">✎</span></a>
+                                <!-- Actions for the draft -->
+                                <div class="mt-4 flex flex-wrap justify-center gap-3">
+                                    <!-- Link to publish post -->
+                                    <a class="app-button-bar border-c-accent hover:bg-c-accent"
+                                        href="{{ route('posts.publish', $post->id) }}">
+                                        Publish <span aria-hidden="true">▽</span>
+                                    </a>
+                                    <!-- Link to edit post -->
+                                    <a class="app-button-bar border-amber-400 hover:bg-amber-400"
+                                        href="{{ route('posts.edit', $post->id) }}">Edit <span aria-hidden="true">✎</span></a>
 
-                        <!-- Form to delete draft post -->
-                        <form method="post" action="{{ route('posts.destroy', $post->id) }}">
-                            @csrf
-                            @method('delete')
-                            <button
-                                class="app-button-bar border-rose-400 hover:bg-rose-400"
-                                type="submit" onclick="return confirm('Are you sure you want to delete this post?')">
-                                Delete <span aria-hidden="true">✕</span>
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            @empty
-                <a class="app-button-primary mb-4" href="{{ route('posts.create') }}">Create your first post</a>
-                <div class="border-b border-c-line p-4 text-c-muted">
-                    <small>No draft posts found.</small>
-                </div>
-            @endforelse
-            <!-- Pagination links bottom -->
-            <div class="mt-4">
-                {{ $draftPosts->links() }}
-            </div>
-        </div>
-
-        <!-- Published -->
-        <div class="app-surface overflow-hidden p-4 sm:p-6">
-            <!-- Title for published posts -->
-            <h3 class="mb-4 text-lg font-semibold leading-tight">Published</h3>
-
-            <!-- Pagination links top -->
-            <div class="mt-4">
-                {{ $publishedPosts->links() }}
-            </div>
-
-            <!-- Section to display published posts as flex-->
-            @forelse ($publishedPosts as $post)
-                <div class="flex flex-col border-b border-c-line py-4 md:flex-row md:items-center">
-                    <!-- Published Image and Details -->
-                    <div class="flex flex-col items-center md:w-1/2 md:flex-row">
-                        <!-- Published Image -->
-                        <div class="flex-shrink-0 md:mr-4">
-                            <div class="@if (!$post->is_published) opacity-25 @endif">
-                                <a class="block transform transition-transform hover:scale-105"
-                                    href="{{ $post->galleryUrl() }}">
-                                    <x-image_or_placeholder alt_title="Open post"
-                                        style="h-24 w-24 rounded-md bg-c-surface-raised object-contain" :image="$post->image" size_type="s" />
-                                </a>
+                                    <!-- Form to delete draft post -->
+                                    <form method="post" action="{{ route('posts.destroy', $post->id) }}">
+                                        @csrf
+                                        @method('delete')
+                                        <button
+                                            class="app-button-bar border-rose-400 hover:bg-rose-400"
+                                            type="submit" onclick="return confirm('Are you sure you want to delete this post?')">
+                                            Delete <span aria-hidden="true">✕</span>
+                                        </button>
+                                    </form>
+                                </div>
                             </div>
-                        </div>
-                        <!-- Display Published details -->
-                        <div class="ml-4 flex-grow">
-                            <a class="text-lg font-semibold text-c-text hover:text-c-primary hover:underline"
-                                href="{{ $post->galleryUrl() }}">
-                                {{ $post->title }}</a>
-                            @if (!$post->is_published)
-                                <span class="font-semibold text-rose-300">(Hidden)</span>
-                            @endif
-                            <small class="flex items-center gap-x-1 text-c-muted">
-                                Published: {{ $post->published_at->diffForHumans() }}
-                                @if ($post->is_sensitive)
-                                    | <span class="flex" title="Protected image">
-                                        <x-icons.lock class="mx-1 h-3.5 w-3.5" aria-hidden="true" />
-                                    </span>
+                        @empty
+                            <div class="flex flex-col items-center gap-4 py-8 text-center text-c-muted">
+                                <p>No drafts. A new post waits here until you publish it.</p>
+                                <a class="app-button-primary" href="{{ route('posts.create') }}">Create a post</a>
+                            </div>
+                        @endforelse
+                    </div>
+
+                    <div class="mt-4">
+                        {{ $draftPosts->links() }}
+                    </div>
+                @else
+                    {{ $publishedPosts->appends(['tab' => 'published'])->links() }}
+
+                    <div>
+                        @forelse ($publishedPosts as $post)
+                            <div class="flex flex-col border-t border-c-line/50 py-4 first:border-t-0 md:flex-row md:items-center">
+                                <!-- Published Image and Details -->
+                                <div class="flex flex-col items-center md:w-1/2 md:flex-row">
+                                    <!-- Published Image -->
+                                    <div class="flex-shrink-0 md:mr-4">
+                                        <div class="@if (!$post->is_published) opacity-25 @endif">
+                                            <a class="block transform transition-transform hover:scale-105"
+                                                href="{{ $post->galleryUrl() }}">
+                                                <x-image_or_placeholder alt_title="Open post"
+                                                    style="h-24 w-24 rounded-md bg-c-surface-raised object-contain" :image="$post->image" size_type="s" />
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <!-- Display Published details -->
+                                    <div class="ml-4 min-w-0 max-w-md flex-grow break-words">
+                                        <a class="text-lg font-semibold text-c-text hover:text-c-primary hover:underline"
+                                            href="{{ $post->galleryUrl() }}">
+                                            {{ $post->title }}</a>
+                                        @if (!$post->is_published)
+                                            <span class="font-semibold text-rose-300">(Hidden)</span>
+                                        @endif
+                                        <small class="flex items-center gap-x-1 text-c-muted">
+                                            Published: {{ $post->published_at->diffForHumans() }}
+                                            @if ($post->is_sensitive)
+                                                | <span class="flex" title="Protected image">
+                                                    <x-icons.lock class="mx-1 h-3.5 w-3.5" aria-hidden="true" />
+                                                </span>
+                                            @endif
+                                        </small>
+                                        @if ($post->published_at->diffForHumans() !== $post->updated_at->diffForHumans())
+                                            <small class="block text-c-muted">Last update: {{ $post->updated_at->diffForHumans() }}</small>
+                                        @endif
+                                        <small class="block text-c-muted">Comments:
+                                            {{ $post->comments_count }}</small>
+                                    </div>
+                                </div>
+                                <!-- Actions -->
+                                <div class="mt-4 flex flex-col justify-center md:w-1/2 md:flex-row md:gap-3">
+                                    <!-- Button Group 1 -->
+                                    <div class="mt-2 flex flex-wrap justify-center gap-3">
+                                        <!-- Admin can edit the post -->
+                                        @if ($isAdmin)
+                                            <a class="app-button-bar border-amber-400 hover:bg-amber-400"
+                                                href="{{ route('posts.edit', $post->id) }}">Edit <span aria-hidden="true">✎</span></a>
+                                            <a class="app-button-bar border-amber-400 hover:bg-amber-400"
+                                                href="{{ route('posts.make-draft', $post->id) }}">Move to draft <span aria-hidden="true">△</span>
+                                            </a>
+                                        @endif
+                                    </div>
+                                    <!-- Button Group 2 -->
+                                    <div class="mt-2 flex flex-wrap justify-center gap-3">
+                                        <!-- Actions for the published post -->
+                                        <a class="app-button-bar border-c-primary {{ $post->is_sensitive ? 'bg-c-primary text-c-background hover:bg-transparent hover:text-c-text' : 'hover:bg-c-primary' }}"
+                                            href="{{ route('posts.toggleSensitive', $post->id) }}"
+                                            title="Toggle post sensitivity.">
+                                            {{ $post->is_sensitive ? 'Protected' : 'Protect' }}
+                                            <span class="ml-0">
+                                                @if ($post->is_sensitive)
+                                                    <svg class="bi bi-shield-check" xmlns="http://www.w3.org/2000/svg"
+                                                        width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                                        <path
+                                                            d="M5.338 1.59a61 61 0 0 0-2.837.856.48.48 0 0 0-.328.39c-.554 4.157.726 7.19 2.253 9.188a10.7 10.7 0 0 0 2.287 2.233c.346.244.652.42.893.533q.18.085.293.118a1 1 0 0 0 .101.025 1 1 0 0 0 .1-.025q.114-.034.294-.118c.24-.113.547-.29.893-.533a10.7 10.7 0 0 0 2.287-2.233c1.527-1.997 2.807-5.031 2.253-9.188a.48.48 0 0 0-.328-.39c-.651-.213-1.75-.56-2.837-.855C9.552 1.29 8.531 1.067 8 1.067c-.53 0-1.552.223-2.662.524zM5.072.56C6.157.265 7.31 0 8 0s1.843.265 2.928.56c1.11.3 2.229.655 2.887.87a1.54 1.54 0 0 1 1.044 1.262c.596 4.477-.787 7.795-2.465 9.99a11.8 11.8 0 0 1-2.517 2.453 7 7 0 0 1-1.048.625c-.28.132-.581.24-.829.24s-.548-.108-.829-.24a7 7 0 0 1-1.048-.625 11.8 11.8 0 0 1-2.517-2.453C1.928 10.487.545 7.169 1.141 2.692A1.54 1.54 0 0 1 2.185 1.43 63 63 0 0 1 5.072.56" />
+                                                        <path
+                                                            d="M10.854 5.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 7.793l2.646-2.647a.5.5 0 0 1 .708 0" />
+                                                    </svg>
+                                                @else
+                                                    <svg class="bi bi-shield" xmlns="http://www.w3.org/2000/svg" width="16"
+                                                        height="16" fill="currentColor" viewBox="0 0 16 16">
+                                                        <path
+                                                            d="M5.338 1.59a61 61 0 0 0-2.837.856.48.48 0 0 0-.328.39c-.554 4.157.726 7.19 2.253 9.188a10.7 10.7 0 0 0 2.287 2.233c.346.244.652.42.893.533q.18.085.293.118a1 1 0 0 0 .101.025 1 1 0 0 0 .1-.025q.114-.034.294-.118c.24-.113.547-.29.893-.533a10.7 10.7 0 0 0 2.287-2.233c1.527-1.997 2.807-5.031 2.253-9.188a.48.48 0 0 0-.328-.39c-.651-.213-1.75-.56-2.837-.855C9.552 1.29 8.531 1.067 8 1.067c-.53 0-1.552.223-2.662.524zM5.072.56C6.157.265 7.31 0 8 0s1.843.265 2.928.56c1.11.3 2.229.655 2.887.87a1.54 1.54 0 0 1 1.044 1.262c.596 4.477-.787 7.795-2.465 9.99a11.8 11.8 0 0 1-2.517 2.453 7 7 0 0 1-1.048.625c-.28.132-.581.24-.829.24s-.548-.108-.829-.24a7 7 0 0 1-1.048-.625 11.8 11.8 0 0 1-2.517-2.453C1.928 10.487.545 7.169 1.141 2.692A1.54 1.54 0 0 1 2.185 1.43 63 63 0 0 1 5.072.56" />
+                                                    </svg>
+                                                @endif
+                                            </span>
+                                        </a>
+                                        <!-- Form to delete post -->
+                                        <form method="post" action="{{ route('posts.destroy', $post->id) }}">
+                                            @csrf
+                                            @method('delete')
+                                            <button
+                                                class="app-button-bar border-rose-400 hover:bg-rose-400"
+                                                type="submit"
+                                                onclick="return confirm('Are you sure you want to delete this post?')">
+                                                Delete <span aria-hidden="true">✕</span>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+                        @empty
+                            <div class="flex flex-col items-center gap-4 py-8 text-center text-c-muted">
+                                <p>Nothing published yet.</p>
+                                @if ($draftPosts->total() > 0)
+                                    <a class="app-button-secondary" href="{{ route('posts.index', ['tab' => 'drafts']) }}">Publish one of your drafts</a>
+                                @else
+                                    <a class="app-button-primary" href="{{ route('posts.create') }}">Create a post</a>
                                 @endif
-                            </small>
-                            @if ($post->published_at->diffForHumans() !== $post->updated_at->diffForHumans())
-                                <small class="block text-c-muted">Last update: {{ $post->updated_at->diffForHumans() }}</small>
-                            @endif
-                            <small class="block text-c-muted">Comments:
-                                {{ $post->comments_count }}</small>
-                        </div>
+                            </div>
+                        @endforelse
                     </div>
-                    <!-- Actions -->
-                    <div class="mt-4 flex flex-col justify-center md:w-1/2 md:flex-row md:gap-3">
-                        <!-- Button Group 1 -->
-                        <div class="mt-2 flex flex-wrap justify-center gap-3">
-                            <!-- Admin can edit the post -->
-                            @if ($isAdmin)
-                                <a class="app-button-bar border-amber-400 hover:bg-amber-400"
-                                    href="{{ route('posts.edit', $post->id) }}">Edit <span aria-hidden="true">✎</span></a>
-                                <a class="app-button-bar border-amber-400 hover:bg-amber-400"
-                                    href="{{ route('posts.make-draft', $post->id) }}">Move to draft <span aria-hidden="true">△</span>
-                                </a>
-                            @endif
-                        </div>
-                        <!-- Button Group 2 -->
-                        <div class="mt-2 flex flex-wrap justify-center gap-3">
-                            <!-- Actions for the published post -->
-                            <a class="app-button-bar border-c-primary {{ $post->is_sensitive ? 'bg-c-primary text-c-background hover:bg-transparent hover:text-c-text' : 'hover:bg-c-primary' }}"
-                                href="{{ route('posts.toggleSensitive', $post->id) }}"
-                                title="Toggle post sensitivity.">
-                                {{ $post->is_sensitive ? 'Protected' : 'Protect' }}
-                                <span class="ml-0">
-                                    @if ($post->is_sensitive)
-                                        <svg class="bi bi-shield-check" xmlns="http://www.w3.org/2000/svg"
-                                            width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                                            <path
-                                                d="M5.338 1.59a61 61 0 0 0-2.837.856.48.48 0 0 0-.328.39c-.554 4.157.726 7.19 2.253 9.188a10.7 10.7 0 0 0 2.287 2.233c.346.244.652.42.893.533q.18.085.293.118a1 1 0 0 0 .101.025 1 1 0 0 0 .1-.025q.114-.034.294-.118c.24-.113.547-.29.893-.533a10.7 10.7 0 0 0 2.287-2.233c1.527-1.997 2.807-5.031 2.253-9.188a.48.48 0 0 0-.328-.39c-.651-.213-1.75-.56-2.837-.855C9.552 1.29 8.531 1.067 8 1.067c-.53 0-1.552.223-2.662.524zM5.072.56C6.157.265 7.31 0 8 0s1.843.265 2.928.56c1.11.3 2.229.655 2.887.87a1.54 1.54 0 0 1 1.044 1.262c.596 4.477-.787 7.795-2.465 9.99a11.8 11.8 0 0 1-2.517 2.453 7 7 0 0 1-1.048.625c-.28.132-.581.24-.829.24s-.548-.108-.829-.24a7 7 0 0 1-1.048-.625 11.8 11.8 0 0 1-2.517-2.453C1.928 10.487.545 7.169 1.141 2.692A1.54 1.54 0 0 1 2.185 1.43 63 63 0 0 1 5.072.56" />
-                                            <path
-                                                d="M10.854 5.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 7.793l2.646-2.647a.5.5 0 0 1 .708 0" />
-                                        </svg>
-                                    @else
-                                        <svg class="bi bi-shield" xmlns="http://www.w3.org/2000/svg" width="16"
-                                            height="16" fill="currentColor" viewBox="0 0 16 16">
-                                            <path
-                                                d="M5.338 1.59a61 61 0 0 0-2.837.856.48.48 0 0 0-.328.39c-.554 4.157.726 7.19 2.253 9.188a10.7 10.7 0 0 0 2.287 2.233c.346.244.652.42.893.533q.18.085.293.118a1 1 0 0 0 .101.025 1 1 0 0 0 .1-.025q.114-.034.294-.118c.24-.113.547-.29.893-.533a10.7 10.7 0 0 0 2.287-2.233c1.527-1.997 2.807-5.031 2.253-9.188a.48.48 0 0 0-.328-.39c-.651-.213-1.75-.56-2.837-.855C9.552 1.29 8.531 1.067 8 1.067c-.53 0-1.552.223-2.662.524zM5.072.56C6.157.265 7.31 0 8 0s1.843.265 2.928.56c1.11.3 2.229.655 2.887.87a1.54 1.54 0 0 1 1.044 1.262c.596 4.477-.787 7.795-2.465 9.99a11.8 11.8 0 0 1-2.517 2.453 7 7 0 0 1-1.048.625c-.28.132-.581.24-.829.24s-.548-.108-.829-.24a7 7 0 0 1-1.048-.625 11.8 11.8 0 0 1-2.517-2.453C1.928 10.487.545 7.169 1.141 2.692A1.54 1.54 0 0 1 2.185 1.43 63 63 0 0 1 5.072.56" />
-                                        </svg>
-                                    @endif
-                                </span>
-                            </a>
-                            <!-- Form to delete post -->
-                            <form method="post" action="{{ route('posts.destroy', $post->id) }}">
-                                @csrf
-                                @method('delete')
-                                <button
-                                    class="app-button-bar border-rose-400 hover:bg-rose-400"
-                                    type="submit"
-                                    onclick="return confirm('Are you sure you want to delete this post?')">
-                                    Delete <span aria-hidden="true">✕</span>
-                                </button>
-                            </form>
-                        </div>
+
+                    <div class="mt-4">
+                        {{ $publishedPosts->links() }}
                     </div>
-                </div>
-
-            @empty
-                <div class="border-b border-c-line p-4 text-c-muted">
-                    <small>No published posts found. Create a post and <span class="font-semibold">publish</span>
-                        it!</small>
-                </div>
-            @endforelse
-
-            <!-- Pagination links bottom -->
-            <div class="mt-4">
-                {{ $publishedPosts->links() }}
+                @endif
             </div>
         </div>
     </div>

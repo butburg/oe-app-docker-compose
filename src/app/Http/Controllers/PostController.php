@@ -8,6 +8,7 @@ use App\Http\Requests\Post\StoreUpdateRequest;
 use App\Actions\CollectMail;
 use App\Models\Image;
 use App\Models\Post; // Importing the Post model
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -20,7 +21,7 @@ class PostController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(): View
+    public function index(Request $request): View
     {
         $userId = Auth::id();
         $userType = Auth::user()->usertype;
@@ -45,13 +46,14 @@ class PostController extends Controller
             'draftPosts' => $draftPosts,
             'publishedPosts' => $publishedPosts,
             'isAdmin' => $userType === 'admin',
+            'tab' => $this->myImagesTab($request, $publishedPosts),
         ]);
     }
 
     /**
      * Display a special listing of the resources with all only for admin.
      */
-    public function all(): View
+    public function all(Request $request): View
     {
         // Retrieve draft posts sorted by created_at
         $draftPosts = Post::with('image.variants')
@@ -69,6 +71,8 @@ class PostController extends Controller
         return view('posts.index', [
             'draftPosts' => $draftPosts,
             'publishedPosts' => $publishedPosts,
+            'isAdmin' => true,
+            'tab' => $this->myImagesTab($request, $publishedPosts),
         ]);
     }
 
@@ -153,7 +157,7 @@ class PostController extends Controller
         if ($post) {
             // Flash a success notification and redirect to the post index page
             session()->flash('notif.success', 'Post created successfully!');
-            return redirect()->route('posts.index');
+            return $this->toMyImages($post);
         }
 
         return abort(500); // Return a server error if the post creation fails
@@ -173,7 +177,7 @@ class PostController extends Controller
         // Restrict edit access based on the is_published flag and user role
         if ($post->is_published && Auth::user()->usertype !== 'admin') {
             session()->flash('notif.error', 'You cannot edit this post since it has been published.');
-            return redirect()->route('posts.index');
+            return $this->toMyImages($post);
         }
 
         // Pass the post to the view for editing
@@ -227,7 +231,7 @@ class PostController extends Controller
 
         if ($post->update($validated)) {
             session()->flash('notif.success', 'Your Post updated successfully!');
-            return redirect()->route('posts.index');
+            return $this->toMyImages($post);
         }
 
         return abort(500); // Return a server error if the post update fails
@@ -258,7 +262,7 @@ class PostController extends Controller
         // Delete the post
         if ($post->delete()) {
             session()->flash('notif.success', 'Post deleted successfully!');
-            return redirect()->route('posts.index');
+            return $this->toMyImages($post);
         }
 
         return abort(500); // Return a server error if the post deletion fails
@@ -290,7 +294,7 @@ class PostController extends Controller
             // first publication: the other users get it with their next mail bundle, a republished post never again
             $collectMail->newImage($post);
             session()->flash('notif.success', 'Post published successfully!');
-            return redirect()->route('posts.index');
+            return $this->toMyImages($post);
         }
         return abort(500); // Return a server error if updating the post fails
     }
@@ -308,7 +312,7 @@ class PostController extends Controller
 
         if ($isDrafted) {
             session()->flash('notif.success', 'Post reverted to draft successfully!');
-            return redirect()->route('posts.index');
+            return $this->toMyImages($post);
         }
 
         return abort(500); // Return a server error if updating the post fails
@@ -331,9 +335,30 @@ class PostController extends Controller
 
         // Flash a success notification and redirect to the post index page
         session()->flash('notif.success', 'Post sensitivity toggled successfully!');
-        return redirect()->route('posts.index');
+        return $this->toMyImages($post);
     }
 
+
+    /**
+     * My Images shows one tab at a time. Without a tab in the url the published posts, unless there are none yet.
+     */
+    private function myImagesTab(Request $request, LengthAwarePaginator $publishedPosts): string
+    {
+        $tab = $request->query('tab');
+        if (in_array($tab, ['drafts', 'published'], true)) {
+            return $tab;
+        }
+
+        return $publishedPosts->total() === 0 ? 'drafts' : 'published';
+    }
+
+    /**
+     * Back to My Images, on the tab where the post is now.
+     */
+    private function toMyImages(Post $post): RedirectResponse
+    {
+        return redirect()->route('posts.index', ['tab' => $post->is_published ? 'published' : 'drafts']);
+    }
 
     private function userIsOwnerOrAdmin($user_id_from_post): void
     {

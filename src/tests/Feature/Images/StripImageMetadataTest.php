@@ -80,7 +80,7 @@ class StripImageMetadataTest extends TestCase
         $this->actingAs($user)->post(route('posts.store'), [
             'title' => 'Holiday',
             'image_file' => new UploadedFile($this->photoWithGps(), 'holiday.jpg', 'image/jpeg', null, true),
-        ])->assertRedirect(route('posts.index'));
+        ])->assertRedirect(route('posts.index', ['tab' => 'drafts']));
 
         $variants = Post::firstOrFail()->image->variants;
         $this->assertCount(4, $variants);

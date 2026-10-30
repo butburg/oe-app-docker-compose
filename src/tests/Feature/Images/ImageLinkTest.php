@@ -129,7 +129,7 @@ class ImageLinkTest extends TestCase
 
         $this->actingAs($this->owner)->put(route('posts.update', $draft->id), [
             'title' => 'New image', 'image_file' => UploadedFile::fake()->image('b.jpg', 120, 120),
-        ])->assertRedirect(route('posts.index'));
+        ])->assertRedirect(route('posts.index', ['tab' => 'drafts']));
 
         $this->get($url)->assertNotFound();
         $this->get($this->path($draft->fresh()->image->url('s')))->assertOk();

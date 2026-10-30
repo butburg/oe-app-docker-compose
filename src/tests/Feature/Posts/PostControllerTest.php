@@ -121,7 +121,7 @@ private User $user;
 
         $response = $this->actingAs($this->user)->post(route('posts.store'), $data);
 
-        $response->assertRedirect(route('posts.index'));
+        $response->assertRedirect(route('posts.index', ['tab' => 'drafts']));
         $this->assertDatabaseHas('posts', ['title' => 'Test Post']);
 
         $post = Post::where('title', 'Test Post')->firstOrFail();
@@ -155,7 +155,7 @@ private User $user;
 
         $response = $this->actingAs($this->user)->get(route('posts.edit', $post));
 
-        $response->assertRedirect(route('posts.index'));
+        $response->assertRedirect(route('posts.index', ['tab' => 'published']));
     }
 
     public function test_edit_of_foreign_post_is_forbidden()
@@ -178,7 +178,7 @@ private User $user;
 
         $response = $this->actingAs($this->user)->put(route('posts.update', $post), $data);
 
-        $response->assertRedirect(route('posts.index'));
+        $response->assertRedirect(route('posts.index', ['tab' => 'drafts']));
         $this->assertDatabaseHas('posts', ['id' => $post->id, 'title' => 'Updated Post']);
         $image = $post->image()->first();
         Storage::disk('images')->assertExists("files/posts/images/s/{$image->id}.jpeg");
@@ -196,7 +196,7 @@ private User $user;
 
         $response = $this->actingAs($this->user)->delete(route('posts.destroy', $post));
 
-        $response->assertRedirect(route('posts.index'));
+        $response->assertRedirect(route('posts.index', ['tab' => 'published']));
         $this->assertDatabaseMissing('posts', ['id' => $post->id]);
         $this->assertDatabaseMissing('images', ['id' => $image->id]);
         foreach ($image->variants as $variant) {
@@ -211,7 +211,7 @@ private User $user;
 
         $response = $this->actingAs($this->user)->get(route('posts.publish', $post));
 
-        $response->assertRedirect(route('posts.index'));
+        $response->assertRedirect(route('posts.index', ['tab' => 'published']));
         $this->assertDatabaseHas('posts', ['id' => $post->id, 'is_published' => true]);
     }
 
@@ -223,7 +223,7 @@ private User $user;
 
         $response = $this->actingAs($admin)->get(route('posts.make-draft', $post));
 
-        $response->assertRedirect(route('posts.index'));
+        $response->assertRedirect(route('posts.index', ['tab' => 'drafts']));
         $this->assertDatabaseHas('posts', ['id' => $post->id, 'is_published' => false]);
     }
 
@@ -233,5 +233,37 @@ private User $user;
 
         $this->actingAs($this->user)->get(route('posts.make-draft', $post))->assertRedirect('/');
         $this->assertDatabaseHas('posts', ['id' => $post->id, 'is_published' => true]);
+    }
+
+    public function test_my_images_shows_the_published_tab_by_default(): void
+    {
+        Post::factory()->forUser($this->user)->create(['title' => 'Draft one', 'is_published' => false]);
+        Post::factory()->forUser($this->user)->create(['title' => 'Public one', 'is_published' => true, 'published_at' => now()]);
+
+        $this->actingAs($this->user)->get(route('posts.index'))
+            ->assertViewHas('tab', 'published')
+            ->assertSee('Public one')
+            ->assertDontSee('Draft one');
+    }
+
+    public function test_my_images_shows_the_drafts_while_nothing_is_published(): void
+    {
+        Post::factory()->forUser($this->user)->create(['title' => 'Draft one', 'is_published' => false]);
+
+        $this->actingAs($this->user)->get(route('posts.index'))
+            ->assertViewHas('tab', 'drafts')
+            ->assertSee('Draft one');
+    }
+
+    public function test_my_images_tab_comes_from_the_url_and_stays_in_the_pagination(): void
+    {
+        config(['app.posts_per_page' => 1]);
+        Post::factory()->forUser($this->user)->count(2)->create(['is_published' => false]);
+        Post::factory()->forUser($this->user)->create(['title' => 'Public one', 'is_published' => true, 'published_at' => now()]);
+
+        $this->actingAs($this->user)->get(route('posts.index', ['tab' => 'drafts']))
+            ->assertViewHas('tab', 'drafts')
+            ->assertDontSee('Public one')
+            ->assertSee('tab=drafts&amp;draft=2', false);
     }
 }
