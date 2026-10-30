@@ -26,7 +26,7 @@
             <div id="{{ $post->anchor() }}" x-data x-init="$store.comments.init({{ $post->id }});
             window.addEventListener('resize', () => $store.comments.updateOnResize({{ $post->id }}))">
 
-                <main class="app-surface mb-4 rounded-none border-x-0 px-2 py-2 sm:mx-1 sm:mb-6 sm:rounded-lg sm:border-x sm:px-6 sm:py-3">
+                <main class="app-surface mb-4 rounded-none border-x-0 border-c-line/20 px-2 py-2 sm:mx-1 sm:mb-6 sm:rounded-lg sm:border-x sm:px-6 sm:py-3">
                     <div class="mx-auto grid grid-cols-1 md:grid-cols-3 md:gap-x-10">
                         <!-- Image -->
                         <div class="col-span-3 flex items-center justify-center md:col-span-2 relative">
@@ -41,6 +41,9 @@
 
                         <!-- Text and Comments -->
                         <div class="relative col-span-3 flex flex-col py-3 md:col-span-1">
+                            {{-- thin line in the middle of the gap, fades out at the ends --}}
+                            <span class="absolute -left-5 inset-y-4 hidden w-px bg-gradient-to-b from-transparent via-c-quiet/60 to-transparent md:block"
+                                aria-hidden="true"></span>
                             <!-- Title and Author -->
                             <div class="flex flex-col rounded-lg bg-none">
                                 <h1 class="break-words text-lg font-semibold leading-snug text-c-text md:text-xl">
@@ -117,7 +120,7 @@
                                 @verified
                                     <x-gallery.comment.show-comments :post="$post" />
                                 @else
-                                    <div class="rounded-md border border-c-line bg-c-surface-raised p-3 text-c-muted">
+                                    <div class="rounded-md border border-c-line/20 bg-c-surface-raised p-3 text-c-muted">
                                         <p>
                                             {{-- logged in but unverified: only old accounts from before FEAT-013,
                                                 a pending registration is still a guest (see @verified in AppServiceProvider) --}}

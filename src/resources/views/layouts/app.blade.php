@@ -49,26 +49,46 @@
             {{ $slot }}
         </main>
 
-        <footer class="border-t border-c-line py-12 text-center text-sm text-c-muted sm:py-16">
-            <div class="mx-auto flex w-full max-w-2xl flex-col items-center gap-8 px-4">
-                <p class="flex flex-col items-center gap-2">
-                    <a class="font-medium text-c-primary underline underline-offset-4 hover:text-c-accent"
-                        href="{{ route('about') }}">
-                        About this site
+        <footer class="mt-6 border-t border-c-line/50 pb-12 pt-6 text-center text-sm text-c-muted sm:mt-8 sm:pb-16 sm:pt-8">
+            <div class="mx-auto flex w-full max-w-2xl flex-col items-center gap-10 px-4">
+                {{-- support, the button frame is the one of x-glow-button --}}
+                <div class="flex flex-col items-center gap-4">
+                    <p class="max-w-sm leading-relaxed">
+                        Weedy Gallery is a hobby project without ads. If you enjoy it, an ice cream keeps it going.
+                    </p>
+                    <a class="group inline-block rounded-lg bg-gradient-to-r from-c-primary via-c-secondary to-c-accent p-0.5 shadow-lg shadow-c-primary/20 transition hover:shadow-c-secondary/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-c-accent focus-visible:ring-offset-2 focus-visible:ring-offset-c-background"
+                        href="https://ko-fi.com/butburg" target="_blank" rel="noopener">
+                        <span class="flex min-h-11 items-center justify-center gap-2 rounded-md bg-c-surface px-5 font-semibold text-c-text transition-colors group-hover:bg-transparent group-hover:text-c-background">
+                            {{-- ice cream cone --}}
+                            <svg class="h-5 w-5 transition-transform duration-300 group-hover:-rotate-12" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                                stroke-linejoin="round" aria-hidden="true">
+                                <path d="M6.5 10.5a5.5 5.5 0 1 1 11 0" />
+                                <path d="M5.5 10.5h13" />
+                                <path d="M7 10.5 12 21l5-10.5" />
+                                <path d="M8.6 13.8h6.8" />
+                            </svg>
+                            Say thank you
+                        </span>
                     </a>
-                    <a class="font-medium text-c-primary underline underline-offset-4 hover:text-c-accent"
-                        href="{{ route('impressum') }}">
-                        Impressum & Datenschutz
-                    </a>
-                </p>
+                </div>
 
-                <div>
-                    <a class="group inline-flex items-center justify-center gap-3 rounded-xl px-3 py-2"
+                <nav class="flex flex-wrap items-center justify-center gap-x-3 gap-y-2" aria-label="Footer">
+                    <a class="font-medium text-c-primary underline underline-offset-4 hover:text-c-accent"
+                        href="{{ route('about') }}">About this site</a>
+                    <span class="text-c-quiet" aria-hidden="true">·</span>
+                    <a class="font-medium text-c-primary underline underline-offset-4 hover:text-c-accent"
+                        href="{{ route('impressum') }}">Impressum & Datenschutz</a>
+                </nav>
+
+                <div class="flex flex-wrap items-center justify-center gap-x-4 gap-y-3 text-xs text-c-quiet">
+                    {{-- the tilting smiley is the signature of the site, keep it --}}
+                    <a class="group inline-flex items-center gap-2 rounded-xl px-2 py-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-c-primary"
                         href="https://ko-fi.com/butburg" target="_blank" rel="noopener"
                         aria-label="Made with love by EW">
                         <span
-                            class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-c-surface-raised text-c-muted transition-colors group-hover:text-c-accent">
-                            <svg class="h-8 w-8 rotate-180 transform transition-transform duration-300 group-hover:rotate-[225deg]"
+                            class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-c-surface-raised text-c-muted transition-colors group-hover:text-c-accent">
+                            <svg class="h-6 w-6 rotate-180 transform transition-transform duration-300 group-hover:rotate-[225deg]"
                                 viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
                                 aria-hidden="true">
                                 <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8" />
@@ -78,26 +98,14 @@
                                     stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
                             </svg>
                         </span>
-
-                        <span class="text-left">
-                            <span
-                                class="block text-base font-semibold tracking-wide text-c-primary/70 underline decoration-c-primary/50 underline-offset-4 transition-colors duration-300 group-hover:text-c-accent group-hover:decoration-c-accent/90">
-                                Made with Love
-                            </span>
-                            <span
-                                class="block text-base leading-relaxed text-c-primary/70 transition-colors duration-300 group-hover:text-c-accent">by
-                                EW</span>
+                        <span class="text-sm font-medium text-c-primary/70 transition-colors duration-300 group-hover:text-c-accent">
+                            Made with love by EW
                         </span>
                     </a>
-                </div>
-
-                <div class="flex flex-col items-center space-y-2">
-                    <p class="text-xs leading-relaxed text-c-primary/70">
-                        If you want to host your own site, you can support this project by using my Lima-City link.
-                    </p>
-                    <a class="inline-flex w-full justify-center" href="https://www.lima-city.de/webhosting?cref=439120"
-                        target="_blank" rel="noopener">
-                        <img class="mx-auto h-10" alt="lima-city: Webhosting, Domains und Cloud"
+                    <a class="opacity-60 transition-opacity hover:opacity-100 focus:outline-none focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-c-primary"
+                        href="https://www.lima-city.de/webhosting?cref=439120" target="_blank" rel="noopener"
+                        title="Hosted at lima-city">
+                        <img class="h-6" alt="lima-city: Webhosting, Domains und Cloud"
                             src="{{ asset('images/lima-city-button.jpg') }}">
                     </a>
                 </div>

@@ -1,7 +1,7 @@
 {{-- list comments --}}
 @forelse ($post->comments->reverse() as $comment)
     {{-- ->reverse() --}}
-    <div class="rounded-md border border-c-line bg-c-surface-raised p-3 text-c-text">
+    <div class="rounded-md border border-c-line/20 bg-c-surface-raised p-3 text-c-text">
         @if (auth()->check() && auth()->user()->id === $comment->user_id)
             {{-- edit users own Comments --}}
             <div x-data="{ isEditing: false }">
@@ -49,7 +49,7 @@
         @endif
     </div>
 @empty
-    <div class="rounded-md border border-c-line bg-c-surface-raised p-3 text-c-muted">
+    <div class="rounded-md border border-c-line/20 bg-c-surface-raised p-3 text-c-muted">
         <p>Be the first one to comment.</p>
     </div>
 @endforelse
