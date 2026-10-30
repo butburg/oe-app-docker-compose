@@ -33,7 +33,7 @@ class CommentController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreRequest $request): RedirectResponse
+    public function store(StoreRequest $request, CollectMail $collectMail): RedirectResponse
     {
         $validated = $request->validated();
         $validated['user_id'] = Auth::id();
@@ -42,7 +42,7 @@ class CommentController extends Controller
 
         if($comment) {
             // the post owner gets it with their next mail bundle, checked again when it is sent
-            app(CollectMail::class)->comment($comment);
+            $collectMail->comment($comment);
 
             session()->flash('notif.success', 'Comment created successfully!');
             return redirect()->back();

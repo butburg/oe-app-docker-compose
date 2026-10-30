@@ -267,7 +267,7 @@ class PostController extends Controller
     /**
      * Mark the specified post as published.
      */
-    public function publish(string $id): RedirectResponse
+    public function publish(string $id, CollectMail $collectMail): RedirectResponse
     {
         // Find the post with the specified ID and update its publication status
         $post = Post::findOrFail($id);
@@ -288,7 +288,7 @@ class PostController extends Controller
 
         if ($isPublished) {
             // first publication: the other users get it with their next mail bundle, a republished post never again
-            app(CollectMail::class)->newImage($post);
+            $collectMail->newImage($post);
             session()->flash('notif.success', 'Post published successfully!');
             return redirect()->route('posts.index');
         }
