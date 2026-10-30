@@ -238,18 +238,6 @@ class ProfileController extends Controller
     }
 
     /**
-     * Delete the account from the verify page, the profile is closed to unverified users.
-     */
-    public function destroyUnverified(Request $request, DeleteUser $deleteUser): RedirectResponse
-    {
-        if ($request->user()->hasVerifiedEmail()) {
-            return Redirect::route('profile.edit');
-        }
-
-        return $this->destroy($request, $deleteUser);
-    }
-
-    /**
      * Delete the user's account.
      */
     public function destroy(Request $request, DeleteUser $deleteUser): RedirectResponse

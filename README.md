@@ -165,6 +165,14 @@ docker-compose run --rm npm sqlite --version
 | Test-User ohne Bilder | `user-ohne-bilder@user.com` / `password` | portrait profile image, no posts |
 | Test-User mit ganz vielen Bildern | `user-viele-bilder@user.com` / `password` | landscape profile image, 14 published posts, 14 drafts |
 
-On the local login page the two developer login buttons sign in as the user with many images or as the admin.
+On the local login page the developer login buttons sign in as the user with many images, as the admin, or as an unverified user.
+
+An unverified user gets a fresh verification mail on login (in MailHog), at most once an hour. To get the next mail right away, reset the counter for that user:
+
+```bash
+docker-compose run --rm artisan tinker --execute='$u = App\Models\User::where("email", "user-unverified@user.com")->first(); Illuminate\Support\Facades\RateLimiter::clear("verify-mail:" . $u->id);'
+```
+
+`docker-compose run --rm artisan cache:clear` also works, but resets all other limits too (login attempts, registration mails).
 
 To start over: `docker-compose run --rm artisan migrate:fresh --seed`. This wipes the local database, and the generated image files in `src/storage/app/public/files/posts` and `profiles` get overwritten by id.

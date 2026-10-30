@@ -33,7 +33,8 @@ class ProfileUpdateRequest extends FormRequest {
             $rules['description'] = ['nullable', 'string', 'max:500'];
         }
 
-        if ($this->routeIs('profile.updateEmail')) {
+        // Also used by old unverified accounts to correct their email on the verify page
+        if ($this->routeIs('profile.updateEmail', 'verification.email')) {
             $rules['email'] = ['required', 'string', 'email', 'max:255', Rule::unique(User::class)->ignore($this->user()->id)];
         }
 

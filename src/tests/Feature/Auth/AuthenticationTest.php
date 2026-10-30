@@ -3,7 +3,9 @@
 namespace Tests\Feature\Auth;
 
 use App\Models\User;
+use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
 
 class AuthenticationTest extends TestCase
@@ -62,5 +64,35 @@ class AuthenticationTest extends TestCase
 
         $this->assertGuest();
         $response->assertRedirect('/');
+    }
+
+    public function test_unverified_user_gets_a_fresh_link_and_the_verify_page_on_login(): void
+    {
+        Notification::fake();
+        $user = User::factory()->unverified()->create();
+
+        $this->post('/login', ['email' => $user->email, 'password' => 'password'])
+            ->assertRedirect(route('verification.notice'));
+
+        Notification::assertSentToTimes($user, VerifyEmail::class, 1);
+        Notification::assertSentTo($user, VerifyEmail::class,
+            fn (VerifyEmail $mail) => $mail->toMail($user)->greeting === "Hello and welcome dear {$user->name}!");
+    }
+
+    public function test_unverified_user_gets_at_most_one_link_an_hour_on_login(): void
+    {
+        Notification::fake();
+        $user = User::factory()->unverified()->create();
+
+        $this->post('/login', ['email' => $user->email, 'password' => 'password']);
+        $this->post('/logout');
+        $this->post('/login', ['email' => $user->email, 'password' => 'password'])
+            ->assertRedirect(route('verification.notice'));
+        Notification::assertSentToTimes($user, VerifyEmail::class, 1);
+
+        $this->post('/logout');
+        $this->travel(61)->minutes();
+        $this->post('/login', ['email' => $user->email, 'password' => 'password']);
+        Notification::assertSentToTimes($user, VerifyEmail::class, 2);
     }
 }
