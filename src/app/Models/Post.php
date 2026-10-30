@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Str;
 
 class Post extends Model {
@@ -49,22 +48,6 @@ class Post extends Model {
                 $post->image->invalidateLinks();
             }
         });
-    }
-
-    /**
-     * Two posts saved at the same time can get the same slug, the unique index catches that: try again.
-     */
-    public function save(array $options = []) {
-        for ($attempt = 1; ; $attempt++) {
-            try {
-                return parent::save($options);
-            } catch (UniqueConstraintViolationException $e) {
-                if ($attempt >= 3 || $this->slug === null || !str_contains($e->getMessage(), 'slug')) {
-                    throw $e;
-                }
-                $this->slug = static::uniqueSlug($this->title, $this->id);
-            }
-        }
     }
 
     /**
