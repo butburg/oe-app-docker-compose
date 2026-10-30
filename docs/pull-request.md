@@ -103,6 +103,10 @@ Betroffen ist [Post.php:57](src/app/Models/Post.php#L57).
 - Bei der Größe der App ist die Race praktisch ausgeschlossen, das ist Over-Engineering.
 - Der Retry hängt an `str_contains($e->getMessage(), 'slug')`, und das ist fragil. Unter Postgres wäre die Transaktion nach dem Fehler ohnehin abgebrochen.
 - Mein Vorschlag: das Override entfernen und den Unique-Index die seltene Kollision mit 500 abfangen lassen.
+- ✅ **Erledigt wie vorgeschlagen:**
+  - Das `save()`-Override ist entfernt. `uniqueSlug()`, der `saving`-Hook und der Unique-Index bleiben.
+  - Bei einer Kollision bekommt ein User eine 500-Seite. Slug und `published_at` stehen im selben UPDATE, es wird also nichts halb gespeichert. Ein zweiter Klick auf Veröffentlichen gibt den Slug `…-2`.
+  - Der Postgres-Einwand trifft nicht zu, weil Prod MySQL und Dev SQLite nutzt.
 
 ---
 
