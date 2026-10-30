@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Comment\StoreRequest;
 use App\Http\Requests\Comment\UpdateRequest;
+use App\Actions\CollectMail;
 use App\Models\Comment;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\RedirectResponse;
@@ -32,7 +33,7 @@ class CommentController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreRequest $request): RedirectResponse
+    public function store(StoreRequest $request, CollectMail $collectMail): RedirectResponse
     {
         $validated = $request->validated();
         $validated['user_id'] = Auth::id();
@@ -40,6 +41,9 @@ class CommentController extends Controller
         $comment = Comment::create($validated);
 
         if($comment) {
+            // the post owner gets it with their next mail bundle, checked again when it is sent
+            $collectMail->comment($comment);
+
             session()->flash('notif.success', 'Comment created successfully!');
             return redirect()->back();
         }

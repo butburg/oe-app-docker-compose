@@ -368,9 +368,6 @@
         <option value="medium">Medium</option>
         <option value="low">Low</option>
       </select>
-      <button class="btn btn-secondary" id="reloadFeaturesBtn" onclick="loadFeaturesFromApi()">
-        ↻ Reload features
-      </button>
       <span id="syncStatus" role="status" aria-live="polite">Loading features...</span>
       <button class="btn" id="newFeatureBtn" onclick="openNewFeatureModal()" disabled>+ New Feature</button>
     </div>
@@ -454,6 +451,7 @@
         const response = await fetch('/api/features', { cache: 'no-store' });
         if (!response.ok) throw new Error(`Server returned ${response.status}`);
         const markdownFiles = await response.json();
+        const shownInModal = features.find(feature => feature.id === currentEditingId)?.markdown;
         features = markdownFiles.map(({ fileName, markdown }) => {
           const { frontmatter, body } = parseFrontmatter(markdown);
           return {
@@ -468,13 +466,15 @@
             tags: Array.isArray(frontmatter.tags) ? frontmatter.tags : [],
             metadata: frontmatter,
             body,
-            fileName
+            fileName,
+            markdown
           };
         }).filter(feature => feature.id && feature.title)
           .sort((left, right) => left.id.localeCompare(right.id, undefined, { numeric: true }));
         document.getElementById('newFeatureBtn').disabled = false;
         setSyncStatus(`${features.length} feature(s) loaded from docs/features`);
         renderBoard();
+        refreshOpenModal(shownInModal);
       } catch (error) {
         setSyncStatus(`Could not load features. Start the local board server: ${error.message}`);
       }
@@ -552,6 +552,10 @@
     function onDragEnd(e) {
       e.target.classList.remove('dragging');
       document.querySelectorAll('.card-list').forEach(el => el.classList.remove('drag-over'));
+      if (reloadAfterDrag) {
+        reloadAfterDrag = false;
+        loadFeaturesFromApi();
+      }
     }
 
     function onDragOver(e) {
@@ -602,6 +606,24 @@
 
       document.getElementById('featureModal').classList.add('open');
       requestAnimationFrame(resizeMarkdownContent);
+    }
+
+    // The files are the truth: an open dialog shows the file as saved, also while it is being edited elsewhere
+    function refreshOpenModal(shownMarkdown) {
+      const modal = document.getElementById('featureModal');
+      if (!modal.classList.contains('open') || currentEditingId === 'NEW') return;
+
+      const feat = features.find(f => f.id === currentEditingId);
+      if (!feat) {
+        closeModal();
+        setSyncStatus(`${currentEditingId} was removed from docs/features`);
+        return;
+      }
+      if (feat.markdown === shownMarkdown) return;
+
+      const scrollPositions = [...modal.querySelectorAll('.modal, .modal-body')].map(el => [el, el.scrollTop]);
+      openEditModal(feat.id);
+      requestAnimationFrame(() => scrollPositions.forEach(([el, top]) => { el.scrollTop = top; }));
     }
 
     function openNewFeatureModal() {
@@ -782,8 +804,27 @@ ${body}
         } catch { }
       }
       if (scalar.startsWith("'") && scalar.endsWith("'")) return scalar.slice(1, -1).replace(/''/g, "'");
-      return scalar;
+      // YAML comment after an unquoted value, e.g. "status: done # backlog | todo | ..." from template.md
+      return scalar.replace(/\s+#.*$/, '');
     }
+
+    // The server reports every save in docs/features (editor, git, this board), so the board stays current
+    let reloadAfterDrag = false;
+    let eventsConnected = false;
+    const featureEvents = new EventSource('/api/events');
+    featureEvents.onmessage = () => {
+      // Re-rendering during a drag would drop the card being dragged
+      if (document.querySelector('.card.dragging')) {
+        reloadAfterDrag = true;
+        return;
+      }
+      loadFeaturesFromApi();
+    };
+    featureEvents.onopen = () => {
+      // After a server restart, catch up on what changed in between
+      if (eventsConnected) loadFeaturesFromApi();
+      eventsConnected = true;
+    };
 
     loadFeaturesFromApi();
   </script>

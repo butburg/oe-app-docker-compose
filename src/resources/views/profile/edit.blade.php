@@ -21,6 +21,12 @@
             </div>
         </div>
 
+            <div id="notifications" class="app-surface scroll-mt-20 p-4 sm:p-6">
+                <div class="max-w-xl">
+                    @include('profile.partials.update-notification-settings-form')
+                </div>
+            </div>
+
             <div
                 class="app-surface p-4 sm:p-6">
                 <div class="max-w-xl">

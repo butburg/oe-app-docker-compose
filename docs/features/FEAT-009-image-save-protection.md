@@ -1,12 +1,12 @@
 ---
 id: FEAT-009
 title: Discourage saving gallery images (right-click, drag, overlay)
-status: review # backlog | todo | in-progress | review | done
+status: done # backlog | todo | in-progress | review | done
 priority: low # low | medium | high
 category: enhancement # feature | enhancement | bugfix | ui | security
 assignee: unassigned
 created: 2026-10-28
-updated: 2026-10-28
+updated: 2026-10-29
 tags:
   - frontend
   - images
@@ -30,7 +30,7 @@ This is a deterrent, not real protection: the files are public under `storage/`,
 - [x] Right-click elsewhere (text, links, inputs) keeps working normally.
 - [x] Alt texts stay intact for screen readers.
 - [x] Applies everywhere `image_or_placeholder` renders plus the About screenshots, not to the logo or UI icons.
-- [ ] Tests and validation passed (container), manual check in desktop and mobile browser. (Tests and build pass; manual browser check still open.)
+- [x] Tests and validation passed (container), manual check in desktop and mobile browser.
 
 ## Technical Implementation Notes
 - **Affected files / components**: `resources/views/components/image_or_placeholder.blade.php` (normal and zoom image), `resources/views/about.blade.php` (screenshots), `resources/css/app.css` (shared class), possibly `resources/js/app.js`.

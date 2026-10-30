@@ -22,7 +22,7 @@
                             placeholder="Edit comment...">{{ $comment->comment }}</x-gallery.form.textarea>
                         {{-- error msg here with named error bags --}}
                         @error('comment', 'commentUpdate_' . $comment->id)
-                            <div class="alert alert-danger">{{ $message }}
+                            <div class="alert alert-danger" data-form-error role="alert">{{ $message }}
                             </div>
                         @enderror
                     </x-gallery.form.form>

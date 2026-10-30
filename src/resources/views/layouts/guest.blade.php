@@ -8,11 +8,6 @@
 
 <title>{{ config('app.name', 'Laravel') }}</title>
 
-<!-- Fonts -->
-<link href="https://fonts.bunny.net" rel="preconnect">
-<link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap"
-    rel="stylesheet" />
-
 <!-- Favicons -->
 <link type="image/x-icon" href="{{ asset('favicons/favicon.ico') }}"
     rel="shortcut icon">
@@ -32,17 +27,39 @@
 
 <body class="bg-c-background font-sans text-c-text antialiased">
     <div class="min-h-screen">
-        @include('layouts.navigation')
+        @if ($focused ?? false)
+            {{-- only one step left (confirm, change or abort), so no links that leave the page --}}
+            <nav class="border-b border-c-line bg-c-surface text-c-text">
+                <div class="mx-auto flex h-16 max-w-screen-2xl items-center px-4 sm:px-6 lg:px-8">
+                    <x-application-logo class="h-10 w-10" />
+                </div>
+            </nav>
+        @else
+            @include('layouts.navigation')
+        @endif
         <main class="mx-auto w-full max-w-lg px-4 py-8 sm:py-12">
             <div class="app-surface p-4 sm:p-6">
                 {{ $slot }}
             </div>
-            @env('local')
+            @if (app()->environment('local') && !($focused ?? false))
                 {{-- seeded user with drafts and published posts, see database/seeders/data/posts.json --}}
                 <x-login-link class="app-button-secondary mt-4 w-full" email="user-viele-bilder@user.com" />
                 {{-- logs in the first admin, or creates one if there is none --}}
                 <x-login-link class="app-button-secondary mt-2 w-full" :user-attributes="['usertype' => 'admin']" label="Developer Login (Admin)" />
-            @endenv
+                {{-- always an unverified account, shows the guest view with the verify hint: the seeded one if it is
+                     still unverified, otherwise any unverified one, otherwise the link creates a new unverified user --}}
+                @php
+                    $unverified = \App\Models\User::whereNull('email_verified_at')
+                        ->orderByRaw("email = 'user-unverified@user.com' desc")
+                        ->orderBy('id')
+                        ->first();
+                @endphp
+                @if ($unverified)
+                    <x-login-link class="app-button-secondary mt-2 w-full" :key="$unverified->id" label="Developer Login (Unverified)" />
+                @else
+                    <x-login-link class="app-button-secondary mt-2 w-full" :user-attributes="['email_verified_at' => null]" label="Developer Login (Unverified)" />
+                @endif
+            @endif
 
             <div class="app-surface-accent mt-6 p-4 sm:p-6">
                 <div class="text-center">

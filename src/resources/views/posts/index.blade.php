@@ -136,15 +136,9 @@ resources\views\layouts\app.blade.php view --}}
                     <div class="flex flex-col items-center md:w-1/2 md:flex-row">
                         <!-- Published Image -->
                         <div class="flex-shrink-0 md:mr-4">
-                            @php
-                                $page = app('App\Http\Controllers\PostController')->getPageForPost(
-                                    $post,
-                                    config('app.posts_per_page'),
-                                );
-                            @endphp
                             <div class="@if (!$post->is_published) opacity-25 @endif">
                                 <a class="block transform transition-transform hover:scale-105"
-                                    href="{{ route('dashboard') }}?page={{ $page }}#post-{{ $post->id }}">
+                                    href="{{ $post->galleryUrl() }}">
                                     <x-image_or_placeholder alt_title="Open post"
                                         style="h-24 w-24 rounded-md bg-c-surface-raised object-contain" :image="$post->image" size_type="s" />
                                 </a>
@@ -153,7 +147,7 @@ resources\views\layouts\app.blade.php view --}}
                         <!-- Display Published details -->
                         <div class="ml-4 flex-grow">
                             <a class="text-lg font-semibold text-c-text hover:text-c-primary hover:underline"
-                                href="{{ route('dashboard') }}?page={{ $page }}#post-{{ $post->id }}">
+                                href="{{ $post->galleryUrl() }}">
                                 {{ $post->title }}</a>
                             @if (!$post->is_published)
                                 <span class="font-semibold text-rose-300">(Hidden)</span>
@@ -170,7 +164,7 @@ resources\views\layouts\app.blade.php view --}}
                                 <small class="block text-c-muted">Last update: {{ $post->updated_at->diffForHumans() }}</small>
                             @endif
                             <small class="block text-c-muted">Comments:
-                                {{ $post->comments->count() }}</small>
+                                {{ $post->comments_count }}</small>
                         </div>
                     </div>
                     <!-- Actions -->

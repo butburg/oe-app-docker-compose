@@ -10,6 +10,11 @@ class CreateImageVariants
 {
     public function handleVariant(Image $image, $file, array $sizeTypes, string $path = 'posts/images/'): void
     {
+        // A replaced image keeps its file names, so links to the old image have to stop working (FEAT-011)
+        if ($image->variants()->exists()) {
+            $image->invalidateLinks();
+        }
+
         foreach ($sizeTypes as $sizeType) {
             $sizeTypeEnum = ImageSizeType::from($sizeType);
             $filePath = "files/{$path}{$sizeType}/" . $image->id . ".jpeg";

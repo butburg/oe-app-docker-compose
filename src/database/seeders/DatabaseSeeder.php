@@ -12,7 +12,7 @@ use Illuminate\Database\Seeder;
 use Symfony\Component\Finder\SplFileInfo;
 
 /**
- * Static demo data: three users, 31 curated CC0 images from data/posts.json and profile images from data/profiles.json.
+ * Static demo data: three verified users and one unverified, 31 curated CC0 images from data/posts.json and profile images from data/profiles.json.
  * Sources and licenses of the images are listed in those files as well.
  */
 class DatabaseSeeder extends Seeder
@@ -30,6 +30,8 @@ class DatabaseSeeder extends Seeder
 
     public function run(): void
     {
+        // These seeded accounts are verified already (factory default email_verified_at = now()),
+        // every other account has to confirm its email via the mail (MailHog locally)
         $users = [
             'admin' => User::factory()->create([
                 'name' => 'Test-Admin User',
@@ -50,6 +52,14 @@ class DatabaseSeeder extends Seeder
             ]),
         ];
         $commenters = array_values($users);
+
+        // Logged in but unverified, like old accounts from before FEAT-013:
+        // sees the guest view with "Verify your email". Not a commenter, comments need a verified email.
+        User::factory()->unverified()->create([
+            'name' => 'Test-User unverified',
+            'email' => 'user-unverified@user.com',
+            'previous_name' => null,
+        ]);
         $sizes = array_map(fn ($size) => $size->value, [
             ImageSizeType::SMALL, ImageSizeType::MEDIUM, ImageSizeType::LARGE, ImageSizeType::EXTRA_LARGE,
         ]);
@@ -79,7 +89,8 @@ class DatabaseSeeder extends Seeder
                 'published_at' => $entry['published'] ? $date : null,
             ]);
             $post->timestamps = false;
-            $post->forceFill(['created_at' => $date, 'updated_at' => $date])->save();
+            // seeded posts count as announced, the first real publication does not mail them again (FEAT-019)
+            $post->forceFill(['created_at' => $date, 'updated_at' => $date, 'notified_at' => $entry['published'] ? $date : null])->save();
 
             $this->storeImage(['post_id' => $post->id], 'posts', $entry['file'], $sizes, 'posts/images/');
 

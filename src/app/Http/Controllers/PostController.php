@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Actions\CreateImageVariants;
 use App\Enums\ImageSizeType;
 use App\Http\Requests\Post\StoreUpdateRequest;
+use App\Actions\CollectMail;
 use App\Models\Image;
 use App\Models\Post; // Importing the Post model
 use Illuminate\Contracts\View\View;
@@ -25,13 +26,16 @@ class PostController extends Controller
         $userType = Auth::user()->usertype;
 
         // Retrieve published and draft posts from the database
-        $draftPosts = Post::whereNotNull('user_id')
+        $draftPosts = Post::with('image.variants')
+            ->whereNotNull('user_id')
             ->where('user_id', $userId)
             ->where('is_published', false)
             ->orderBy('created_at', 'desc')
             ->paginate(config('app.posts_per_page'), pageName: 'draft');
 
-        $publishedPosts = Post::whereNotNull('user_id')
+        $publishedPosts = Post::with('image.variants')
+            ->withCount('comments')
+            ->whereNotNull('user_id')
             ->where('user_id', $userId)
             ->where('is_published', true)
             ->orderBy('published_at', 'desc')
@@ -50,12 +54,15 @@ class PostController extends Controller
     public function all(): View
     {
         // Retrieve draft posts sorted by created_at
-        $draftPosts = Post::where('is_published', false)
+        $draftPosts = Post::with('image.variants')
+            ->where('is_published', false)
             ->orderBy('created_at', 'desc')
             ->paginate(config('app.posts_per_page'));
 
         // Retrieve published posts sorted by published_at
-        $publishedPosts = Post::where('is_published', true)
+        $publishedPosts = Post::with('image.variants')
+            ->withCount('comments')
+            ->where('is_published', true)
             ->orderBy('published_at', 'desc')
             ->paginate(config('app.posts_per_page'));
 
@@ -71,9 +78,12 @@ class PostController extends Controller
     public function gallery(Request $request): View
     {
         $search = trim((string) $request->query('q', ''));
-        $query = Post::where('is_published', true);
+        // Load everything the page shows in a few queries instead of several per post
+        $query = Post::with(['image.variants', 'user', 'comments.user.image.variants'])
+            ->where('is_published', true);
 
-        if (!Auth::check()) {
+        // Unverified users see the same as guests (who is unverified: see @verified in AppServiceProvider)
+        if (!Auth::user()?->hasVerifiedEmail()) {
             $query->where('is_sensitive', false);
         }
 
@@ -147,30 +157,6 @@ class PostController extends Controller
         }
 
         return abort(500); // Return a server error if the post creation fails
-    }
-
-    /**
-     * Calculate the gallery page number for a specific post that is PUBLISHED.
-     */
-    public function getPageForPost(Post $post, $perPage = null)
-    {
-        if (!$post->is_published) {
-            throw new \Exception("Cannot calculate page for unpublished post");
-        }
-
-        // Use the configuration value if $perPage is null
-        $perPage = $perPage ?? config('app.posts_per_page');
-
-        // Get the total number of posts before the current post in descending order
-        $postPosition = Post::where('is_published', true)
-            ->where('published_at', '>=', $post->published_at)
-            ->orderBy('published_at', 'desc')
-            ->count();
-
-        // Calculate the page number
-        $page = ceil(($postPosition + 1) / $perPage);
-
-        return $page;
     }
 
     /**
@@ -262,7 +248,7 @@ class PostController extends Controller
 
             // Delete the image variants from storage
             foreach ($image->variants as $variant) {
-                Storage::disk('public')->delete($variant->path);
+                Storage::disk('images')->delete($variant->path);
             }
 
             // Delete the image record (this will cascade and delete associated variants)
@@ -281,7 +267,7 @@ class PostController extends Controller
     /**
      * Mark the specified post as published.
      */
-    public function publish(string $id): RedirectResponse
+    public function publish(string $id, CollectMail $collectMail): RedirectResponse
     {
         // Find the post with the specified ID and update its publication status
         $post = Post::findOrFail($id);
@@ -301,6 +287,8 @@ class PostController extends Controller
         ]);
 
         if ($isPublished) {
+            // first publication: the other users get it with their next mail bundle, a republished post never again
+            $collectMail->newImage($post);
             session()->flash('notif.success', 'Post published successfully!');
             return redirect()->route('posts.index');
         }

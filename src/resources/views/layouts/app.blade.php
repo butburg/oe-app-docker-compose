@@ -8,9 +8,6 @@
 
     <title>{{ config('app.name', 'Laravel') }}</title>
 
-    <!-- Fonts -->
-    <link href="https://fonts.bunny.net" rel="preconnect">
-    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
     <!-- Favicons -->
     <link type="image/x-icon" href="{{ asset('favicons/favicon.ico') }}" rel="shortcut icon">
@@ -101,7 +98,7 @@
                     <a class="inline-flex w-full justify-center" href="https://www.lima-city.de/webhosting?cref=439120"
                         target="_blank" rel="noopener">
                         <img class="mx-auto h-10" alt="lima-city: Webhosting, Domains und Cloud"
-                            src="https://www.lima-city.de/assets/banner/button3.jpg">
+                            src="{{ asset('images/lima-city-button.jpg') }}">
                     </a>
                 </div>
 

@@ -22,7 +22,7 @@ class AdminUserDeletionTest extends TestCase
     {
         parent::setUp();
 
-        Storage::fake('public');
+        Storage::fake('images');
 
         $this->admin = User::factory()->create(['usertype' => 'admin']);
         $this->target = User::factory()->create();
@@ -37,7 +37,7 @@ class AdminUserDeletionTest extends TestCase
     private function storeVariantFiles(Image $image): void
     {
         foreach ($image->variants as $variant) {
-            Storage::disk('public')->put($variant->path, 'image');
+            Storage::disk('images')->put($variant->path, 'image');
         }
     }
 
@@ -62,7 +62,7 @@ class AdminUserDeletionTest extends TestCase
 
         $this->assertNull($targetImage->fresh());
         foreach ($targetImage->variants as $variant) {
-            Storage::disk('public')->assertMissing($variant->path);
+            Storage::disk('images')->assertMissing($variant->path);
         }
         $this->assertNotNull($bystanderImage->fresh());
         $this->assertCount(4, $bystanderImage->fresh()->variants);
@@ -99,7 +99,7 @@ class AdminUserDeletionTest extends TestCase
         $this->assertNull($targetComment->fresh());
         $this->assertNull($targetCommentOnBystanderPost->fresh());
         foreach ($targetPost->image->variants as $variant) {
-            Storage::disk('public')->assertMissing($variant->path);
+            Storage::disk('images')->assertMissing($variant->path);
         }
 
         $this->assertNotNull($bystanderPost->fresh());

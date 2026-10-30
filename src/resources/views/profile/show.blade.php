@@ -79,12 +79,9 @@
                 </h3>
                 <ul class="flex flex-wrap gap-4">
                     @forelse ($posts as $post)
-                        @php
-                            $page = app('App\Http\Controllers\PostController')->getPageForPost($post);
-                        @endphp
                         <li class="app-surface-raised w-full max-w-72 p-2 sm:w-72">
                             <a class="block h-full min-w-0 text-c-text transition-colors hover:text-c-primary"
-                                href="{{ route('dashboard') }}?page={{ $page }}#post-{{ $post->id }}">
+                                href="{{ $post->galleryUrl() }}">
                                 <div class="flex h-full items-center gap-3">
                                     <!-- Post Image -->
                                     <x-image_or_placeholder style="h-16 w-16 shrink-0 rounded-md bg-c-background object-contain" :image="$post->image"

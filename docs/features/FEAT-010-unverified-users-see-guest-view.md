@@ -1,7 +1,7 @@
 ---
 id: FEAT-010
 title: Unverified users see only the guest view, with a hint to verify
-status: todo # backlog | todo | in-progress | review | done
+status: done # backlog | todo | in-progress | review | done
 priority: high # low | medium | high
 category: security # feature | enhancement | bugfix | ui | security
 assignee: unassigned
@@ -24,16 +24,23 @@ Registration logs the user in and redirects to the gallery (`RegisteredUserContr
 - `gallery.blade.php` shows comments inside `@auth`.
 - `add-comment-form.blade.php` shows the form for `Auth::check()`; submitting it then redirects to the verify page.
 
-So anyone can see protected images and all comments right after signing up with any email address, without ever verifying it. Users who change their email in the profile also become unverified again (`email_verified_at = null`), so this case stays relevant even after FEAT-013.
+So anyone can see protected images and all comments right after signing up with any email address, without ever verifying it. Old accounts that were never verified still exist, so this case stays relevant even after FEAT-013. (Originally an email change in the profile also made users unverified; that now uses a pending email instead, see below.)
+
+## Who is logged in but unverified?
+Since FEAT-013 this is rare, which is why the "Verify your email" hint is hard to see in the browser:
+- Someone with a **pending registration** (submitted the form, not clicked the mail link yet) has **no account**. They are a guest and see "Log in to view and post comments".
+- **Logged in and unverified** only happens for accounts that were already unverified before FEAT-013.
+- An **email change in the profile does not make the user unverified**: the new address is stored as `pending_email` and gets a confirmation link (60 minutes). The old email stays active and verified until the link is opened, so a mistyped address never locks anyone out; the profile shows the pending address with "Resend link" and "Cancel email change" (`User::requestEmailChange`, `ProfileController::confirmEmailChange`).
+- To see it locally: use the seeded unverified account `user-unverified@user.com` ("Developer Login (Unverified)" on the login page).
 
 ## Acceptance Criteria
-- [ ] Gallery: unverified users get the same post list as guests (no `is_sensitive` posts), also with search.
-- [ ] Gallery: unverified users do not see comments; instead of "Log in to view and post comments" they see "Verify your email to view and post comments" with a link to `verification.notice`.
-- [ ] The comment form is not shown to unverified users.
-- [ ] Navigation: for unverified users, My Images / Profile are replaced or accompanied by a visible "Verify email" hint (decide during implementation; links already redirect to the verify page).
-- [ ] Any other place that checks only `auth` for showing protected content is found and fixed (grep for `@auth`, `Auth::check()`, `auth()->check()` in views and controllers).
-- [ ] Verified users and admins see everything as before.
-- [ ] Feature tests: unverified user sees no sensitive posts and no comments; verified user does; guest unchanged. Tests and validation passed (container).
+- [x] Gallery: unverified users get the same post list as guests (no `is_sensitive` posts), also with search.
+- [x] Gallery: unverified users do not see comments; instead of "Log in to view and post comments" they see "Verify your email to view and post comments" with a link to `verification.notice`.
+- [x] The comment form is not shown to unverified users.
+- [x] Navigation: for unverified users, My Images / Profile are replaced or accompanied by a visible "Verify email" hint (decide during implementation; links already redirect to the verify page).
+- [x] Any other place that checks only `auth` for showing protected content is found and fixed (grep for `@auth`, `Auth::check()`, `auth()->check()` in views and controllers).
+- [x] Verified users and admins see everything as before.
+- [x] Feature tests: unverified user sees no sensitive posts and no comments; verified user does; guest unchanged. Tests and validation passed (container).
 
 ## Technical Implementation Notes
 - **Affected files / components**: `app/Http/Controllers/PostController.php` (`gallery`), `resources/views/components/gallery/gallery.blade.php`, `resources/views/components/gallery/comment/add-comment-form.blade.php`, `resources/views/components/gallery/comment/show-comments.blade.php`, `resources/views/layouts/navigation.blade.php`, tests in `tests/Feature`.

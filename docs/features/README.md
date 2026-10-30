@@ -43,6 +43,18 @@ tags:
 1. Copy [`template.md`](template.md) to a new file, e.g. `FEAT-005-my-feature.md`.
 2. Fill out the YAML frontmatter fields (especially `id`, `title`, and `status`).
 3. Describe the overview, problem statement, acceptance criteria, and technical plan.
-4. From the repository root, run `python3 docs/kanban/server.py`, then open [`../kanban/index.html`](http://localhost:8765/docs/kanban/index.html). The board reads and writes this folder directly through a repo-relative local API.
+4. Open the Kanban board (see below) to see it in its column.
+
+## Opening the Kanban Board
+
+```bash
+python3 docs/kanban/server.py   # from the repository root, stop with Ctrl+C
+```
+
+Then open http://localhost:8765/docs/kanban/index.html, either in a normal browser (works from WSL too) or inside VS Code via `Ctrl+Shift+P` → **Simple Browser: Show**. Opening `index.html` directly as a file does not work, the board needs the server for its `/api/features` calls.
+
+Sync:
+- Changes on the board (drag to another column, edits) are written to the Markdown file right away.
+- Changes to the Markdown files (saved in the editor, auto save, git checkout) show up on the board by themselves within about a second. This includes an open detail dialog; unsaved input there gives way to the file. The server watches `docs/features` and tells the open page through `/api/events`.
 
 The board only treats files named `FEAT-<number>-<slug>.md` as tickets; it ignores this README and `template.md`. No folder picker or manual import is needed.

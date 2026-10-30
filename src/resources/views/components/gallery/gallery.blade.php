@@ -23,7 +23,7 @@
 <div class="mx-auto py-4 sm:py-5">
     <div class="{{-- grid grid-cols-1 lg:grid-cols-2 gap-4 --}}">
         @foreach ($posts as $post)
-            <div id="post-{{ $post->id }}" x-data x-init="$store.comments.init({{ $post->id }});
+            <div id="{{ $post->anchor() }}" x-data x-init="$store.comments.init({{ $post->id }});
             window.addEventListener('resize', () => $store.comments.updateOnResize({{ $post->id }}))">
 
                 <main class="app-surface mb-4 rounded-none border-x-0 px-2 py-2 sm:mx-1 sm:mb-6 sm:rounded-lg sm:border-x sm:px-6 sm:py-3">
@@ -89,15 +89,15 @@
                                             {{ $publishedAt->format('d.m.Y') }}
                                         </span>
                                     </span>
-                                    @if ($post->comments()->count() > 0)
+                                    @if ($post->comments->count() > 0)
                                         |
                                         <button type="button" class="cursor-pointer rounded-sm text-c-muted hover:text-c-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-c-primary md:cursor-auto"
                                             :class="{ 'underline': !$store.comments.visibility[{{ $post->id }}] }"
                                             @click="$store.comments.toggle({{ $post->id }})"
                                             :aria-expanded="$store.comments.visibility[{{ $post->id }}] ? 'true' : 'false'"
                                             aria-controls="comments-{{ $post->id }}">
-                                            {{ $post->comments()->count() }}
-                                            comment{{ $post->comments()->count() > 1 ? 's' : '' }}
+                                            {{ $post->comments->count() }}
+                                            comment{{ $post->comments->count() > 1 ? 's' : '' }}
                                             ♥</button>
                                     @endif
                                     <span>@include('components.gallery.share', ['post' => $post])</span>
@@ -114,17 +114,25 @@
                             <div id="comments-{{ $post->id }}" class="mt-4 max-h-64 space-y-4 overflow-auto px-3 text-sm leading-6 text-c-text sm:px-0 md:max-h-[420px] md:flex-grow"
                                 x-show="$store.comments.visibility[{{ $post->id }}]">
                                 <!-- Comments Section (conditionally visible) -->
-                                @auth
+                                @verified
                                     <x-gallery.comment.show-comments :post="$post" />
                                 @else
                                     <div class="rounded-md border border-c-line bg-c-surface-raised p-3 text-c-muted">
                                         <p>
-                                            <a class="rounded-sm text-sm text-c-primary underline hover:text-c-text focus:outline-none focus-visible:ring-2 focus-visible:ring-c-primary"
-                                                href="{{ route('login') }}">
-                                                Log in</a> to view and post comments.
+                                            {{-- logged in but unverified: only old accounts from before FEAT-013,
+                                                a pending registration is still a guest (see @verified in AppServiceProvider) --}}
+                                            @auth
+                                                <a class="rounded-sm text-sm text-c-primary underline hover:text-c-text focus:outline-none focus-visible:ring-2 focus-visible:ring-c-primary"
+                                                    href="{{ route('verification.notice') }}">
+                                                    Verify your email</a> to view and post comments.
+                                            @else
+                                                <a class="rounded-sm text-sm text-c-primary underline hover:text-c-text focus:outline-none focus-visible:ring-2 focus-visible:ring-c-primary"
+                                                    href="{{ route('login') }}">
+                                                    Log in</a> to view and post comments.
+                                            @endauth
                                         </p>
                                     </div>
-                                @endauth
+                                @endverified
 
                             </div>
                         </div>

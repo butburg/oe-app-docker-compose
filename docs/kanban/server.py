@@ -4,6 +4,7 @@ import json
 import os
 import re
 import tempfile
+import time
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import unquote, urlsplit
@@ -15,6 +16,7 @@ FEATURE_FILENAME = re.compile(r"FEAT-\d+-[a-z0-9][a-z0-9-]*\.md", re.IGNORECASE)
 FEATURE_ID = re.compile(r"^id:\s*(FEAT-\d+)\s*$", re.IGNORECASE | re.MULTILINE)
 FRONTMATTER = re.compile(r"\A---\s*\n([\s\S]*?)\n---(?:\n|\Z)")
 MAX_MARKDOWN_BYTES = 1_000_000
+WATCH_INTERVAL_SECONDS = 0.5
 
 
 class FeatureBoardHandler(SimpleHTTPRequestHandler):
@@ -30,7 +32,28 @@ class FeatureBoardHandler(SimpleHTTPRequestHandler):
             ]
             self._send_json(200, files)
             return
+        if urlsplit(self.path).path == "/api/events":
+            self._stream_changes()
+            return
         super().do_GET()
+
+    def _stream_changes(self):
+        """Server-sent events: one "changed" event whenever a feature file is added, removed or saved."""
+        self.send_response(200)
+        self.send_header("Content-Type", "text/event-stream")
+        self.send_header("Cache-Control", "no-store")
+        self.end_headers()
+        snapshot = _features_snapshot()
+        try:
+            while True:
+                time.sleep(WATCH_INTERVAL_SECONDS)
+                current = _features_snapshot()
+                # The comment line also detects a closed tab, the write fails then
+                self.wfile.write(b"data: changed\n\n" if current != snapshot else b": ping\n\n")
+                self.wfile.flush()
+                snapshot = current
+        except (BrokenPipeError, ConnectionResetError):
+            pass
 
     def do_PUT(self):
         path = urlsplit(self.path).path
@@ -104,6 +127,19 @@ class FeatureBoardHandler(SimpleHTTPRequestHandler):
         self.send_header("Cache-Control", "no-store")
         self.end_headers()
         self.wfile.write(payload)
+
+
+def _features_snapshot():
+    """Name, modification time and size of every feature file, enough to notice any save."""
+    snapshot = set()
+    for path in FEATURES_DIRECTORY.iterdir():
+        if FEATURE_FILENAME.fullmatch(path.name):
+            try:
+                stat = path.stat()
+            except FileNotFoundError:
+                continue
+            snapshot.add((path.name, stat.st_mtime_ns, stat.st_size))
+    return snapshot
 
 
 def main():

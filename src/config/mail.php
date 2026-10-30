@@ -108,4 +108,36 @@ return [
         'name' => env('MAIL_FROM_NAME', 'Example'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Mail bundle (FEAT-020)
+    |--------------------------------------------------------------------------
+    |
+    | Announcements, comment and new image mails to a user are collected and
+    | sent as one mail: the first item starts the clock, after this many
+    | minutes everything collected goes out together.
+    |
+    */
+
+    'bundle_minutes' => (int) env('MAIL_BUNDLE_MINUTES', 60),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Markdown Mail Settings
+    |--------------------------------------------------------------------------
+    |
+    | Weedy Gallery layout for all Markdown mails (FEAT-016): changed components
+    | and the theme live in resources/views/vendor/mail, all others fall back to
+    | the framework.
+    |
+    */
+
+    'markdown' => [
+        'theme' => 'weedy',
+
+        'paths' => [
+            resource_path('views/vendor/mail'),
+        ],
+    ],
+
 ];
