@@ -6,8 +6,8 @@ Vorherige Liste: [archive/TODO-2026-10-28-seed-data.md](archive/TODO-2026-10-28-
 - [x] Nach dem nächsten Deploy die alten statischen Bilder im Server-Storage löschen (`starfish.svg broken.png impressum-contact.png impressum-mail.png blue.jpg placeholder.jpg` in `storage/app/public/files/images`). `factory_images/` bleibt. Details in [archive/TODO-2026-10-28-ui-review.md](archive/TODO-2026-10-28-ui-review.md).
 - [ ] Deploy von Branch 05: Frontend-Build und Migrationen macht der GitHub-Workflow. Vorher DB-Dump und Sicherung von `storage/app/public/files`. `MAIL_BUNDLE_MINUTES`, `IMAGES_*` müssen nicht in die Secrets, die Defaults passen.
 - [ ] Nach dem Deploy Queue-Worker als lima-Cronjob anlegen, ohne ihn bleiben die Sammel-Mails in `jobs` liegen. Anleitung: [server-cronjobs.md](server-cronjobs.md).
-- [ ] Bilder liegen noch auf der `public`-Disk, `/storage/files/...` ist direkt erreichbar (FEAT-011). Umzug auf die private Disk folgt.
-- [ ] Danach per SSH in `~/oe-app`: `php artisan images:strip-metadata --dry-run`, dann ohne `--dry-run` (FEAT-015). Überschreibt Dateien mit Metadaten.
+- [ ] Danach per SSH in `~/oe-app`: `php artisan images:strip-metadata --dry-run`, dann ohne `--dry-run` (FEAT-015). Überschreibt Dateien mit Metadaten. Die betroffenen JPEGs werden dabei einmal neu kodiert, der kleine Qualitätsverlust ist in Kauf genommen.
+- [ ] Danach in einem eigenen PR `images:strip-metadata` entfernen ([StripImageMetadata.php](../src/app/Console/Commands/StripImageMetadata.php) und [StripImageMetadataTest.php](../src/tests/Feature/Images/StripImageMetadataTest.php)), er wird nur dieses eine Mal gebraucht.
 
 ## 2. Manuell auf Dev testen (FEAT-011 bis 020, @butburg)
 Setup: `docker compose up -d`, `docker compose run --rm artisan migrate`. Logins über die Developer-Buttons auf der Login-Seite, Mails in MailHog: http://localhost:8025. Alle Mails mit Beispieldaten: http://localhost/dev/mail.
