@@ -113,8 +113,15 @@ Betroffen ist [Post.php:57](src/app/Models/Post.php#L57).
 ## ⚪ Niedrig
 
 - **Gleichzeitiges Doppel-Submit beim Admin-Senden:** Beide Requests bestehen den `exists()`-Check in [MailController.php:82](src/app/Http/Controllers/Admin/MailController.php#L82), der zweite endet mit 500 (UniqueConstraint). Doppelt gesendet wird nichts, aber die Fehlerseite ist unschön.
+  - ✅ **Bewusst nicht umgesetzt:** Der Bestätigungsdialog und der deaktivierte Button lassen praktisch keinen zweiten Request durch. Selbst dann geht nichts doppelt raus, und der Unique-Index fängt den Rest ab.
 - **Vorschau ohne Redirect nach dem POST:** Lädt der Admin nach „Send test to me“ die Seite neu, geht die Testmail noch einmal raus.
+  - ✅ **Bewusst nicht umgesetzt:** Der Browser fragt vor dem erneuten Senden nach, und die Testmail geht nur an den Admin selbst. Ein Redirect bräuchte eine GET-Route für die Vorschau und die Formulardaten in der Session, das lohnt sich dafür nicht.
 - **Lowercase-Logik doppelt und uneinheitlich:** Sie steckt in `RegisteredUserController::lowercaseEmail()` und in `LoginRequest::prepareForValidation()`. [ProfileUpdateRequest.php:27](src/app/Http/Requests/ProfileUpdateRequest.php#L27) lehnt Großbuchstaben dagegen weiter per `lowercase`-Regel ab.
+  - ✅ **Erledigt:** Auch das Profil wandelt Großbuchstaben jetzt um, statt sie abzulehnen. Die `lowercase`-Regel ist raus, dazu gibt es einen Test.
+  - ✅ **Doppelte Logik bewusst gelassen:** Es sind drei Kopien von je drei Zeilen. Login und Profil sind FormRequests, die Registrierung arbeitet mit einem einfachen `Request`, und dort läuft `prepareForValidation()` nicht. Zusammenlegen ginge nur, wenn man die Registrierung auf FormRequests umbaut.
 - **Seiteneffekte in Models:** `PendingRegistration::sendLink()` und `User::sendEmailChangeLink()` versenden Mails direkt aus dem Model. Dazu kommt `app(CollectMail::class)` in den Controllern statt Method Injection. Das ist kein Bug, aber nicht der übliche Laravel-Stil.
+  - ✅ **Mails aus Models bewusst so belassen:** Token, Ablaufzeit, Limit und Mail gehören fachlich zusammen und werden von mehreren Controller-Aktionen gebraucht. Laravel macht das selbst genauso: `sendEmailVerificationNotification()` und `sendPasswordResetNotification()` sitzen am `User`. Action-Klassen oder Events wären mehr Klassen ohne Änderung am Verhalten.
+  - ✅ **Method Injection erledigt:** `CommentController::store()` und `PostController::publish()` bekommen `CollectMail` jetzt als Parameter, so wie `MailController::send()`.
 - **Division durch null:** `IMAGES_LINK_WINDOW_DAYS=0` führt in [Image.php:51](src/app/Models/Image.php#L51) zu einem `DivisionByZeroError`. `max(1, …)` in der Config behebt das.
+  - ✅ **Erledigt wie vorgeschlagen:** In [config/images.php:16](src/config/images.php#L16) steht jetzt `max(1, …)`. Ein leerer Wert oder ein Tippfehler wird durch `(int)` ebenfalls zu 0 und landet jetzt bei 1 Tag.
 - **Neu-Kodierung bei `images:strip-metadata`:** Der Befehl kodiert jedes betroffene JPEG neu und verliert dabei einmalig etwas Qualität. Vor dem Lauf auf Prod sollte man das wissen.
