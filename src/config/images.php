@@ -13,6 +13,6 @@ return [
     |
     */
 
-    'link_window_days' => (int) env('IMAGES_LINK_WINDOW_DAYS', 7),
+    'link_window_days' => max(1, (int) env('IMAGES_LINK_WINDOW_DAYS', 7)),
 
 ];
