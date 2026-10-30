@@ -54,6 +54,13 @@ class EmailChangeTest extends TestCase
             ->assertSee('new@example.com');
     }
 
+    public function test_email_is_lowercased_instead_of_rejected(): void
+    {
+        $this->requestChange('New@Example.COM');
+
+        $this->assertSame('new@example.com', $this->user->refresh()->pending_email);
+    }
+
     public function test_old_email_still_logs_in_while_the_change_is_pending(): void
     {
         $this->requestChange();
